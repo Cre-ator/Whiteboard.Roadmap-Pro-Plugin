@@ -4,7 +4,7 @@ class RoadmapProPlugin extends MantisPlugin
 {
     function register ()
     {
-        $this->name = 'Roadmap Pro';
+        $this->name = 'RoadmapPro';
         $this->description = 'Extended Roadmap with additional progress information';
         $this->page = 'config_page';
 

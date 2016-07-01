@@ -1,14 +1,26 @@
 <?php
 
+require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+
 auth_reauthenticate ();
-access_ensure_global_level ( config_get ( 'version_management_access_level' ) );
-//form_security_validate ( 'plugin_VersionManagement_config_update' );
+access_ensure_global_level ( plugin_config_get ( 'roadmap_pro_access_level' ) );
+form_security_validate ( 'plugin_RoadmapPro_config_update' );
 
 $option_change = gpc_get_bool ( 'config_change', false );
 $option_reset = gpc_get_bool ( 'config_reset', false );
+$option_add_profile = gpc_get_bool ( 'add_profile', false );
+
+if ( $option_add_profile )
+{
+    $profile_name = trim ( $_POST[ 'profile_name' ] );
+    $profile_status = $_POST[ 'profile_status' ];
+
+    roadmap_pro_api::insert_profile ( $profile_name, $profile_status );
+}
 
 if ( $option_reset )
 {
+    print_successful_redirect ( plugin_page ( 'config_reset_ensure', true ) );
 }
 
 if ( $option_change )

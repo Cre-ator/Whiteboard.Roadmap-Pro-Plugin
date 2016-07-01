@@ -8,4 +8,13 @@ $s_plugin_RoadmapPro_config_page_access_level = 'Plugin Zugriffslevel';
 $s_plugin_RoadmapPro_config_page_show_menu = 'Menü anzeigen';
 $s_plugin_RoadmapPro_config_page_show_footer = 'Plugin Informationen in Fußzeile anzeigen';
 $s_plugin_RoadmapPro_config_page_roadmap_profile_management = 'Roadmap Profilverwaltung';
-$s_plugin_RoadmapPro_config_page_new_profile = 'Neues Profil erstellen';
+$s_plugin_RoadmapPro_config_page_profile_name = 'Name';
+$s_plugin_RoadmapPro_config_page_profile_status = 'Status';
+$s_plugin_RoadmapPro_config_page_add_profile = 'Profil hinzufügen';
+$s_plugin_RoadmapPro_config_page_profile_list = 'Angelegte Profile';
+$s_plugin_RoadmapPro_config_page_delete_profile = 'Entfernen';
+
+$s_plugin_RoadmapPro_config_reset_ensure_title = 'Plugin-Einstellungen zurücksetzen';
+$s_plugin_RoadmapPro_config_reset_ensure_expl = 'Achtung, wenn Sie fortfahren werden alle im Plugin hinterlegten Daten unwiderruflich gelöscht. Fortfahren?';
+$s_plugin_RoadmapPro_config_reset_ensure_conf = 'Fortfahren';
+$s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abbrechen';

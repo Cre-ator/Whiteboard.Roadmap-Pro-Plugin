@@ -24,13 +24,13 @@ else
 }
 
 /** General configuration */
-print_config_table_title_row ( 2, 'config_page_general' );
+print_config_table_title_row ( 5, 'config_page_general' );
 /** Access level */
 print_config_table_row ();
 echo '<td class="category">';
 echo '<span class="required">*</span>' . plugin_lang_get ( 'config_page_access_level' );
 echo '</td>';
-echo '<td width="100px" colspan="2">';
+echo '<td width="100px" colspan="5">';
 echo '<select name="access_level">';
 print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'version_management_access_level', ADMINISTRATOR ) );
 echo '</select>';
@@ -39,24 +39,70 @@ echo '</tr>';
 /** Show menu */
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_show_menu' );
-print_config_table_radio_button_col ( 1, 'show_menu' );
+print_config_table_radio_button_col ( 4, 'show_menu' );
 echo '</tr>';
 /** Show plugin information in footer */
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_show_footer' );
-print_config_table_radio_button_col ( 1, 'show_footer' );
+print_config_table_radio_button_col ( 4, 'show_footer' );
 echo '</tr>';
 
 /** Profile Management */
-print_config_table_title_row ( 2, 'config_page_roadmap_profile_management' );
+print_config_table_title_row ( 5, 'config_page_roadmap_profile_management' );
 /** Add new Profile */
 print_config_table_row ();
-print_config_table_category_col ( 1, 1, 'config_page_new_profile' );
+print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
+/** profile name */
+echo '<td width="100px" colspan="1">';
+echo '<input type="text" id="profile_name" name="profile_name" size="15" maxlength="128" value="">';
+echo '</td>';
+/** select status, selected => new */
+echo '<td>';
+print_status_option_list ( 'profile_status', 10 );
+echo '</td>';
+/** submit new profile */
+echo '<td colspan="2">';
+echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
+echo '</td>';
 echo '</tr>';
+
+/** show profiles */
+
+$profiles = roadmap_pro_api::get_profiles ();
+if ( empty( $profiles ) == false )
+{
+    print_config_table_row ();
+    print_config_table_title_row ( 5, 'config_page_profile_list' );
+    foreach ( $profiles as $profile )
+    {
+        $profile_id = $profile[ 0 ];
+        $profile_name = $profile[ 1 ];
+        $profile_status = $profile[ 2 ];
+
+        print_config_table_row ();
+        print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
+        echo '<td>' . string_display_line ( $profile_name ) . '</td>';
+        print_config_table_category_col ( 1, 1, 'config_page_profile_status' );
+        echo '<td>' . string_display_line ( get_enum_element ( 'status', $profile_status ) ) . '</td>';
+
+        echo '<td>';
+        echo '<a style="text-decoration: none;" href="' . plugin_page ( 'config_delete_profile' ) .
+            '&amp;profile_id=' . $profile_id . '">';
+        echo '<span class="input">';
+        echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
+        echo '</span>';
+        echo '</a>';
+        echo '</td>';
+
+        echo '</tr>';
+    }
+    echo '</tr>';
+}
+
 
 echo '<tr>';
 echo '<td class="center" colspan="5">';
-echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>' . ' ';
+echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>&nbsp';
 echo '<input type="submit" name="config_reset" class="button" value="' . lang_get ( 'reset_prefs_button' ) . '"/>';
 echo '</td>';
 echo '</tr>';
@@ -151,5 +197,18 @@ function print_config_table_color_picker_row ( $colspan, $name, $default )
     echo '<label>';
     echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="' . $name . '" value="' . plugin_config_get ( $name, $default ) . '" />';
     echo '</label>';
+    echo '</td>';
+}
+
+/**
+ * @param $colspan
+ * @param $name
+ */
+function print_config_table_text_input_field ( $colspan, $name )
+{
+    $profile = gpc_get_string ( 'profile', '' );
+    echo '<td width="100px" colspan="' . $colspan . '">';
+    echo '<input type="text" id="type" name="' . $name . '" size="15" maxlength="128" value="' . $profile . '">&nbsp';
+    echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
     echo '</td>';
 }

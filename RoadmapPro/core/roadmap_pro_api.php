@@ -28,14 +28,30 @@ class roadmap_pro_api
         return count ( $array ) !== count ( array_unique ( $array ) );
     }
 
-    public static function get_bug_ids_by_version ( $version_name )
+    /**
+     * create a mysqli object
+     *
+     * @return mysqli
+     */
+    private static function get_mysqli_object ()
     {
         $dbPath = config_get ( 'hostname' );
         $dbUser = config_get ( 'db_username' );
         $dbPass = config_get ( 'db_password' );
         $dbName = config_get ( 'database_name' );
 
-        $mysqli = new mysqli( $dbPath, $dbUser, $dbPass, $dbName );
+        return new mysqli( $dbPath, $dbUser, $dbPass, $dbName );
+    }
+
+    /**
+     * returns all assigned bug ids to a given target version
+     *
+     * @param $version_name
+     * @return array|null
+     */
+    public static function get_bug_ids_by_version ( $version_name )
+    {
+        $mysqli = self::get_mysqli_object ();
 
         $query = /** @lang sql */
             "SELECT id FROM mantis_bug_table
@@ -54,5 +70,92 @@ class roadmap_pro_api
         }
 
         return null;
+    }
+
+    /**
+     * inserts a new roadmap profile if there isnt a dupicate by name
+     *
+     * @param $profile_name
+     * @param $profile_status
+     */
+    public static function insert_profile ( $profile_name, $profile_status )
+    {
+        $mysqli = self::get_mysqli_object ();
+
+        $query = /** @lang sql */
+            "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_status )
+            SELECT null,'" . $profile_name . "'," . $profile_status . "
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
+            WHERE profile_name = '" . $profile_name . "')";
+
+        $mysqli->query ( $query );
+    }
+
+    /**
+     * get all roadmap profiles
+     *
+     * @return array|null
+     */
+    public static function get_profiles ()
+    {
+        $mysqli = self::get_mysqli_object ();
+
+        $query = /** @lang sql */
+            "SELECT * FROM mantis_plugin_RoadmapPro_profile_table";
+
+        $result = $mysqli->query ( $query );
+
+        $prfiles = array ();
+        if ( 0 != $result->num_rows )
+        {
+            while ( $row = $result->fetch_row () )
+            {
+                $prfiles[] = $row;
+            }
+            return $prfiles;
+        }
+
+        return null;
+    }
+
+    /**
+     * delete a roadmap profile by its primary id
+     *
+     * @param $profile_id
+     */
+    public static function delete_profile ( $profile_id )
+    {
+        $mysqli = self::get_mysqli_object ();
+
+        $query = /** @lang sql */
+            "DELETE FROM mantis_plugin_RoadmapPro_profile_table
+            WHERE id = " . $profile_id;
+
+        $mysqli->query ( $query );
+    }
+
+    /**
+     * Reset all plugin-related data
+     *
+     * - config entries
+     * - database entities
+     */
+    public static function reset_plugin ()
+    {
+        $mysqli = self::get_mysqli_object ();
+
+        $query = /** @lang sql */
+            "DROP TABLE mantis_plugin_RoadmapPro_profile_table";
+
+        $mysqli->query ( $query );
+
+        $query = /** @lang sql */
+            "DELETE FROM mantis_config_table
+            WHERE config_id LIKE 'plugin_RoadmapPro%'";
+
+        $mysqli->query ( $query );
+
+        print_successful_redirect ( 'manage_plugin_page.php' );
     }
 }

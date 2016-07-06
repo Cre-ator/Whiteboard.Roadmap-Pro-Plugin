@@ -31,8 +31,8 @@ echo '<td class="category">';
 echo '<span class="required">*</span>' . plugin_lang_get ( 'config_page_access_level' );
 echo '</td>';
 echo '<td width="100px" colspan="5">';
-echo '<select name="access_level">';
-print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'version_management_access_level', ADMINISTRATOR ) );
+echo '<select name="roadmap_pro_access_level">';
+print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'roadmap_pro_access_level', ADMINISTRATOR ) );
 echo '</select>';
 echo '</td>';
 echo '</tr>';
@@ -58,7 +58,9 @@ echo '<input type="text" id="profile_name" name="profile_name" size="15" maxleng
 echo '</td>';
 /** select status, selected => new */
 echo '<td>';
-print_status_option_list ( 'profile_status', 10 );
+echo '<select name="profile_status[]" multiple="multiple">';
+print_enum_string_option_list ( 'status', plugin_config_get ( 'URIThreshold', 50 ) );
+echo '</select>';
 echo '</td>';
 /** submit new profile */
 echo '<td colspan="2">';
@@ -68,7 +70,7 @@ echo '</tr>';
 
 /** show profiles */
 
-$profiles = roadmap_pro_api::get_profiles ();
+$profiles = roadmap_pro_api::get_roadmap_profiles ();
 if ( empty( $profiles ) == false )
 {
     print_config_table_row ();
@@ -77,13 +79,25 @@ if ( empty( $profiles ) == false )
     {
         $profile_id = $profile[ 0 ];
         $profile_name = $profile[ 1 ];
-        $profile_status = $profile[ 2 ];
+        $db_profile_status = $profile[ 2 ];
+        $profile_status_array = explode ( ';', $db_profile_status );
 
         print_config_table_row ();
         print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
         echo '<td>' . string_display_line ( $profile_name ) . '</td>';
         print_config_table_category_col ( 1, 1, 'config_page_profile_status' );
-        echo '<td>' . string_display_line ( get_enum_element ( 'status', $profile_status ) ) . '</td>';
+        echo '<td>';
+        $counter = count ( $profile_status_array );
+        for ( $status_index = 0; $status_index < $counter; $status_index++ )
+        {
+            $profile_status = $profile_status_array[ $status_index ];
+            echo string_display_line ( get_enum_element ( 'status', $profile_status ) );
+            if ( $status_index < ( $counter - 1 ) )
+            {
+                echo ',&nbsp';
+            }
+        }
+        echo '</td>';
 
         echo '<td>';
         echo '<a style="text-decoration: none;" href="' . plugin_page ( 'config_delete_profile' ) .

@@ -46,16 +46,18 @@ class roadmap_pro_api
     /**
      * returns all assigned bug ids to a given target version
      *
+     * @param $project_id
      * @param $version_name
      * @return array|null
      */
-    public static function get_bug_ids_by_version ( $version_name )
+    public static function get_bug_ids_by_project_and_version ( $project_id, $version_name )
     {
         $mysqli = self::get_mysqli_object ();
 
         $query = /** @lang sql */
             "SELECT id FROM mantis_bug_table
-            WHERE target_version = '" . $version_name . "'";
+            WHERE target_version = '" . $version_name . "'
+            AND project_id = " . $project_id;
 
         $result = $mysqli->query ( $query );
 
@@ -84,7 +86,7 @@ class roadmap_pro_api
 
         $query = /** @lang sql */
             "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_status )
-            SELECT null,'" . $profile_name . "'," . $profile_status . "
+            SELECT null,'" . $profile_name . "','" . $profile_status . "'
             FROM DUAL WHERE NOT EXISTS (
             SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
             WHERE profile_name = '" . $profile_name . "')";
@@ -97,7 +99,7 @@ class roadmap_pro_api
      *
      * @return array|null
      */
-    public static function get_profiles ()
+    public static function get_roadmap_profiles ()
     {
         $mysqli = self::get_mysqli_object ();
 
@@ -106,17 +108,38 @@ class roadmap_pro_api
 
         $result = $mysqli->query ( $query );
 
-        $prfiles = array ();
+        $profiles = array ();
         if ( 0 != $result->num_rows )
         {
             while ( $row = $result->fetch_row () )
             {
-                $prfiles[] = $row;
+                $profiles[] = $row;
             }
-            return $prfiles;
+            return $profiles;
         }
 
         return null;
+    }
+
+    /**
+     * get a specific roadmap profile
+     *
+     * @param $profile_id
+     * @return array|null
+     */
+    public static function get_roadmap_profile ( $profile_id )
+    {
+        $mysqli = self::get_mysqli_object ();
+
+        $query = /** @lang sql */
+            "SELECT * FROM mantis_plugin_RoadmapPro_profile_table
+            WHERE id = " . $profile_id;
+
+        $result = $mysqli->query ( $query );
+
+        $profile = mysqli_fetch_row ( $result );
+
+        return $profile;
     }
 
     /**

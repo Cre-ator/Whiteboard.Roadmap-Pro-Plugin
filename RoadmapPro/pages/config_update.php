@@ -13,7 +13,23 @@ $option_add_profile = gpc_get_bool ( 'add_profile', false );
 if ( $option_add_profile )
 {
     $profile_name = trim ( $_POST[ 'profile_name' ] );
-    $profile_status = $_POST[ 'profile_status' ];
+    $profile_status = '';
+
+    if ( !empty( $_POST[ 'profile_status' ] ) )
+    {
+        $post_profile_status = $_POST[ 'profile_status' ];
+        $counter = count ( $post_profile_status );
+        for ( $status_index = 0; $status_index < $counter; $status_index++ )
+        {
+            $status_value = $post_profile_status[ $status_index ];
+            $profile_status .= $status_value;
+            if ( $status_index < ( $counter - 1 ) )
+            {
+                $profile_status .= ';';
+            }
+
+        }
+    }
 
     roadmap_pro_api::insert_profile ( $profile_name, $profile_status );
 }
@@ -25,13 +41,13 @@ if ( $option_reset )
 
 if ( $option_change )
 {
-    update_single_value ( 'version_management_access_level', ADMINISTRATOR );
+    update_single_value ( 'roadmap_pro_access_level', ADMINISTRATOR );
     update_button ( 'show_menu' );
     update_button ( 'show_footer' );
     update_color ( 'unused_version_row_color', '#908b2d' );
 }
 
-form_security_purge ( 'plugin_VersionManagement_config_update' );
+form_security_purge ( 'plugin_RoadmapPro_config_update' );
 
 print_successful_redirect ( plugin_page ( 'config_page', true ) );
 

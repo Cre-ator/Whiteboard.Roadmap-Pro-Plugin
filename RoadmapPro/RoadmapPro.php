@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
         $this->description = 'Extended Roadmap with additional progress information';
         $this->page = 'config_page';
 
-        $this->version = '1.0.2';
+        $this->version = '1.0.3';
         $this->requires = array
         (
             'MantisCore' => '1.2.0, <= 1.3.99'
@@ -24,7 +24,9 @@ class RoadmapProPlugin extends MantisPlugin
         $hooks = array
         (
             'EVENT_LAYOUT_PAGE_FOOTER' => 'footer',
-            'EVENT_MENU_MAIN' => 'menu'
+            'EVENT_MENU_MAIN' => 'menu',
+
+            'EVENT_LAYOUT_RESOURCES' => 'event_layout_resources'
         );
         return $hooks;
     }
@@ -48,10 +50,22 @@ class RoadmapProPlugin extends MantisPlugin
                 'CreateTableSQL', array ( plugin_table ( 'profile' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             profile_name    C(250)  DEFAULT '',
+            profile_color   C(250)  DEFAULT '',
             profile_status  C(250)  DEFAULT ''
             " )
             )
         );
+    }
+
+    function init ()
+    {
+        $t_core_path = config_get_global ( 'plugin_path' )
+            . plugin_get_current ()
+            . DIRECTORY_SEPARATOR
+            . 'core'
+            . DIRECTORY_SEPARATOR;
+
+        require_once ( $t_core_path . 'roadmap_constant_api.php' );
     }
 
     function get_user_has_level ()
@@ -69,6 +83,11 @@ class RoadmapProPlugin extends MantisPlugin
             return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
         }
         return null;
+    }
+
+    function event_layout_resources ()
+    {
+        echo '<link rel="stylesheet" href="' . EOADMAPPRO_PLUGIN_URL . 'files/doadmap.css"/>' . "\n";
     }
 
     function menu ()

@@ -6,8 +6,10 @@ auth_reauthenticate ();
 access_ensure_global_level ( plugin_config_get ( 'roadmap_pro_access_level' ) );
 
 html_page_top1 ( plugin_lang_get ( 'config_page_title' ) );
+echo '<script type="text/javascript" src="plugins/RoadmapPro/files/jscolor/jscolor.js"></script>';
 html_page_top2 ();
 print_manage_menu ();
+
 
 echo '<br/>';
 echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
@@ -53,17 +55,19 @@ print_config_table_title_row ( 5, 'config_page_roadmap_profile_management' );
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
 /** profile name */
-echo '<td width="100px" colspan="1">';
+echo '<td width="100px">';
 echo '<input type="text" id="profile_name" name="profile_name" size="15" maxlength="128" value="">';
 echo '</td>';
 /** select status, selected => new */
 echo '<td>';
 echo '<select name="profile_status[]" multiple="multiple">';
-print_enum_string_option_list ( 'status', plugin_config_get ( 'URIThreshold', 50 ) );
+print_enum_string_option_list ( 'status' );
 echo '</select>';
 echo '</td>';
+/** profile color picker */
+print_config_table_color_picker_row ( 1, 'profile_color' );
 /** submit new profile */
-echo '<td colspan="2">';
+echo '<td>';
 echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
 echo '</td>';
 echo '</tr>';
@@ -79,12 +83,15 @@ if ( empty( $profiles ) == false )
     {
         $profile_id = $profile[ 0 ];
         $profile_name = $profile[ 1 ];
-        $db_profile_status = $profile[ 2 ];
+        $db_profile_color = $profile[ 2 ];
+        $db_profile_status = $profile[ 3 ];
         $profile_status_array = explode ( ';', $db_profile_status );
 
         print_config_table_row ();
+        /** profile name */
         print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
         echo '<td>' . string_display_line ( $profile_name ) . '</td>';
+        /** profile status */
         print_config_table_category_col ( 1, 1, 'config_page_profile_status' );
         echo '<td>';
         $counter = count ( $profile_status_array );
@@ -99,6 +106,10 @@ if ( empty( $profiles ) == false )
         }
         echo '</td>';
 
+        /** profile color */
+        echo '<td style="background-color: #' . $db_profile_color . '"></td>';
+
+        /** delete profile button */
         echo '<td>';
         echo '<a style="text-decoration: none;" href="' . plugin_page ( 'config_delete_profile' ) .
             '&amp;profile_id=' . $profile_id . '">';
@@ -203,13 +214,12 @@ function print_config_table_radio_button_col ( $colspan, $name )
  *
  * @param $colspan
  * @param $name
- * @param $default
  */
-function print_config_table_color_picker_row ( $colspan, $name, $default )
+function print_config_table_color_picker_row ( $colspan, $name )
 {
     echo '<td width="100px" colspan="' . $colspan . '">';
     echo '<label>';
-    echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="' . $name . '" value="' . plugin_config_get ( $name, $default ) . '" />';
+    echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="' . $name . '" value="" />';
     echo '</label>';
     echo '</td>';
 }

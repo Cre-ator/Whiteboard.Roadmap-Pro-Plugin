@@ -78,15 +78,16 @@ class roadmap_pro_api
      * inserts a new roadmap profile if there isnt a dupicate by name
      *
      * @param $profile_name
+     * @param $profile_color
      * @param $profile_status
      */
-    public static function insert_profile ( $profile_name, $profile_status )
+    public static function insert_profile ( $profile_name, $profile_color, $profile_status )
     {
         $mysqli = self::get_mysqli_object ();
 
         $query = /** @lang sql */
-            "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_status )
-            SELECT null,'" . $profile_name . "','" . $profile_status . "'
+            "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status )
+            SELECT null,'" . $profile_name . "','" . $profile_color . "','" . $profile_status . "'
             FROM DUAL WHERE NOT EXISTS (
             SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
             WHERE profile_name = '" . $profile_name . "')";

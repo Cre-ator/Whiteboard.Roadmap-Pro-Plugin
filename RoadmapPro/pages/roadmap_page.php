@@ -1,13 +1,18 @@
 <?php
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
 
 process_page ();
 
 function process_page ()
 {
+    $roadmap_profile_id = $_GET[ 'profile_id' ];
+    $roadmap_profile = roadmap_pro_api::get_roadmap_profile ( $roadmap_profile_id );
+    $profile_color = $roadmap_profile[ 2 ];
+
     html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
-    echo '<link rel="stylesheet" href="' . __DIR__ . '/../files/roadmap.css"/>';
+    echo '<link rel="stylesheet" href="' . EOADMAPPRO_PLUGIN_URL . 'files/progress.css.php?profile_color=' . $profile_color . '"/>' . "\n";
     html_page_top2 ();
 
     if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
@@ -21,7 +26,6 @@ function process_page ()
     /** print profile menu bar */
     print_profile_switcher ();
 
-    $profile_id = null;
     if ( isset( $_GET[ 'profile_id' ] ) )
     {
         $profile_id = $_GET[ 'profile_id' ];
@@ -198,7 +202,7 @@ function check_issue_is_done ( $bug_id, $profile_id )
 
     $bug_status = bug_get_field ( $bug_id, 'status' );
     $roadmap_profile = roadmap_pro_api::get_roadmap_profile ( $profile_id );
-    $db_raodmap_status = $roadmap_profile[ 2 ];
+    $db_raodmap_status = $roadmap_profile[ 3 ];
     $roadmap_status_array = explode ( ';', $db_raodmap_status );
 
     foreach ( $roadmap_status_array as $roadmap_status )
@@ -232,8 +236,8 @@ function print_version_progress ( $version_progress )
     $progress_percent = round ( ( $version_progress * 100 ), 2 );
 
     echo '<tr><td>';
-    echo '<div class="progress400">';
-    echo '  <span class="bar" style="width: ' . $progress_percent . '%;">' . $progress_percent . '%</span>';
+    echo '<div class="progress9000">';
+    echo '<span class="bar" style="width: ' . $progress_percent . '%;">' . $progress_percent . '%</span>';
     echo '</div>';
     echo '</td></tr>';
 }

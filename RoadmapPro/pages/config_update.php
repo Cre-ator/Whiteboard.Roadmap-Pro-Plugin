@@ -13,6 +13,7 @@ $option_add_profile = gpc_get_bool ( 'add_profile', false );
 if ( $option_add_profile )
 {
     $profile_name = trim ( $_POST[ 'profile_name' ] );
+    $profile_color = $_POST[ 'profile_color' ];
     $profile_status = '';
 
     if ( !empty( $_POST[ 'profile_status' ] ) )
@@ -31,7 +32,7 @@ if ( $option_add_profile )
         }
     }
 
-    roadmap_pro_api::insert_profile ( $profile_name, $profile_status );
+    roadmap_pro_api::insert_profile ( $profile_name, $profile_color, $profile_status );
 }
 
 if ( $option_reset )

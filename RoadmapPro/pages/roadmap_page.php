@@ -138,7 +138,7 @@ function process_table ( $profile_id )
                 $release_title_without_hyperlinks = $project_name . ' - ' . $version_name . $release_date;
                 echo '<tr><td>' . utf8_str_pad ( '', utf8_strlen ( $release_title_without_hyperlinks ), '=' ) . '</td></tr>';
 
-                $done_bug_amount = roadmap_pro_api::calculate_version_progress ( $bug_ids, $profile_id );
+                $done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $profile_id );
                 $version_progress = round ( ( $done_bug_amount / $overall_bug_amount ), 4 );
                 $use_time_calculation = roadmap_pro_api::check_eta_is_set ( $bug_ids );
                 print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation );
@@ -216,6 +216,10 @@ function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use
 
 function print_bug_list ( $bug_ids, $profile_id )
 {
+    $bug_hash_array = roadmap_pro_api::calculate_bug_array_with_relationships ( $bug_ids );
+    var_dump ( $bug_hash_array );
+    $sorted_bugs = roadmap_pro_api::sort_bug_ids_by_relationships ( $bug_hash_array );
+    var_dump ( $sorted_bugs );
     foreach ( $bug_ids as $bug_id )
     {
         $user_id = bug_get_field ( $bug_id, 'handler_id' );

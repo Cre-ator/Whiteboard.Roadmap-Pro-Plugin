@@ -24,9 +24,7 @@ class RoadmapProPlugin extends MantisPlugin
         $hooks = array
         (
             'EVENT_LAYOUT_PAGE_FOOTER' => 'footer',
-            'EVENT_MENU_MAIN' => 'menu',
-
-            'EVENT_LAYOUT_RESOURCES' => 'event_layout_resources'
+            'EVENT_MENU_MAIN' => 'menu'
         );
         return $hooks;
     }

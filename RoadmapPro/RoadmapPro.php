@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
         $this->description = 'Extended Roadmap with additional progress information';
         $this->page = 'config_page';
 
-        $this->version = '1.0.3';
+        $this->version = '1.0.4';
         $this->requires = array
         (
             'MantisCore' => '1.2.0, <= 1.3.99'
@@ -83,11 +83,6 @@ class RoadmapProPlugin extends MantisPlugin
             return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
         }
         return null;
-    }
-
-    function event_layout_resources ()
-    {
-        echo '<link rel="stylesheet" href="' . EOADMAPPRO_PLUGIN_URL . 'files/doadmap.css"/>' . "\n";
     }
 
     function menu ()

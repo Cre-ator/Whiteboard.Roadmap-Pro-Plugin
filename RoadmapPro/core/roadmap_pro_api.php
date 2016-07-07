@@ -182,4 +182,142 @@ class roadmap_pro_api
 
         print_successful_redirect ( 'manage_plugin_page.php' );
     }
+
+    public static function check_eta_is_set ( $bug_ids )
+    {
+        $set = true;
+        foreach ( $bug_ids as $bug_id )
+        {
+            $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
+            if ( ( is_null ( $bug_eta_value ) ) || ( $bug_eta_value == 10 ) )
+            {
+                $set = false;
+            }
+        }
+
+        return $set;
+    }
+
+    public static function get_single_eta ( $bug_id )
+    {
+        $eta = 0;
+        $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
+        switch ( $bug_eta_value )
+        {
+            case 20:
+                $eta += ETA20;
+                break;
+            case 30:
+                $eta += ETA30;
+                break;
+            case 40:
+                $eta += ETA40;
+                break;
+            case 50:
+                $eta += ETA50;
+                break;
+            default:
+                $eta += 0;
+                break;
+        }
+
+        return $eta;
+    }
+
+    public static function get_full_eta ( $bug_ids )
+    {
+        $full_eta = 0;
+        foreach ( $bug_ids as $bug_id )
+        {
+            $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
+
+            switch ( $bug_eta_value )
+            {
+                case 20:
+                    $full_eta += ETA20;
+                    break;
+                case 30:
+                    $full_eta += ETA30;
+                    break;
+                case 40:
+                    $full_eta += ETA40;
+                    break;
+                case 50:
+                    $full_eta += ETA50;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return $full_eta;
+    }
+
+    public static function check_issue_is_done ( $bug_id, $profile_id )
+    {
+        $done = false;
+
+        $bug_status = bug_get_field ( $bug_id, 'status' );
+        $roadmap_profile = roadmap_pro_api::get_roadmap_profile ( $profile_id );
+        $db_raodmap_status = $roadmap_profile[ 3 ];
+        $roadmap_status_array = explode ( ';', $db_raodmap_status );
+
+        foreach ( $roadmap_status_array as $roadmap_status )
+        {
+            if ( $bug_status == $roadmap_status )
+            {
+                $done = true;
+            }
+        }
+
+        return $done;
+    }
+
+    public static function calculate_version_progress ( $bug_ids, $profile_id )
+    {
+        $done_bug_amount = 0;
+
+        foreach ( $bug_ids as $bug_id )
+        {
+            if ( self::check_issue_is_done ( $bug_id, $profile_id ) )
+            {
+                $done_bug_amount++;
+            }
+        }
+
+        return $done_bug_amount;
+    }
+
+    public static function get_done_bug_ids ( $bug_ids, $profile_id )
+    {
+        $done_bug_ids = array ();
+        foreach ( $bug_ids as $bug_id )
+        {
+            if ( self::check_issue_is_done ( $bug_id, $profile_id ) )
+            {
+                array_push ( $done_bug_ids, $bug_id );
+            }
+        }
+
+        return $done_bug_ids;
+    }
+
+    public static function prepare_project_ids ()
+    {
+        $current_project_id = helper_get_current_project ();
+        $sub_project_ids = project_hierarchy_get_all_subprojects ( $current_project_id );
+
+        $project_ids = array ();
+        if ( $current_project_id > 0 )
+        {
+            array_push ( $project_ids, $current_project_id );
+        }
+
+        foreach ( $sub_project_ids as $sub_project_id )
+        {
+            array_push ( $project_ids, $sub_project_id );
+        }
+
+        return $project_ids;
+    }
 }

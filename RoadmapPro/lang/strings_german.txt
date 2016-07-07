@@ -18,3 +18,7 @@ $s_plugin_RoadmapPro_config_reset_ensure_title = 'Plugin-Einstellungen zurückse
 $s_plugin_RoadmapPro_config_reset_ensure_expl = 'Achtung, wenn Sie fortfahren werden alle im Plugin hinterlegten Daten unwiderruflich gelöscht. Fortfahren?';
 $s_plugin_RoadmapPro_config_reset_ensure_conf = 'Fortfahren';
 $s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abbrechen';
+
+$s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d von %2$d Einträgen erledigt.';
+$s_plugin_RoadmapPro_roadmap_page_bar_time = 'Dauer';
+$s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Anzahl';

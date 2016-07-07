@@ -26,13 +26,13 @@ else
 }
 
 /** General configuration */
-print_config_table_title_row ( 5, 'config_page_general' );
+print_config_table_title_row ( 6, 'config_page_general' );
 /** Access level */
 print_config_table_row ();
 echo '<td class="category">';
 echo '<span class="required">*</span>' . plugin_lang_get ( 'config_page_access_level' );
 echo '</td>';
-echo '<td width="100px" colspan="5">';
+echo '<td width="100px" colspan="6">';
 echo '<select name="roadmap_pro_access_level">';
 print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'roadmap_pro_access_level', ADMINISTRATOR ) );
 echo '</select>';
@@ -41,16 +41,16 @@ echo '</tr>';
 /** Show menu */
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_show_menu' );
-print_config_table_radio_button_col ( 4, 'show_menu' );
+print_config_table_radio_button_col ( 5, 'show_menu' );
 echo '</tr>';
 /** Show plugin information in footer */
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_show_footer' );
-print_config_table_radio_button_col ( 4, 'show_footer' );
+print_config_table_radio_button_col ( 5, 'show_footer' );
 echo '</tr>';
 
 /** Profile Management */
-print_config_table_title_row ( 5, 'config_page_roadmap_profile_management' );
+print_config_table_title_row ( 6, 'config_page_roadmap_profile_management' );
 /** Add new Profile */
 print_config_table_row ();
 print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
@@ -67,7 +67,7 @@ echo '</td>';
 /** profile color picker */
 print_config_table_color_picker_row ( 1, 'profile_color' );
 /** submit new profile */
-echo '<td>';
+echo '<td colspan="2">';
 echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
 echo '</td>';
 echo '</tr>';
@@ -126,7 +126,7 @@ if ( empty( $profiles ) == false )
 
 
 echo '<tr>';
-echo '<td class="center" colspan="5">';
+echo '<td class="center" colspan="6">';
 echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>&nbsp';
 echo '<input type="submit" name="config_reset" class="button" value="' . lang_get ( 'reset_prefs_button' ) . '"/>';
 echo '</td>';

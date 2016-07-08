@@ -35,9 +35,9 @@ function process_page ()
         $profile_id = $_GET[ 'profile_id' ];
         echo '<div align="center">';
         echo '<hr size="1" width="100%" />';
-        echo '<table>';
+        echo '<div class="table">';
         process_table ( $profile_id );
-        echo '</table>';
+        echo '</div>';
         echo '</div>';
     }
 
@@ -58,7 +58,6 @@ function process_table ( $profile_id )
         array_push ( $project_ids, $get_project_id );
     }
 
-    echo '<tbody>';
     /** iterate through projects */
     foreach ( $project_ids as $project_id )
     {
@@ -110,11 +109,15 @@ function process_table ( $profile_id )
 
             if ( $overall_bug_amount > 0 )
             {
+                /** define and print project title */
                 if ( $printed_project_title == false )
                 {
-                    echo '<tr><td><span class="pagetitle">' . string_display ( $project_name ), '&nbsp;-&nbsp;' . lang_get ( 'roadmap' ) . '</span></td></tr>';
+                    $project_title = '<span class="pagetitle">' . string_display ( $project_name ) . '&nbsp;-&nbsp;'
+                        . lang_get ( 'roadmap' ) . '</span>';
+                    print_content_row ( $project_title );
                     $printed_project_title = true;
                 }
+                /** define and print release title */
                 $release_title = '<a href="' . plugin_page ( 'roadmap_page' )
                     . '&amp;profile_id=' . $profile_id . '&amp;project_id=' . $project_id . '">'
                     . string_display_line ( $project_name ) . '</a>&nbsp;-'
@@ -122,32 +125,43 @@ function process_table ( $profile_id )
                     . '&amp;profile_id=' . $profile_id . '&amp;version_id=' . $version_id . '">'
                     . string_display_line ( $version_name ) . '</a>';
 
-                echo '<tr>';
-                echo '<td>';
-                echo $release_title . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;' . $release_date . ')&nbsp;'
-                    . lang_get ( 'word_separator' ),
-                print_bracket_link ( 'view_all_set.php?type=1&temporary=y&' . FILTER_PROPERTY_PROJECT_ID . '=' . $project_id
-                    . '&' . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $version_name ),
-                    lang_get ( 'view_bugs_link' )
-                );
-                echo '</td>';
-                echo '</tr>';
+                $release_title_string = $release_title . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;'
+                    . $release_date . ')&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
+                    . FILTER_PROPERTY_PROJECT_ID . '=' . $project_id . '&amp;'
+                    . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $version_name ) . '">'
+                    . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
-                echo '<tr><td>' . $version_description . '</td></tr>';
-
+                print_content_row ( $release_title_string );
+                /** print version description */
+                print_content_row ( $version_description );
+                /** define and print seperator string */
                 $release_title_without_hyperlinks = $project_name . ' - ' . $version_name . $release_date;
-                echo '<tr><td>' . utf8_str_pad ( '', utf8_strlen ( $release_title_without_hyperlinks ), '=' ) . '</td></tr>';
+                $separator_string = utf8_str_pad ( '', utf8_strlen ( $release_title_without_hyperlinks ), '=' );
+                print_content_row ( $separator_string );
 
                 $done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $profile_id );
                 $version_progress = round ( ( $done_bug_amount / $overall_bug_amount ), 4 );
                 $use_time_calculation = roadmap_pro_api::check_eta_is_set ( $bug_ids );
+                /** print version progress bar */
                 print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation );
+                /** print bug list */
                 print_bug_list ( $bug_ids, $profile_id );
+                /** print text progress */
                 print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $version_progress, $use_time_calculation );
+                /** print spacer */
+                print_spacer ();
             }
         }
     }
-    echo '</tbody>';
+}
+
+function print_content_row ( $content )
+{
+    echo '<div class="tr">' . PHP_EOL;
+    echo '<div class="td">';
+    echo $content;
+    echo '</div>' . PHP_EOL;
+    echo '</div>' . PHP_EOL;
 }
 
 function print_profile_switcher ()
@@ -157,15 +171,14 @@ function print_profile_switcher ()
 
     $roadmap_profiles = roadmap_pro_api::get_roadmap_profiles ();
 
-    echo '<table align="center">';
-    echo '<tbody>';
-    echo '<tr>';
+    echo '<div class="table_center">' . PHP_EOL;
+    echo '<div class="tr">' . PHP_EOL;
     foreach ( $roadmap_profiles as $roadmap_profile )
     {
         $profile_id = $roadmap_profile[ 0 ];
         $profile_name = $roadmap_profile[ 1 ];
 
-        echo '<td>';
+        echo '<div class="td">';
         echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=' . $profile_id;
         if ( $get_version_id != null )
         {
@@ -178,16 +191,16 @@ function print_profile_switcher ()
         echo '">';
         echo string_display ( $profile_name );
         echo '</a> ]';
-        echo '</td>';
+        echo '</div>' . PHP_EOL;
     }
-    echo '</tr>';
-    echo '</tbody>';
-    echo '</table>';
+    echo '</div>' . PHP_EOL;
+    echo '</div>' . PHP_EOL;
 }
 
 function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation )
 {
-    echo '<tr><td>';
+    echo '<div class="tr">' . PHP_EOL;
+    echo '<div class="td">';
     if ( $use_time_calculation )
     {
         $full_eta = roadmap_pro_api::get_full_eta ( $bug_ids );
@@ -211,29 +224,62 @@ function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use
         echo '<span class="bar" style="width: ' . $progress_percent . '%;">' . $progress_percent . '%&nbsp;(' . plugin_lang_get ( 'roadmap_page_bar_amount' ) . ')</span>';
         echo '</div>';
     }
-    echo '</td></tr>';
+    echo '</div>' . PHP_EOL;
+    echo '</div>' . PHP_EOL;
 }
 
 function print_bug_list ( $bug_ids, $profile_id )
 {
-    $bug_hash_array = roadmap_pro_api::calculate_bug_array_with_relationships ( $bug_ids );
-    var_dump ( $bug_hash_array );
-    $sorted_bugs = roadmap_pro_api::sort_bug_ids_by_relationships ( $bug_hash_array );
-    var_dump ( $sorted_bugs );
-    foreach ( $bug_ids as $bug_id )
+    $bug_ids_detailed = roadmap_pro_api::calculate_bug_relationships ( $bug_ids );
+    foreach ( $bug_ids_detailed as $bug )
     {
+        $bug_id = $bug[ 'id' ];
         $user_id = bug_get_field ( $bug_id, 'handler_id' );
         $bug_eta = bug_get_field ( $bug_id, 'eta' );
-        echo '<tr><td>';
+        $bug_blocking_ids = $bug[ 'blocking_ids' ];
+        $bug_blocked_ids = $bug[ 'blocked_ids' ];
+        echo '<div class="tr">' . PHP_EOL;
+        echo '<div class="td">';
         /** line through, if bug is done */
         if ( roadmap_pro_api::check_issue_is_done ( $bug_id, $profile_id ) )
         {
             echo '<span style="text-decoration: line-through;">';
         }
         echo print_bug_link ( $bug_id, bug_format_id ( $bug_id ) ) . ':&nbsp;';
+        /** symbol when eta is set */
         if ( ( $bug_eta > 10 ) && config_get ( 'enable_eta' ) )
         {
             echo '<img src="' . EOADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" height="12" width="12" />&nbsp;';
+        }
+        /** symbol when bug is blocking */
+        if ( empty ( $bug_blocked_ids ) == false )
+        {
+            $blocked_id_string = lang_get ( 'blocks' ) . '&nbsp;';
+            $blocked_id_count = count ( $bug_blocked_ids );
+            for ( $i = 0; $i < $blocked_id_count; $i++ )
+            {
+                $blocked_id_string .= bug_format_id ( $bug_blocked_ids[ $i ] );
+                if ( $i < ( $blocked_id_count - 1 ) )
+                {
+                    $blocked_id_string .= ',&nbsp;';
+                }
+            }
+            echo '<img src="' . EOADMAPPRO_PLUGIN_URL . 'files/sign_warning.png' . '" alt="' . $blocked_id_string . '" title="' . $blocked_id_string . '" height="12" width="12" />&nbsp;';
+        }
+        /** symbol when bug is blocked by */
+        if ( empty ( $bug_blocking_ids ) == false )
+        {
+            $blocking_id_string = lang_get ( 'dependant_on' ) . '&nbsp;';
+            $blocking_id_count = count ( $bug_blocking_ids );
+            for ( $i = 0; $i < $blocking_id_count; $i++ )
+            {
+                $blocking_id_string .= bug_format_id ( $bug_blocking_ids[ $i ] );
+                if ( $i < ( $blocking_id_count - 1 ) )
+                {
+                    $blocking_id_string .= ',&nbsp;';
+                }
+            }
+            echo '<img src="' . EOADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blocking_id_string . '" title="' . $blocking_id_string . '" height="12" width="12" />&nbsp;';
         }
         echo string_display ( bug_get_field ( $bug_id, 'summary' ) )
             . '&nbsp;(';
@@ -247,7 +293,8 @@ function print_bug_list ( $bug_ids, $profile_id )
         {
             echo '</span>';
         }
-        echo '</td></tr>';
+        echo '</div>' . PHP_EOL;
+        echo '</div>' . PHP_EOL;
     }
 }
 
@@ -255,7 +302,8 @@ function print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $v
 {
     $progress_percent = round ( ( $version_progress * 100 ), 2 );
 
-    echo '<tr><td>';
+    echo '<div class="tr">' . PHP_EOL;
+    echo '<div class="td">';
     if ( $use_time_calculation )
     {
         echo sprintf ( plugin_lang_get ( 'roadmap_page_resolved_time' ), $done_bug_amount, $overall_bug_amount );
@@ -264,7 +312,13 @@ function print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $v
     {
         echo sprintf ( lang_get ( 'resolved_progress' ), $done_bug_amount, $overall_bug_amount, $progress_percent );
     }
-    echo '</td></tr>';
-    /** spacer */
-    echo '<tr><td height="20px"></td></tr>';
+    echo '</div>' . PHP_EOL;
+    echo '</div>' . PHP_EOL;
+}
+
+function print_spacer ()
+{
+    echo '<div class="tr">';
+    echo '<div class="td20"></div>';
+    echo '</div>' . PHP_EOL;
 }

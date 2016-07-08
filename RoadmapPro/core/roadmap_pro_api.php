@@ -371,54 +371,53 @@ class roadmap_pro_api
      * @param $bug_ids
      * @return mixed
      */
-    public static function calculate_bug_array_with_relationships ( $bug_ids )
+    public static function calculate_bug_relationships ( $bug_ids )
     {
         $bug_count = count ( $bug_ids );
         $bug_hash_array = array ();
-        for ( $bug_index = 0; $bug_index < $bug_count; $bug_index++ )
+        for ( $bug_index = 0; $bug_index < ( $bug_count ); $bug_index++ )
         {
             $bug_id = $bug_ids[ $bug_index ];
-            $blocking_ids = '';
-            $blocked_ids = '';
-            if ( ( $bug_index >= 0 ) && ( $bug_index < ( $bug_count - 1 ) ) )
+            $bug_target_version = bug_get_field ( $bug_id, 'target_version' );
+
+            $bug_blocking_ids = array ();
+            $bug_blocked_ids = array ();
+
+            $blocking_relationship_rows = self::get_bug_relationship ( $bug_id, true );
+            $blocked_relationship_rows = self::get_bug_relationship ( $bug_id, false );
+
+            if ( is_null ( $blocking_relationship_rows ) == false )
             {
-                $next_bug_id = $bug_ids[ $bug_index + 1 ];
-
-                $this_next_relationship = self::check_relationship ( $bug_id, $next_bug_id );
-                $next_this_relationship = self::check_relationship ( $next_bug_id, $bug_id );
-
-                /** this blocked from next -> this
-                 *                            - next
-                 */
-                if ( $this_next_relationship )
+                foreach ( $blocking_relationship_rows as $blocking_relationship )
                 {
-                    $blocking_ids = '';
-                    $blocking_relationship_rows = self::get_relationship ( $bug_id, $next_bug_id );
-                    foreach ( $blocking_relationship_rows as $row )
+                    $dest_bug_id = $blocking_relationship[ 0 ];
+                    $dest_bug_target_version = bug_get_field ( $dest_bug_id, 'target_version' );
+
+                    if ( $bug_target_version == $dest_bug_target_version )
                     {
-                        $blocking_id = $row[ 2 ];
-                        $blocking_ids .= $blocking_id . ';';
+                        array_push ( $bug_blocking_ids, $dest_bug_id );
                     }
                 }
-                /** next blocked from this -> next
-                 *                            - this
-                 */
-                elseif ( $next_this_relationship )
+            }
+
+            if ( is_null ( $blocked_relationship_rows ) == false )
+            {
+                foreach ( $blocked_relationship_rows as $blocked_relationship )
                 {
-                    $blocked_ids = '';
-                    $blocked_relationship_rows = self::get_relationship ( $next_bug_id, $bug_id );
-                    foreach ( $blocked_relationship_rows as $row )
+                    $src_bug_id = $blocked_relationship[ 0 ];
+                    $src_bug_target_version = bug_get_field ( $src_bug_id, 'target_version' );
+
+                    if ( $bug_target_version == $src_bug_target_version )
                     {
-                        $blocked_id = $row[ 2 ];
-                        $blocked_ids .= $blocked_id . ';';
+                        array_push ( $bug_blocked_ids, $src_bug_id );
                     }
                 }
             }
 
             $bug_hash = array (
                 'id' => $bug_id,
-                'next_ids' => $blocking_ids,
-                'previous_ids' => $blocked_ids,
+                'blocking_ids' => $bug_blocking_ids,
+                'blocked_ids' => $bug_blocked_ids
             );
 
             array_push ( $bug_hash_array, $bug_hash );
@@ -430,38 +429,6 @@ class roadmap_pro_api
     public static function sort_bug_ids_by_relationships ( $bug_hash_array )
     {
         $sorted_bug_ids = array ();
-        $counter = 0;
-        foreach ( $bug_hash_array as $bug_hash )
-        {
-            $is_blocker = false;
-            $bug_id = $bug_hash[ 'id' ];
-            /** if bug is blocker, move --> */
-            if ( strlen ( $bug_hash[ 'previous_ids' ] ) > 0 )
-            {
-                $is_blocker = true;
-            }
-            /** if bug is blocked, hich prio */
-            if ( strlen ( $bug_hash[ 'next_ids' ] ) > 0 )
-            {
-                $bug_data = array (
-                    'counter' => $counter,
-                    'id' => $bug_id,
-                    'is_blocker' => $is_blocker
-                );
-
-                $counter++;
-            }
-            else
-            {
-                $bug_data = array (
-                    'counter' => '',
-                    'id' => $bug_id,
-                    'is_blocker' => $is_blocker
-                );
-            }
-
-            array_push ( $sorted_bug_ids, $bug_data );
-        }
 
         return $sorted_bug_ids;
     }
@@ -506,11 +473,11 @@ class roadmap_pro_api
     /**
      * get the relationship rows for two given bug ids
      *
-     * @param $bug_id_src
-     * @param $bug_id_dest
+     * @param $bug_id
+     * @param $blocking
      * @return array|null
      */
-    public static function get_relationship ( $bug_id_src, $bug_id_dest )
+    public static function get_bug_relationship ( $bug_id, $blocking )
     {
         /** src_id - blocked */
         /** dest_id - blocking */
@@ -522,11 +489,22 @@ class roadmap_pro_api
 
         $mysqli = self::get_mysqli_object ();
 
-        $query = /** @lang sql */
-            "SELECT * FROM mantis_bug_relationship_table
-            WHERE source_bug_id = " . $bug_id_src . "
-            AND destination_bug_id = " . $bug_id_dest . "
+        /** get blocking bug ids */
+        if ( $blocking == true )
+        {
+            $query = /** @lang sql */
+                "SELECT destination_bug_id FROM mantis_bug_relationship_table
+            WHERE source_bug_id = " . $bug_id . "
             AND relationship_type = 2";
+        }
+        /** get blocked bug ids */
+        else
+        {
+            $query = /** @lang sql */
+                "SELECT source_bug_id FROM mantis_bug_relationship_table
+            WHERE destination_bug_id = " . $bug_id . "
+            AND relationship_type = 2";
+        }
 
         $result = $mysqli->query ( $query );
 

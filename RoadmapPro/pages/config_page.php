@@ -49,6 +49,14 @@ print_config_table_category_col ( 1, 1, 'config_page_show_footer' );
 print_config_table_radio_button_col ( 5, 'show_footer' );
 echo '</tr>';
 
+/** eta management */
+print_config_table_title_row ( 6, 'config_page_eta_management' );
+print_config_table_row ();
+print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
+
+
+
+
 /** Profile Management */
 print_config_table_title_row ( 6, 'config_page_roadmap_profile_management' );
 /** Add new Profile */

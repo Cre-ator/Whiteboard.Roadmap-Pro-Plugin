@@ -175,6 +175,11 @@ class roadmap_pro_api
         $mysqli->query ( $query );
 
         $query = /** @lang sql */
+            "DROP TABLE mantis_plugin_RoadmapPro_eta_table";
+
+        $mysqli->query ( $query );
+
+        $query = /** @lang sql */
             "DELETE FROM mantis_config_table
             WHERE config_id LIKE 'plugin_RoadmapPro%'";
 
@@ -479,14 +484,6 @@ class roadmap_pro_api
      */
     public static function get_bug_relationship ( $bug_id, $blocking )
     {
-        /** src_id - blocked */
-        /** dest_id - blocking */
-
-        /** - blocked
-         *    - blocking
-         *  - others...
-         */
-
         $mysqli = self::get_mysqli_object ();
 
         /** get blocking bug ids */

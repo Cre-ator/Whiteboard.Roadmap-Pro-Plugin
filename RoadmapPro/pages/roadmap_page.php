@@ -27,6 +27,7 @@ function process_page ()
         whiteboard_print_api::printWhiteboardMenu ();
     }
 
+
     /** print profile menu bar */
     print_profile_switcher ();
 
@@ -134,10 +135,6 @@ function process_table ( $profile_id )
                 print_content_row ( $release_title_string );
                 /** print version description */
                 print_content_row ( $version_description );
-                /** define and print seperator string */
-                $release_title_without_hyperlinks = $project_name . ' - ' . $version_name . $release_date;
-                $separator_string = utf8_str_pad ( '', utf8_strlen ( $release_title_without_hyperlinks ), '=' );
-                print_content_row ( $separator_string );
 
                 $done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $profile_id );
                 $version_progress = round ( ( $done_bug_amount / $overall_bug_amount ), 4 );

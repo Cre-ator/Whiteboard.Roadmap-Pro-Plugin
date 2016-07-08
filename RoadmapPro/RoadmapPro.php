@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
         $this->description = 'Extended Roadmap with additional progress information';
         $this->page = 'config_page';
 
-        $this->version = '1.0.4';
+        $this->version = '1.0.5';
         $this->requires = array
         (
             'MantisCore' => '1.2.0, <= 1.3.99'
@@ -24,9 +24,7 @@ class RoadmapProPlugin extends MantisPlugin
         $hooks = array
         (
             'EVENT_LAYOUT_PAGE_FOOTER' => 'footer',
-            'EVENT_MENU_MAIN' => 'menu',
-
-            'EVENT_LAYOUT_RESOURCES' => 'event_layout_resources'
+            'EVENT_MENU_MAIN' => 'menu'
         );
         return $hooks;
     }

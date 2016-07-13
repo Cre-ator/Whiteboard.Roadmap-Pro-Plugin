@@ -3,7 +3,7 @@
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
 
 auth_reauthenticate ();
-access_ensure_global_level ( plugin_config_get ( 'roadmap_pro_access_level' ) );
+access_ensure_global_level ( plugin_config_get ( 'access_level' ) );
 form_security_validate ( 'plugin_RoadmapPro_config_update' );
 
 $option_change = gpc_get_bool ( 'config_change', false );
@@ -42,7 +42,7 @@ if ( $option_reset )
 
 if ( $option_change )
 {
-    update_single_value ( 'roadmap_pro_access_level', ADMINISTRATOR );
+    update_single_value ( 'access_level', ADMINISTRATOR );
     update_button ( 'show_menu' );
     update_button ( 'show_footer' );
     update_color ( 'unused_version_row_color', '#908b2d' );

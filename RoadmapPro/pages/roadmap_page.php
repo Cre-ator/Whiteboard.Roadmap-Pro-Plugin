@@ -1,17 +1,19 @@
 <?php
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_db.php' );
 require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
 
 process_page ();
 
 function process_page ()
 {
+   $roadmap_db = new roadmap_db();
    $roadmap_profile_id = $_GET[ 'profile_id' ];
    $profile_color = 'FFFFFF';
    if ( is_null ( $roadmap_profile_id ) == false )
    {
-      $roadmap_profile = roadmap_pro_api::get_roadmap_profile ( $roadmap_profile_id );
+      $roadmap_profile = $roadmap_db->get_roadmap_profile ( $roadmap_profile_id );
       $profile_color = $roadmap_profile[ 2 ];
    }
 
@@ -29,7 +31,10 @@ function process_page ()
 
 
    /** print profile menu bar */
-   print_profile_switcher ();
+   if ( is_null ( $roadmap_db->get_roadmap_profiles () ) == false )
+   {
+      print_profile_switcher ();
+   }
 
    if ( isset( $_GET[ 'profile_id' ] ) )
    {
@@ -105,7 +110,8 @@ function process_table ( $profile_id )
 
          $release_date = string_display_line ( date ( config_get ( 'short_date_format' ), $version_date ) );
 
-         $bug_ids = roadmap_pro_api::get_bug_ids_by_project_and_version ( $project_id, $version_name );
+         $roadmap_db = new roadmap_db();
+         $bug_ids = $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, $version_name );
          $overall_bug_amount = count ( $bug_ids );
 
          if ( $overall_bug_amount > 0 )
@@ -166,7 +172,8 @@ function print_profile_switcher ()
    $get_version_id = $_GET[ 'version_id' ];
    $get_project_id = $_GET[ 'project_id' ];
 
-   $roadmap_profiles = roadmap_pro_api::get_roadmap_profiles ();
+   $roadmap_db = new roadmap_db();
+   $roadmap_profiles = $roadmap_db->get_roadmap_profiles ();
 
    echo '<div class="table_center">' . PHP_EOL;
    echo '<div class="tr">' . PHP_EOL;
@@ -196,6 +203,8 @@ function print_profile_switcher ()
 
 function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation )
 {
+   $roadmap_db = new roadmap_db();
+
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
    if ( $use_time_calculation && config_get ( 'enable_eta' ) )
@@ -211,7 +220,7 @@ function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use
       $progress_time = round ( ( ( $done_eta / $full_eta ) * 100 ), 2 );
 
       echo '<div class="progress9000">';
-      echo '<span class="bar" style="width: ' . $progress_time . '%;">' . $done_eta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $full_eta . '&nbsp;' . roadmap_pro_api::get_eta_unit () . '&nbsp;(' . plugin_lang_get ( 'roadmap_page_bar_time' ) . ')</span>';
+      echo '<span class="bar" style="width: ' . $progress_time . '%;">' . $done_eta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $full_eta . '&nbsp;' . $roadmap_db->get_eta_unit () . '&nbsp;(' . plugin_lang_get ( 'roadmap_page_bar_time' ) . ')</span>';
       echo '</div>';
    }
    else

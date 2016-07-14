@@ -1,11 +1,13 @@
 <?php
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_db.php' );
 
 auth_reauthenticate ();
 access_ensure_global_level ( plugin_config_get ( 'access_level' ) );
 //form_security_validate ( 'plugin_RoadmapPro_config_update' );
 
+$roadmap_db = new roadmap_db();
 $option_change = gpc_get_bool ( 'config_change', false );
 $option_reset = gpc_get_bool ( 'config_reset', false );
 $option_add_profile = gpc_get_bool ( 'add_profile', false );
@@ -32,7 +34,7 @@ if ( $option_add_profile )
       }
    }
 
-   roadmap_pro_api::insert_profile ( $profile_name, $profile_color, $profile_status );
+   $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status );
 }
 
 if ( $option_reset )
@@ -53,13 +55,13 @@ if ( $option_change )
       $eta_enum_string = config_get ( 'eta_enum_string' );
       $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
 
-      roadmap_pro_api::update_eta_unit ( $eta_unit );
+      $roadmap_db->update_eta_unit ( $eta_unit );
       for ( $enum_value_index = 0; $enum_value_index < count ( $eta_enum_values ); $enum_value_index++ )
       {
          $key = $eta_enum_values[ $enum_value_index ];
          $value = $eta_user_values[ $enum_value_index ];
 
-         roadmap_pro_api::update_eta_key_value ( $key, $value );
+         $roadmap_db->update_eta_key_value ( $key, $value );
       }
    }
 }
@@ -67,7 +69,6 @@ if ( $option_change )
 form_security_purge ( 'plugin_RoadmapPro_config_update' );
 
 print_successful_redirect ( plugin_page ( 'config_page', true ) );
-
 
 /**
  * Adds the "#"-Tag if necessary

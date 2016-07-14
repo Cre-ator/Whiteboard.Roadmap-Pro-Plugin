@@ -1,6 +1,7 @@
 <?php
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_db.php' );
 
 process_page ();
 
@@ -9,11 +10,12 @@ process_page ();
  */
 function process_page ()
 {
-    auth_reauthenticate ();
+   auth_reauthenticate ();
 
-    $profile_id = $_GET[ 'profile_id' ];
-    roadmap_pro_api::delete_profile ( $profile_id );
+   $profile_id = $_GET[ 'profile_id' ];
+   $oradmap_db = new roadmap_db();
+   $oradmap_db->delete_profile ( $profile_id );
 
-    /** redirect to view page */
-    print_successful_redirect ( plugin_page ( 'config_page', true ) );
+   /** redirect to view page */
+   print_successful_redirect ( plugin_page ( 'config_page', true ) );
 }

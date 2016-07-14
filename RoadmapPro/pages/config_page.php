@@ -1,6 +1,7 @@
 <?php
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_db.php' );
 
 auth_reauthenticate ();
 access_ensure_global_level ( plugin_config_get ( 'access_level' ) );
@@ -13,6 +14,7 @@ echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro
 html_page_top2 ();
 print_manage_menu ();
 
+$roadmap_db = new roadmap_db();
 echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
 ?>
    <div class="surrounder">
@@ -102,7 +104,7 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
             <div class="gridcol-5 category_value_field-1">
                <label for="eta_unit"></label>
                <input type="text" id="eta_unit" name="eta_unit" size="15" maxlength="128"
-                      value="<?php echo roadmap_pro_api::get_eta_unit () ?>"/>
+                      value="<?php echo $roadmap_db->get_eta_unit () ?>"/>
             </div>
          </div>
 
@@ -135,11 +137,11 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
                <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
                   <label>
                      <input type="text" name="eta_value[]"
-                            value="<?php echo roadmap_pro_api::get_eta_row_by_key ( $eta_enum_value )[ 2 ] ?>"/>
+                            value="<?php echo $roadmap_db->get_eta_row_by_key ( $eta_enum_value )[ 2 ] ?>"/>
                   </label>
                </div>
                <div class="gridcol-4 category_value_field-<?php echo $index; ?>">
-                  <?php echo roadmap_pro_api::get_eta_unit () ?>
+                  <?php echo $roadmap_db->get_eta_unit () ?>
                </div>
             </div>
             <?php
@@ -181,7 +183,7 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
          </div>
       </div>
       <?php
-      $profiles = roadmap_pro_api::get_roadmap_profiles ();
+      $profiles = $roadmap_db->get_roadmap_profiles ();
       if ( empty( $profiles ) == false )
       {
          ?>
@@ -273,8 +275,8 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
          </div>
       </div>
    </div>
-   </form>
 <?php
+echo '</form>';
 html_page_bottom1 ();
 
 /**

@@ -6,241 +6,309 @@ auth_reauthenticate ();
 access_ensure_global_level ( plugin_config_get ( 'access_level' ) );
 
 html_page_top1 ( plugin_lang_get ( 'config_page_title' ) );
+echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
 echo '<script type="text/javascript" src="plugins/RoadmapPro/files/jscolor/jscolor.js"></script>';
+echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php"/>' . "\n";
+
 html_page_top2 ();
 print_manage_menu ();
 
-
-echo '<br/>';
 echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
-echo form_security_field ( 'plugin_RoadmapPro_config_update' );
+?>
+   <div class="surrounder">
+      <?php echo get_chapter_headrow ( 'config_page_general' )->saveHTML (); ?>
 
-if ( roadmap_pro_api::check_mantis_version_is_released () )
-{
-    echo '<table align="center" class="width75" cellspacing="1">';
-}
-else
-{
-    echo '<div class="form-container">';
-    echo '<table>';
-}
+      <div class="row">
+         <div class="gridcol-1 category_name_field">
+            <span class="required">*</span><?php echo plugin_lang_get ( 'config_page_access_level' ); ?>
+         </div>
 
-/** General configuration */
-print_config_table_title_row ( 6, 'config_page_general' );
-/** Access level */
-print_config_table_row ();
-echo '<td class="category">';
-echo '<span class="required">*</span>' . plugin_lang_get ( 'config_page_access_level' );
-echo '</td>';
-echo '<td width="100px" colspan="6">';
-echo '<select name="roadmap_pro_access_level">';
-print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'access_level', ADMINISTRATOR ) );
-echo '</select>';
-echo '</td>';
-echo '</tr>';
-/** Show menu */
-print_config_table_row ();
-print_config_table_category_col ( 1, 1, 'config_page_show_menu' );
-print_config_table_radio_button_col ( 5, 'show_menu' );
-echo '</tr>';
-/** Show plugin information in footer */
-print_config_table_row ();
-print_config_table_category_col ( 1, 1, 'config_page_show_footer' );
-print_config_table_radio_button_col ( 5, 'show_footer' );
-echo '</tr>';
+         <div class="gridcol-5 category_value_field-0">
+            <label>
+               <select name="roadmap_pro_access_level">
+                  <?php print_enum_string_option_list ( 'access_levels', plugin_config_get ( 'access_level', ADMINISTRATOR ) ); ?>
+               </select>
+            </label>
+         </div>
+      </div>
 
-/** eta management */
-print_config_table_title_row ( 6, 'config_page_eta_management' );
-print_config_table_row ();
-print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
+      <div class="row">
+         <div class="gridcol-1 category_name_field">
+            <?php echo plugin_lang_get ( 'config_page_show_menu' ); ?>
+         </div>
 
 
+         <div class="gridcol-5 category_value_field-1">
+            <label>
+               <input type="radio" name="show_menu"
+                      value="1"
+                  <?php
+                  if ( plugin_config_get ( 'show_menu' ) == ON )
+                  {
+                     echo ' checked="checked"';
+                  }
+                  ?>/><?php echo lang_get ( 'yes' ); ?>
+            </label>
+            <label>
+               <input type="radio" name="show_menu"
+                      value="0"
+                  <?php
+                  if ( plugin_config_get ( 'show_menu' ) == OFF )
+                  {
+                     echo ' checked="checked"';
+                  }
+                  ?>/><?php echo lang_get ( 'no' ); ?>
+            </label>
+         </div>
+      </div>
 
+      <div class="row">
+         <div class="gridcol-1 category_name_field">
+            <?php echo plugin_lang_get ( 'config_page_show_footer' ); ?>
+         </div>
 
-/** Profile Management */
-print_config_table_title_row ( 6, 'config_page_roadmap_profile_management' );
-/** Add new Profile */
-print_config_table_row ();
-print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
-/** profile name */
-echo '<td width="100px">';
-echo '<input type="text" id="profile_name" name="profile_name" size="15" maxlength="128" value="">';
-echo '</td>';
-/** select status, selected => new */
-echo '<td>';
-echo '<select name="profile_status[]" multiple="multiple">';
-print_enum_string_option_list ( 'status' );
-echo '</select>';
-echo '</td>';
-/** profile color picker */
-print_config_table_color_picker_row ( 1, 'profile_color' );
-/** submit new profile */
-echo '<td colspan="2">';
-echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
-echo '</td>';
-echo '</tr>';
+         <div class="gridcol-5 category_value_field-0">
+            <label>
+               <input type="radio" name="show_footer"
+                      value="1"
+                  <?php
+                  if ( plugin_config_get ( 'show_footer' ) == ON )
+                  {
+                     echo ' checked="checked"';
+                  }
+                  ?>/><?php echo lang_get ( 'yes' ); ?>
+            </label>
+            <label>
+               <input type="radio" name="show_footer"
+                      value="0"
+                  <?php
+                  if ( plugin_config_get ( 'show_footer' ) == OFF )
+                  {
+                     echo ' checked="checked"';
+                  }
+                  ?>/><?php echo lang_get ( 'no' ); ?>
+            </label>
+         </div>
+      </div>
+      <?php
+      if ( config_get ( 'enable_eta' ) )
+      {
+         ?>
+         <div class="row">
+            <div class="gridcol-1 category_name_field">
+               <?php echo plugin_lang_get ( 'config_page_eta_unit' ); ?>
+            </div>
 
-/** show profiles */
+            <div class="gridcol-5 category_value_field-1">
+               <label for="eta_unit"></label>
+               <input type="text" id="eta_unit" name="eta_unit" size="15" maxlength="128"
+                      value="<?php echo roadmap_pro_api::get_eta_unit () ?>"/>
+            </div>
+         </div>
 
-$profiles = roadmap_pro_api::get_roadmap_profiles ();
-if ( empty( $profiles ) == false )
-{
-    print_config_table_row ();
-    print_config_table_title_row ( 5, 'config_page_profile_list' );
-    foreach ( $profiles as $profile )
-    {
-        $profile_id = $profile[ 0 ];
-        $profile_name = $profile[ 1 ];
-        $db_profile_color = $profile[ 2 ];
-        $db_profile_status = $profile[ 3 ];
-        $profile_status_array = explode ( ';', $db_profile_status );
+         <?php echo get_chapter_headrow ( 'config_page_eta_management' )->saveHTML (); ?>
+         <div class="row">
+            <div class="gridcol-1 category_name_field">
+               <?php echo plugin_lang_get ( 'config_page_eta_name' ); ?>
+            </div>
+            <div class="gridcol-1 category_name_field">
+               <?php echo plugin_lang_get ( 'config_page_eta_value' ); ?>
+            </div>
+            <div class="gridcol-4 category_name_field">
+               <?php echo plugin_lang_get ( 'config_page_eta_unit' ); ?>
+            </div>
+         </div>
+         <?php
+         /** eta management */
 
-        print_config_table_row ();
-        /** profile name */
-        print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
-        echo '<td>' . string_display_line ( $profile_name ) . '</td>';
-        /** profile status */
-        print_config_table_category_col ( 1, 1, 'config_page_profile_status' );
-        echo '<td>';
-        $counter = count ( $profile_status_array );
-        for ( $status_index = 0; $status_index < $counter; $status_index++ )
-        {
-            $profile_status = $profile_status_array[ $status_index ];
-            echo string_display_line ( get_enum_element ( 'status', $profile_status ) );
-            if ( $status_index < ( $counter - 1 ) )
+         $eta_enum_string = config_get ( 'eta_enum_string' );
+         $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
+         $row_count = count ( $eta_enum_values );
+         $index = 1;
+         foreach ( $eta_enum_values as $eta_enum_value )
+         {
+            ?>
+            <div class="row">
+               <div class="gridcol-1 category_name_field">
+                  <?php echo string_display_line ( get_enum_element ( 'eta', $eta_enum_value ) ); ?>
+               </div>
+               <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
+                  <label>
+                     <input type="text" name="eta_value[]"
+                            value="<?php echo roadmap_pro_api::get_eta_row_by_key ( $eta_enum_value )[ 2 ] ?>"/>
+                  </label>
+               </div>
+               <div class="gridcol-4 category_value_field-<?php echo $index; ?>">
+                  <?php echo roadmap_pro_api::get_eta_unit () ?>
+               </div>
+            </div>
+            <?php
+            $index = ( $index + 1 ) % 2;
+         }
+      }
+      ?>
+      <?php echo get_chapter_headrow ( 'config_page_roadmap_profile_management' )->saveHTML (); ?>
+      <div class="row">
+         <div class="gridcol-1 category_name_field">
+            <?php echo plugin_lang_get ( 'config_page_profile_name' ); ?>
+         </div>
+
+         <div class="gridcol-1 category_value_field-0">
+            <label for="profile_name"></label>
+            <input type="text" id="profile_name" name="profile_name" size="15" maxlength="128" value=""/>
+         </div>
+
+         <div class="gridcol-1 category_value_field-0">
+            <label>
+               <select name="profile_status[]" multiple="multiple">
+                  <?php print_enum_string_option_list ( 'status' ); ?>
+               </select>
+            </label>
+         </div>
+
+         <div class="gridcol-1 category_value_field-0">
+            <label>
+               <input class="color {pickerFace:4,pickerClosable:true}" type="text" name="new_profile_color"
+                      value=""/>
+            </label>
+         </div>
+
+         <div class="gridcol-2 category_value_field-0">
+            <label>
+               <input type="submit" name="add_profile" class="button"
+                      value="<?php echo plugin_lang_get ( 'config_page_add_profile' ); ?>"/>
+            </label>
+         </div>
+      </div>
+      <?php
+      $profiles = roadmap_pro_api::get_roadmap_profiles ();
+      if ( empty( $profiles ) == false )
+      {
+         ?>
+         <div id="profile_container">
+            <?php echo get_chapter_headrow ( 'config_page_profile_list' )->saveHTML (); ?>
+            <div class="row">
+               <div class="gridcol-1 category_name_field">
+                  <?php echo plugin_lang_get ( 'config_page_profile_name' ); ?>
+               </div>
+               <div class="gridcol-1 category_name_field">
+                  <?php echo plugin_lang_get ( 'config_page_profile_status' ); ?>
+               </div>
+               <div class="gridcol-1 category_name_field">
+                  <?php echo plugin_lang_get ( 'config_page_profile_color' ); ?>
+               </div>
+               <div class="gridcol-3 category_name_field">
+                  <?php echo plugin_lang_get ( 'config_page_profile_action' ); ?>
+               </div>
+            </div>
+            <?php
+            $index = 1;
+            foreach ( $profiles as $profile )
             {
-                echo ',&nbsp';
+               $profile_id = $profile[ 0 ];
+               $profile_name = $profile[ 1 ];
+               $db_profile_color = $profile[ 2 ];
+               $db_profile_status = $profile[ 3 ];
+               $profile_status_array = explode ( ';', $db_profile_status );
+
+               $status_string = '';
+               $counter = count ( $profile_status_array );
+               for ( $status_index = 0; $status_index < $counter; $status_index++ )
+               {
+                  $profile_status = $profile_status_array[ $status_index ];
+                  $status_string .= string_display_line ( get_enum_element ( 'status', $profile_status ) );
+                  if ( $status_index < ( $counter - 1 ) )
+                  {
+                     $status_string .= ',&nbsp;';
+                  }
+               }
+               ?>
+               <div class="row" id="profile_row">
+                  <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
+                     <?php echo string_display_line ( $profile_name ); ?>
+                  </div>
+                  <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
+                     <?php echo $status_string; ?>
+                  </div>
+
+                  <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
+                     <label>
+                        <input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile_color"
+                               value="#<?php echo $db_profile_color; ?>"/>
+                     </label>
+                  </div>
+
+                  <div class="gridcol-3 category_value_field-<?php echo $index; ?>">
+                     <a style="text-decoration: none;"
+                        href="<?php echo plugin_page ( 'config_delete_profile' ); ?>&amp;profile_id=<?php echo $profile_id; ?>">
+                        <input type="button"
+                               value="<?php echo plugin_lang_get ( 'config_page_delete_profile' ); ?>"/>
+                     </a>
+                  </div>
+               </div>
+               <?php
+               $index = ( $index + 1 ) % 2;
             }
-        }
-        echo '</td>';
-
-        /** profile color */
-        echo '<td style="background-color: #' . $db_profile_color . '"></td>';
-
-        /** delete profile button */
-        echo '<td>';
-        echo '<a style="text-decoration: none;" href="' . plugin_page ( 'config_delete_profile' ) .
-            '&amp;profile_id=' . $profile_id . '">';
-        echo '<span class="input">';
-        echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
-        echo '</span>';
-        echo '</a>';
-        echo '</td>';
-
-        echo '</tr>';
-    }
-    echo '</tr>';
-}
-
-
-echo '<tr>';
-echo '<td class="center" colspan="6">';
-echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>&nbsp';
-echo '<input type="submit" name="config_reset" class="button" value="' . lang_get ( 'reset_prefs_button' ) . '"/>';
-echo '</td>';
-echo '</tr>';
-
-echo '</table>';
-
-if ( roadmap_pro_api::check_mantis_version_is_released () == false )
-{
-    echo '</div>';
-}
-
-echo '</form>';
+            ?>
+         </div>
+         <?php
+      }
+      $initial_row_count = ( count ( $profiles ) );
+      $status_enum_string = config_get ( 'status_enum_string' );
+      $status_enum_values = MantisEnum::getValues ( $status_enum_string );
+      $status_enum_strings = array ();
+      foreach ( $status_enum_values as $status_enum_value )
+      {
+         array_push ( $status_enum_strings, get_enum_element ( 'status', $status_enum_value ) );
+      }
+      $i = json_encode ( $status_enum_strings );
+      echo '<script type="text/javascript">var status_array =' . $i . ';</script>';
+      ?>
+      <div class="row grid_center">
+         <div class="gridcol-6 ">
+            <input type="submit" name="config_change" class="button"
+                   value="<?php echo lang_get ( 'update_prefs_button' ); ?>"/>&nbsp;
+            <input type="submit" name="config_reset" class="button"
+                   value="<?php echo lang_get ( 'reset_prefs_button' ); ?>"/>
+         </div>
+      </div>
+   </div>
+   </form>
+<?php
 html_page_bottom1 ();
 
-
 /**
- * Prints a table row in the plugin config area
- */
-function print_config_table_row ()
-{
-    if ( roadmap_pro_api::check_mantis_version_is_released () )
-    {
-        echo '<tr ' . helper_alternate_class () . '>';
-    }
-    else
-    {
-        echo '<tr>';
-    }
-}
-
-/**
- * Prints a category column in the plugin config area
+ * wraps a content with a html tag (withour braces)
  *
- * @param $colspan
- * @param $rowspan
- * @param $lang_string
+ * @param $html_tag
+ * @param $content
+ * @return string
  */
-function print_config_table_category_col ( $colspan, $rowspan, $lang_string )
+function wrap_content_with_html_tag ( $html_tag, $content )
 {
-    echo '<td class="category" colspan="' . $colspan . '" rowspan="' . $rowspan . '">';
-    echo plugin_lang_get ( $lang_string );
-    echo '</td>';
+   return '<' . $html_tag . '>' . $content . '</' . $html_tag . '>' . PHP_EOL;
 }
 
-/**
- * Prints a title row in the plugin config area
- *
- * @param $colspan
- * @param $lang_string
- */
-function print_config_table_title_row ( $colspan, $lang_string )
+function add_attribute_to_html_tag ( $attribute_type, $content )
 {
-    echo '<tr>';
-    echo '<td class="form-title" colspan="' . $colspan . '">';
-    echo plugin_lang_get ( $lang_string );
-    echo '</td>';
-    echo '</tr>';
+
 }
 
-/**
- * Prints a radio button element in the plugin config area
- *
- * @param $colspan
- * @param $name
- */
-function print_config_table_radio_button_col ( $colspan, $name )
+function get_chapter_headrow ( $lang_string )
 {
-    echo '<td width="100px" colspan="' . $colspan . '">';
-    echo '<label>';
-    echo '<input type="radio" name="' . $name . '" value="1"';
-    echo ( ON == plugin_config_get ( $name ) ) ? 'checked="checked"' : '';
-    echo '/>' . lang_get ( 'yes' );
-    echo '</label>';
-    echo '<label>';
-    echo '<input type="radio" name="' . $name . '" value="0"';
-    echo ( OFF == plugin_config_get ( $name ) ) ? 'checked="checked"' : '';
-    echo '/>' . lang_get ( 'no' );
-    echo '</label>';
-    echo '</td>';
-}
+   $dom = new DOMDocument();
 
-/**
- * Prints a color picker element in the plugin config area
- *
- * @param $colspan
- * @param $name
- */
-function print_config_table_color_picker_row ( $colspan, $name )
-{
-    echo '<td width="100px" colspan="' . $colspan . '">';
-    echo '<label>';
-    echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="' . $name . '" value="" />';
-    echo '</label>';
-    echo '</td>';
-}
+   $row_element = $dom->createElement ( 'div' );
+   $row_attribute = $dom->createAttribute ( 'class' );
+   $row_attribute->value = 'row';
+   $row_element->appendChild ( $row_attribute );
+   $col_element = $dom->createElement ( 'div', plugin_lang_get ( $lang_string ) );
+   $col_attribute = $dom->createAttribute ( 'class' );
+   $col_attribute->value = 'gridcol-6 title_row';
+   $col_element->appendChild ( $col_attribute );
+   $row_element->appendChild ( $col_element );
 
-/**
- * @param $colspan
- * @param $name
- */
-function print_config_table_text_input_field ( $colspan, $name )
-{
-    $profile = gpc_get_string ( 'profile', '' );
-    echo '<td width="100px" colspan="' . $colspan . '">';
-    echo '<input type="text" id="type" name="' . $name . '" size="15" maxlength="128" value="' . $profile . '">&nbsp';
-    echo '<input type="submit" name="add_profile" class="button" value="' . plugin_lang_get ( 'config_page_add_profile' ) . '">';
-    echo '</td>';
+   $dom->appendChild ( $row_element );
+
+   return $dom;
 }

@@ -128,5 +128,5 @@ div.td20 {
     display: table-cell;
     border: none;
     padding: 5px;
-    height: 20px;
+    margin: 20px;
 }

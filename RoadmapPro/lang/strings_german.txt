@@ -2,17 +2,25 @@
 
 $s_plugin_RoadmapPro_menu_title = 'Roadmap Pro';
 
-$s_plugin_RoadmapPro_config_page_title = 'Einstellung Version Management';
+$s_plugin_RoadmapPro_config_page_title = 'Einstellung Roadmap Pro';
 $s_plugin_RoadmapPro_config_page_general = 'Allgemeine Einstellungen';
 $s_plugin_RoadmapPro_config_page_access_level = 'Plugin Zugriffslevel';
 $s_plugin_RoadmapPro_config_page_show_menu = 'Menü anzeigen';
 $s_plugin_RoadmapPro_config_page_show_footer = 'Plugin Informationen in Fußzeile anzeigen';
 $s_plugin_RoadmapPro_config_page_roadmap_profile_management = 'Roadmap Profilverwaltung';
+$s_plugin_RoadmapPro_config_page_eta_name = 'Bezeichnung';
+$s_plugin_RoadmapPro_config_page_eta_value = 'Wert';
+$s_plugin_RoadmapPro_config_page_eta_unit = 'Einheit';
+
 $s_plugin_RoadmapPro_config_page_profile_name = 'Name';
 $s_plugin_RoadmapPro_config_page_profile_status = 'Status';
+$s_plugin_RoadmapPro_config_page_profile_color = 'Farbe';
+$s_plugin_RoadmapPro_config_page_profile_action = 'Aktion';
 $s_plugin_RoadmapPro_config_page_add_profile = 'Profil hinzufügen';
 $s_plugin_RoadmapPro_config_page_profile_list = 'Angelegte Profile';
 $s_plugin_RoadmapPro_config_page_delete_profile = 'Entfernen';
+
+$s_plugin_RoadmapPro_config_page_eta_management = 'Verwaltung Aufwand';
 
 $s_plugin_RoadmapPro_config_reset_ensure_title = 'Plugin-Einstellungen zurücksetzen';
 $s_plugin_RoadmapPro_config_reset_ensure_expl = 'Achtung, wenn Sie fortfahren werden alle im Plugin hinterlegten Daten unwiderruflich gelöscht. Fortfahren?';

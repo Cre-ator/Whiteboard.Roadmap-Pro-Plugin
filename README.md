@@ -1,4 +1,4 @@
-# Roadmap-Pro
+# RoadmapPro
 
 Plugin for MantisBT to manage raodmaps
 

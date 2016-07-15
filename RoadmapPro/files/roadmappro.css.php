@@ -3,11 +3,31 @@
   header('Content-type: text/css; charset: UTF-8');
 ?>
 
+hr.project-separator {
+   border-top: 1px;
+}
+
+hr.version-separator {
+   border-top: 1px dotted #000000;
+}
+
+.progress-suffix {
+   position: relative;
+   background: #fff;
+   background-color: #fff;
+   height: 25px;
+   margin-top: 1em;
+   margin-bottom: 1em;
+   padding: 1px 4px 1px 1px;
+   float: left;
+}
+
 .progress9000 {
    position: relative;
    background: #fff;
    background-color: #fff;
    width: 400px;
+   height: 25px;
    border: 1px solid #d7d7d7;
    -moz-border-radius: 6px;
    -webkit-border-radius: 6px;
@@ -15,25 +35,34 @@
    margin-top: 1em;
    margin-bottom: 1em;
    padding: 1px 4px 1px 1px;
+   float: left;
 }
 
 .progress9000 .bar {
-   padding: 0px 0px 0px 1px;
+   padding: 0px 0px 0px 0px;
    display: block;
    position: relative;
    background: <?php echo $background ?>;
-   background-color: <?php echo $background ?>;
-   background-image: -webkit-linear-gradient(top, <?php echo $background ?>,<?php echo $background ?>);
-   background-image: -moz-linear-gradient(top, <?php echo $background ?>, <?php echo $background ?>);
-   background-image: -ms-linear-gradient(top, <?php echo $background ?>, <?php echo $background ?>);
-   background-image: -o-linear-gradient(top, <?php echo $background ?>, <?php echo $background ?>);
-   background-image: linear-gradient(top, <?php echo $background ?>, <?php echo $background ?>);
    text-align: center;
    font-weight: normal;
-   height: 1.4em;
+   height: 1.5em;
    line-height: 1.4em;
    color: #111;
    border: solid 1px <?php echo $background ?>;
+   -moz-border-radius: 4px;
+   -webkit-border-radius: 4px;
+   border-radius: 4px;
+}
+
+.progress9000 .scaledbar {
+   padding: 0px 0px 0px 1px;
+   display: block;
+   position: absolute;
+   text-align: right;
+   font-weight: normal;
+   height: 1.5em;
+   line-height: 1.4em;
+   color: #111;
    -moz-border-radius: 4px;
    -webkit-border-radius: 4px;
    border-radius: 4px;
@@ -124,11 +153,10 @@ div.td {
    padding: 5px;
 }
 
-div.td20 {
-   display: table-cell;
+div.spacer {
    border: none;
    padding: 5px;
-   margin: 20px;
+   margin-top: 30px;
 }
 
 .title_row {
@@ -212,30 +240,33 @@ div {
 }
 
 #container2 {
-   clear:left;
-   float:left;
-   width:100%;
-   overflow:hidden;
-   background:#ffa7a7; /* column 2 background colour */
+   clear: left;
+   float: left;
+   width: 100%;
+   overflow: hidden;
+   background: #ffa7a7; /* column 2 background colour */
 }
+
 #container1 {
-   float:left;
-   width:100%;
-   position:relative;
-   right:50%;
-   background:#fff689; /* column 1 background colour */
+   float: left;
+   width: 100%;
+   position: relative;
+   right: 50%;
+   background: #fff689; /* column 1 background colour */
 }
+
 #col1 {
-   float:left;
-   width:46%;
-   position:relative;
-   left:52%;
-   overflow:hidden;
+   float: left;
+   width: 46%;
+   position: relative;
+   left: 52%;
+   overflow: hidden;
 }
+
 #col2 {
-   float:left;
-   width:46%;
-   position:relative;
-   left:56%;
-   overflow:hidden;
+   float: left;
+   width: 46%;
+   position: relative;
+   left: 56%;
+   overflow: hidden;
 }

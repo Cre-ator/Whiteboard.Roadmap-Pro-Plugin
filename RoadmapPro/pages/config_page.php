@@ -148,6 +148,8 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
             $index = ( $index + 1 ) % 2;
          }
       }
+      $road_profiles = $roadmap_db->get_roadmap_profiles ();
+      $profile_count = count ( $road_profiles );
       ?>
       <?php echo get_chapter_headrow ( 'config_page_roadmap_profile_management' )->saveHTML (); ?>
       <div class="row">
@@ -175,7 +177,12 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
             </label>
          </div>
 
-         <div class="gridcol-2 category_value_field-0">
+         <div class="gridcol-1 category_value_field-0">
+            <label for="profile_priority"></label>
+            <input type="text" id="profile_priority" name="profile_priority" size="5" maxlength="128" value=""/>
+         </div>
+
+         <div class="gridcol-1 category_value_field-0">
             <label>
                <input type="submit" name="add_profile" class="button"
                       value="<?php echo plugin_lang_get ( 'config_page_add_profile' ); ?>"/>
@@ -199,7 +206,11 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
                <div class="gridcol-1 category_name_field">
                   <?php echo plugin_lang_get ( 'config_page_profile_color' ); ?>
                </div>
-               <div class="gridcol-3 category_name_field">
+               <div class="gridcol-1 category_name_field">
+                  <?php echo plugin_lang_get ( 'config_page_profile_prio' );
+                  print_priority_description_field () ?>
+               </div>
+               <div class="gridcol-2 category_name_field">
                   <?php echo plugin_lang_get ( 'config_page_profile_action' ); ?>
                </div>
             </div>
@@ -211,6 +222,7 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
                $profile_name = $profile[ 1 ];
                $db_profile_color = $profile[ 2 ];
                $db_profile_status = $profile[ 3 ];
+               $db_profile_priority = $profile[ 4 ];
                $profile_status_array = explode ( ';', $db_profile_status );
 
                $status_string = '';
@@ -240,7 +252,11 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
                      </label>
                   </div>
 
-                  <div class="gridcol-3 category_value_field-<?php echo $index; ?>">
+                  <div class="gridcol-1 category_value_field-<?php echo $index; ?>">
+                     <?php echo $db_profile_priority; ?>
+                  </div>
+
+                  <div class="gridcol-2 category_value_field-<?php echo $index; ?>">
                      <a style="text-decoration: none;"
                         href="<?php echo plugin_page ( 'config_delete_profile' ); ?>&amp;profile_id=<?php echo $profile_id; ?>">
                         <input type="button"
@@ -279,23 +295,6 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
 echo '</form>';
 html_page_bottom1 ();
 
-/**
- * wraps a content with a html tag (withour braces)
- *
- * @param $html_tag
- * @param $content
- * @return string
- */
-function wrap_content_with_html_tag ( $html_tag, $content )
-{
-   return '<' . $html_tag . '>' . $content . '</' . $html_tag . '>' . PHP_EOL;
-}
-
-function add_attribute_to_html_tag ( $attribute_type, $content )
-{
-
-}
-
 function get_chapter_headrow ( $lang_string )
 {
    $dom = new DOMDocument();
@@ -313,4 +312,16 @@ function get_chapter_headrow ( $lang_string )
    $dom->appendChild ( $row_element );
 
    return $dom;
+}
+
+function print_priority_description_field ()
+{
+   echo '<a class="rcv_tooltip">';
+   echo '&nbsp[i]';
+   echo '<span>';
+   echo '<div class="rcv_tooltip_content">';
+   echo utf8_substr ( string_email_links ( plugin_lang_get ( 'config_page_prio_decription' ) ), 0, 255 );
+   echo '</div>';
+   echo '</span>';
+   echo '</a>';
 }

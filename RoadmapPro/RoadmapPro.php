@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.0.9';
+      $this->version = '1.0.10';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -49,7 +49,8 @@ class RoadmapProPlugin extends MantisPlugin
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             profile_name    C(250)  DEFAULT '',
             profile_color   C(250)  DEFAULT '',
-            profile_status  C(250)  DEFAULT ''
+            profile_status  C(250)  DEFAULT '',
+            profile_prio    I       DEFAULT 0
             " )
          ),
          array

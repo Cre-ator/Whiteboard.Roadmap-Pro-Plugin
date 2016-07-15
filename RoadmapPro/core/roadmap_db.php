@@ -70,15 +70,16 @@ class roadmap_db
     * @param $profile_name
     * @param $profile_color
     * @param $profile_status
+    * @param $profile_priority
     * @return mixed
     */
-   public function insert_profile ( $profile_name, $profile_color, $profile_status )
+   public function insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $query = /** @lang sql */
-         "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status )
-            SELECT null,'" . $profile_name . "','" . $profile_color . "','" . $profile_status . "'
+         "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio )
+            SELECT null,'" . $profile_name . "','" . $profile_color . "','" . $profile_status . "'," . (int)$profile_priority . "
             FROM DUAL WHERE NOT EXISTS (
             SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
             WHERE profile_name = '" . $profile_name . "')";
@@ -100,7 +101,7 @@ class roadmap_db
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $query = /** @lang sql */
-         "SELECT * FROM mantis_plugin_RoadmapPro_profile_table";
+         "SELECT * FROM mantis_plugin_RoadmapPro_profile_table ORDER BY profile_prio ASC";
 
       $result = $this->mysqli->query ( $query );
 
@@ -408,7 +409,7 @@ class roadmap_db
          "INSERT INTO mantis_plugin_RoadmapPro_unit_table ( id, eta_unit )
             SELECT null,'" . $unit . "'
             FROM DUAL WHERE NOT EXISTS (
-            SELECT 1 FROM mantis_plugin_RoadmapPro_eta_table
+            SELECT 1 FROM mantis_plugin_RoadmapPro_unit_table
             WHERE id = 1)";
 
       $this->mysqli->query ( $query );

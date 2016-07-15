@@ -105,7 +105,7 @@ class roadmap_pro_api
     * @param $profile_id
     * @return bool
     */
-   public static function check_issue_is_done ( $bug_id, $profile_id )
+   public static function check_issue_is_done_by_id ( $bug_id, $profile_id )
    {
       $roadmap_db = new roadmap_db();
 
@@ -137,10 +137,10 @@ class roadmap_pro_api
    public static function get_done_bug_amount ( $bug_ids, $profile_id )
    {
       $done_bug_amount = 0;
-
       foreach ( $bug_ids as $bug_id )
       {
-         if ( self::check_issue_is_done ( $bug_id, $profile_id ) )
+         /** specific profile */
+         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
          {
             $done_bug_amount++;
          }
@@ -161,7 +161,8 @@ class roadmap_pro_api
       $done_bug_ids = array ();
       foreach ( $bug_ids as $bug_id )
       {
-         if ( self::check_issue_is_done ( $bug_id, $profile_id ) )
+         /** specific profile */
+         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
          {
             array_push ( $done_bug_ids, $bug_id );
          }

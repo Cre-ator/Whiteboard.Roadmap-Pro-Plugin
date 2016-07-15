@@ -16,8 +16,8 @@ if ( $option_add_profile )
 {
    $profile_name = trim ( $_POST[ 'profile_name' ] );
    $profile_color = $_POST[ 'new_profile_color' ];
-   $profile_status = '';
 
+   $profile_status = '';
    if ( !empty( $_POST[ 'profile_status' ] ) )
    {
       $post_profile_status = $_POST[ 'profile_status' ];
@@ -34,7 +34,9 @@ if ( $option_add_profile )
       }
    }
 
-   $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status );
+   $profile_priority = $_POST[ 'profile_priority' ];
+
+   $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority );
 }
 
 if ( $option_reset )

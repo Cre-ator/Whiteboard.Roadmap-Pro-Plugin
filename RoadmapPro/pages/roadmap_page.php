@@ -67,6 +67,7 @@ function process_table ( $profile_id )
    /** iterate through projects */
    foreach ( $project_ids as $project_id )
    {
+      $project_seperator = false;
       $user_access_lecel = user_get_access_level ( auth_get_current_user_id (), $project_id );
       $has_project_level = access_has_project_level ( $user_access_lecel, $project_id );
       /** skip if user has no access to project */
@@ -94,8 +95,10 @@ function process_table ( $profile_id )
       }
 
       /** iterate through versions */
-      foreach ( $versions as $version )
+      $version_count = count ( $versions );
+      for ( $v_index = 0; $v_index < $version_count; $v_index++ )
       {
+         $version = $versions[ $v_index ];
          $version_id = $version[ 'id' ];
          $version_name = $version[ 'version' ];
          $version_date = $version[ 'date_order' ];
@@ -116,12 +119,15 @@ function process_table ( $profile_id )
 
          if ( $overall_bug_amount > 0 )
          {
+            $use_eta = roadmap_pro_api::check_eta_is_set ( $bug_ids );
+            $done_eta = 0;
+            $profile_progress_values = array ();
             /** define and print project title */
             if ( $printed_project_title == false )
             {
                $project_title = '<span class="pagetitle">' . string_display ( $project_name ) . '&nbsp;-&nbsp;'
                   . lang_get ( 'roadmap' ) . '</span>';
-               print_content_row ( $project_title );
+               print_html_wrapper ( $project_title );
                $printed_project_title = true;
             }
             /** define and print release title */
@@ -138,27 +144,137 @@ function process_table ( $profile_id )
                . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $version_name ) . '">'
                . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
-            print_content_row ( $release_title_string );
+            print_html_wrapper ( $release_title_string );
             /** print version description */
-            print_content_row ( $version_description );
+            print_html_wrapper ( $version_description );
 
-            $done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $profile_id );
-            $version_progress = round ( ( $done_bug_amount / $overall_bug_amount ), 4 );
-            $use_time_calculation = roadmap_pro_api::check_eta_is_set ( $bug_ids );
+
+            $done_bug_amount = 0;
+            if ( $profile_id == -1 )
+            {
+               $scaled_data = calc_scaled_data ( $bug_ids, $use_eta, $overall_bug_amount );
+               $profile_progress_values = $scaled_data[ 0 ];
+               $progress_percent = $scaled_data[ 1 ];
+            }
+            else
+            {
+               $single_data = calc_single_data ( $bug_ids, $profile_id, $use_eta, $overall_bug_amount );
+               $done_eta = $single_data[ 0 ];
+               $progress_percent = $single_data[ 1 ];
+            }
+
             /** print version progress bar */
-            print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation );
+            print_version_progress ( $bug_ids, $profile_id, $progress_percent, $profile_progress_values, $use_eta, $done_eta );
             /** print bug list */
             print_bug_list ( $bug_ids, $profile_id );
             /** print text progress */
-            print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $version_progress, $use_time_calculation );
+            if ( $profile_id >= 0 )
+            {
+               print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $progress_percent, $use_eta );
+            }
             /** print spacer */
-            print_spacer ();
+            echo '<div class="spacer"></div>';
+            $project_seperator = true;
          }
+      }
+      /** print separator */
+      if ( $project_seperator == true )
+      {
+         echo '<hr class="project-separator" />';
       }
    }
 }
 
-function print_content_row ( $content )
+function calc_scaled_data ( $bug_ids, $use_eta, $overall_bug_amount )
+{
+   $roadmap_db = new roadmap_db();
+
+   $profile_progress_values = array ();
+   $roadmap_profiles = $roadmap_db->get_roadmap_profiles ();
+   $profile_count = count ( $roadmap_profiles );
+   $sum_progress_done_bug_amount = 0;
+   $sum_progress_done_percent = 0;
+   $sum_progress_done_eta = 0;
+   $sum_progress_done_eta_percent = 0;
+   $full_eta = ( roadmap_pro_api::get_full_eta ( $bug_ids ) ) * $profile_count;
+   foreach ( $roadmap_profiles as $roadmap_profile )
+   {
+      $temp_profile_id = $roadmap_profile[ 0 ];
+      $temp_done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $temp_profile_id );
+      $sum_progress_done_bug_amount += $temp_done_bug_amount;
+      if ( $use_eta )
+      {
+         /** calculate eta for profile */
+         $done_eta = 0;
+         $done_bug_ids = roadmap_pro_api::get_done_bug_ids ( $bug_ids, $temp_profile_id );
+         foreach ( $done_bug_ids as $done_bug_id )
+         {
+            $done_eta += roadmap_pro_api::get_single_eta ( $done_bug_id );
+         }
+         $done_eta_percent = round ( ( ( $done_eta / $full_eta ) * 100 ), 2 );
+         $sum_progress_done_eta += $done_eta;
+         $sum_progress_done_eta_percent += $done_eta_percent;
+
+         $profile_hash = $temp_profile_id . ';' . $sum_progress_done_eta_percent . ';' . $done_eta_percent;
+      }
+      else
+      {
+         $temp_version_progress = round ( ( $temp_done_bug_amount / $overall_bug_amount ), 4 );
+         $progess_done_percent = round ( ( $temp_version_progress * 100 / $profile_count ), 1 );
+         $sum_progress_done_percent += $progess_done_percent;
+         $profile_hash = $temp_profile_id . ';' . $sum_progress_done_percent . ';' . $progess_done_percent;
+      }
+
+      array_push ( $profile_progress_values, $profile_hash );
+   }
+
+   /** whole progress of the version */
+   if ( $use_eta )
+   {
+      $whole_progress = round ( ( $sum_progress_done_eta / $full_eta ), 2 );
+   }
+   else
+   {
+      $whole_progress = round ( ( ( $sum_progress_done_bug_amount / $profile_count ) / $overall_bug_amount ), 4 );
+   }
+   $progress_percent = round ( ( $whole_progress * 100 ), 2 );
+
+   $result = [ 0 => $profile_progress_values, 1 => $progress_percent ];
+
+   return $result;
+}
+
+function calc_single_data ( $bug_ids, $profile_id, $use_eta, $overall_bug_amount )
+{
+   $full_eta = ( roadmap_pro_api::get_full_eta ( $bug_ids ) );
+   $done_eta = 0;
+   if ( $use_eta )
+   {
+      $done_bug_ids = roadmap_pro_api::get_done_bug_ids ( $bug_ids, $profile_id );
+      foreach ( $done_bug_ids as $done_bug_id )
+      {
+         $done_eta += roadmap_pro_api::get_single_eta ( $done_bug_id );
+      }
+
+      $progress_percent = 0;
+      if ( $full_eta > 0 )
+      {
+         $progress_percent = round ( ( ( $done_eta / $full_eta ) * 100 ), 2 );
+      }
+   }
+   else
+   {
+      $done_bug_amount = roadmap_pro_api::get_done_bug_amount ( $bug_ids, $profile_id );
+      $progress = round ( ( $done_bug_amount / $overall_bug_amount ), 4 );
+      $progress_percent = round ( ( $progress * 100 ), 2 );
+   }
+
+   $result = [ 0 => $done_eta, 1 => $progress_percent ];
+
+   return $result;
+}
+
+function print_html_wrapper ( $content )
 {
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
@@ -177,6 +293,7 @@ function print_profile_switcher ()
 
    echo '<div class="table_center">' . PHP_EOL;
    echo '<div class="tr">' . PHP_EOL;
+   /** print roadmap_profile-links */
    foreach ( $roadmap_profiles as $roadmap_profile )
    {
       $profile_id = $roadmap_profile[ 0 ];
@@ -197,41 +314,99 @@ function print_profile_switcher ()
       echo '</a> ]';
       echo '</div>' . PHP_EOL;
    }
+   /** show whole progress, when there is more then one different profile */
+   if ( count ( $roadmap_profiles ) > 1 )
+   {
+      echo '<div class="td">';
+      echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=-1">';
+      echo plugin_lang_get ( 'roadmap_page_whole_progress' );
+      echo '</a> ]';
+      echo '</div>' . PHP_EOL;
+   }
+
    echo '</div>' . PHP_EOL;
    echo '</div>' . PHP_EOL;
 }
 
-function print_version_progress ( $bug_ids, $profile_id, $version_progress, $use_time_calculation )
+function print_version_progress ( $bug_ids, $profile_id, $progress_percent, $profile_progress_values, $use_eta, $done_eta )
 {
    $roadmap_db = new roadmap_db();
 
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
-   if ( $use_time_calculation && config_get ( 'enable_eta' ) )
+   echo '<div class="progress9000">';
+   if ( $use_eta && config_get ( 'enable_eta' ) )
    {
-      $full_eta = roadmap_pro_api::get_full_eta ( $bug_ids );
-      $done_eta = 0;
-      $done_bug_ids = roadmap_pro_api::get_done_bug_ids ( $bug_ids, $profile_id );
-      foreach ( $done_bug_ids as $done_bug_id )
+      if ( $profile_id == -1 )
       {
-         $done_eta += roadmap_pro_api::get_single_eta ( $done_bug_id );
+         print_scaled_progressbar ( $profile_progress_values, $progress_percent, $bug_ids, true );
       }
-
-      $progress_time = round ( ( ( $done_eta / $full_eta ) * 100 ), 2 );
-
-      echo '<div class="progress9000">';
-      echo '<span class="bar" style="width: ' . $progress_time . '%;">' . $done_eta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $full_eta . '&nbsp;' . $roadmap_db->get_eta_unit () . '&nbsp;(' . plugin_lang_get ( 'roadmap_page_bar_time' ) . ')</span>';
-      echo '</div>';
+      else
+      {
+         $full_eta = roadmap_pro_api::get_full_eta ( $bug_ids );
+         $progress_string = $done_eta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $full_eta . '&nbsp;' . $roadmap_db->get_eta_unit ();
+         print_single_progressbar ( $progress_percent, $progress_string );
+      }
    }
    else
    {
-      $progress_percent = round ( ( $version_progress * 100 ), 2 );
-      echo '<div class="progress9000">';
-      echo '<span class="bar" style="width: ' . $progress_percent . '%;">' . $progress_percent . '%&nbsp;(' . plugin_lang_get ( 'roadmap_page_bar_amount' ) . ')</span>';
-      echo '</div>';
+      if ( $profile_id == -1 )
+      {
+         print_scaled_progressbar ( $profile_progress_values, $progress_percent, $bug_ids );
+      }
+      else
+      {
+         $bug_count = count ( $bug_ids );
+         $progress_string = $progress_percent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bug_count . '&nbsp;' . lang_get ( 'issues' );
+         print_single_progressbar ( $progress_percent, $progress_string );
+      }
    }
+   echo '</div>';
    echo '</div>' . PHP_EOL;
    echo '</div>' . PHP_EOL;
+}
+
+function print_single_progressbar ( $progress, $progress_string )
+{
+   echo '<span class="bar" style="width: ' . $progress . '%; white-space: nowrap;">' . $progress_string . '</span>';
+}
+
+function print_scaled_progressbar ( $profile_hash_map, $progress_percent, $bug_ids, $use_eta = false )
+{
+   $roadmap_db = new roadmap_db();
+   if ( empty( $profile_hash_map ) == false )
+   {
+      $profile_hash_map = array_reverse ( $profile_hash_map );
+      foreach ( $profile_hash_map as $profile_hash )
+      {
+         /** extract profile data */
+         $profile_hash = explode ( ';', $profile_hash );
+         $hash_profile_id = $profile_hash[ 0 ];
+         $hash_sum_progress = $profile_hash[ 1 ];
+         $hash_progress = round ( $profile_hash[ 2 ], 1 );
+
+         /** get profile color */
+         $profile_db_row = $roadmap_db->get_roadmap_profile ( $hash_profile_id );
+         $profile_color = '#' . $profile_db_row[ 2 ];
+
+         echo '<span class="scaledbar" style="width: ' . $hash_sum_progress . '%; background: ' . $profile_color . '; border: solid 1px ' . $profile_color . '">' . $hash_progress . '%</span>';
+      }
+   }
+
+   echo '</div>';
+   echo '<div class="progress-suffix">';
+   echo '&nbsp;(' . $progress_percent . '%';
+   if ( $use_eta == true )
+   {
+      $full_eta = roadmap_pro_api::get_full_eta ( $bug_ids );
+      echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $full_eta . '&nbsp;' . $roadmap_db->get_eta_unit ();
+   }
+   else
+   {
+      $bug_count = count ( $bug_ids );
+      echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bug_count . '&nbsp;' . lang_get ( 'issues' );
+   }
+   echo ')';
 }
 
 function print_bug_list ( $bug_ids, $profile_id )
@@ -247,7 +422,7 @@ function print_bug_list ( $bug_ids, $profile_id )
       echo '<div class="tr">' . PHP_EOL;
       echo '<div class="td">';
       /** line through, if bug is done */
-      if ( roadmap_pro_api::check_issue_is_done ( $bug_id, $profile_id ) )
+      if ( roadmap_pro_api::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
       {
          echo '<span style="text-decoration: line-through;">';
       }
@@ -287,15 +462,17 @@ function print_bug_list ( $bug_ids, $profile_id )
          }
          echo '<img src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blocking_id_string . '" title="' . $blocking_id_string . '" height="12" width="12" />&nbsp;';
       }
-      echo string_display ( bug_get_field ( $bug_id, 'summary' ) )
-         . '&nbsp;(';
-      echo '<a href="' . config_get ( 'path' ) . '/view_user_page.php?id=' . $user_id . '">';
-      echo user_get_name ( $user_id );
-      echo '</a>';
+      echo string_display ( bug_get_field ( $bug_id, 'summary' ) );
+      if ( $user_id > 0 )
+      {
+         echo '&nbsp;(<a href="' . config_get ( 'path' ) . '/view_user_page.php?id=' . $user_id . '">';
+         echo user_get_name ( $user_id );
+         echo '</a>' . ')';
+      }
 
-      echo ')&nbsp;-&nbsp;'
+      echo '&nbsp;-&nbsp;'
          . string_display_line ( get_enum_element ( 'status', bug_get_field ( $bug_id, 'status' ) ) ) . '.';
-      if ( roadmap_pro_api::check_issue_is_done ( $bug_id, $profile_id ) )
+      if ( roadmap_pro_api::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
       {
          echo '</span>';
       }
@@ -304,10 +481,8 @@ function print_bug_list ( $bug_ids, $profile_id )
    }
 }
 
-function print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $version_progress, $use_time_calculation )
+function print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $progress_percent, $use_time_calculation )
 {
-   $progress_percent = round ( ( $version_progress * 100 ), 2 );
-
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
    if ( $use_time_calculation && config_get ( 'enable_eta' ) )
@@ -319,12 +494,5 @@ function print_text_version_progress ( $overall_bug_amount, $done_bug_amount, $v
       echo sprintf ( lang_get ( 'resolved_progress' ), $done_bug_amount, $overall_bug_amount, $progress_percent );
    }
    echo '</div>' . PHP_EOL;
-   echo '</div>' . PHP_EOL;
-}
-
-function print_spacer ()
-{
-   echo '<div class="tr">';
-   echo '<div class="td20"></div>';
    echo '</div>' . PHP_EOL;
 }

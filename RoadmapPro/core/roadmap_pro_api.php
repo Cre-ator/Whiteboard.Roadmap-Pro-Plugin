@@ -9,28 +9,18 @@ require_once ( __DIR__ . '/roadmap_db.php' );
 class roadmap_pro_api
 {
    /**
-    * returns true, if the used mantis version is release 1.2.x
-    *
-    * @return bool
-    */
-   public static function check_mantis_version_is_released ()
-   {
-      return substr ( MANTIS_VERSION, 0, 4 ) == '1.2.';
-   }
-
-   /**
     * returns true if every item of bug id array has set eta value
     *
-    * @param $bug_ids
+    * @param $bugIds
     * @return bool
     */
-   public static function check_eta_is_set ( $bug_ids )
+   public static function checkEtaIsSet ( $bugIds )
    {
       $set = true;
-      foreach ( $bug_ids as $bug_id )
+      foreach ( $bugIds as $bugId )
       {
-         $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
-         if ( ( is_null ( $bug_eta_value ) ) || ( $bug_eta_value == 10 ) )
+         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+         if ( ( is_null ( $bugEtaValue ) ) || ( $bugEtaValue == 10 ) )
          {
             $set = false;
          }
@@ -42,25 +32,25 @@ class roadmap_pro_api
    /**
     * returns the eta value of a single bug
     *
-    * @param $bug_id
+    * @param $bugId
     * @return float|int
     */
-   public static function get_single_eta ( $bug_id )
+   public static function getSingleEta ( $bugId )
    {
-      $roadmap_db = new roadmap_db();
+      $roadmapDb = new roadmap_db();
 
       $eta = 0;
-      $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
+      $bugEtaValue = bug_get_field ( $bugId, 'eta' );
 
-      $eta_enum_string = config_get ( 'eta_enum_string' );
-      $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
+      $etaEnumString = config_get ( 'eta_enum_string' );
+      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
 
-      foreach ( $eta_enum_values as $enum_value )
+      foreach ( $etaEnumValues as $enumValue )
       {
-         if ( $enum_value == $bug_eta_value )
+         if ( $enumValue == $bugEtaValue )
          {
-            $eta_row = $roadmap_db->get_eta_row_by_key ( $enum_value );
-            $eta = $eta_row[ 2 ];
+            $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
+            $eta = $etaRow[ 2 ];
          }
       }
 
@@ -70,55 +60,54 @@ class roadmap_pro_api
    /**
     * returns the eta value of a bunch of bugs
     *
-    * @param $bug_ids
+    * @param $bugIds
     * @return float|int
     */
-   public static function get_full_eta ( $bug_ids )
+   public static function getFullEta ( $bugIds )
    {
-      $roadmap_db = new roadmap_db();
+      $roadmapDb = new roadmap_db();
 
-      $full_eta = 0;
-      foreach ( $bug_ids as $bug_id )
+      $fullEta = 0;
+      foreach ( $bugIds as $bugId )
       {
-         $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
+         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
 
-         $eta_enum_string = config_get ( 'eta_enum_string' );
-         $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
+         $etaEnumString = config_get ( 'eta_enum_string' );
+         $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
 
-         foreach ( $eta_enum_values as $enum_value )
+         foreach ( $etaEnumValues as $enumValue )
          {
-            if ( $enum_value == $bug_eta_value )
+            if ( $enumValue == $bugEtaValue )
             {
-               $eta_row = $roadmap_db->get_eta_row_by_key ( $enum_value );
-               $full_eta += $eta_row[ 2 ];
+               $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
+               $fullEta += $etaRow[ 2 ];
             }
          }
       }
 
-      return $full_eta;
+      return $fullEta;
    }
 
    /**
     * returns true if the issue is done like it is defined in the profile preference
     *
-    * @param $bug_id
-    * @param $profile_id
+    * @param $bugId
+    * @param $profileId
     * @return bool
     */
-   public static function check_issue_is_done_by_id ( $bug_id, $profile_id )
+   public static function checkIssueIsDoneById ( $bugId, $profileId )
    {
-      $roadmap_db = new roadmap_db();
-
+      $roadmapDb = new roadmap_db();
       $done = false;
 
-      $bug_status = bug_get_field ( $bug_id, 'status' );
-      $roadmap_profile = $roadmap_db->get_roadmap_profile ( $profile_id );
-      $db_raodmap_status = $roadmap_profile[ 3 ];
-      $roadmap_status_array = explode ( ';', $db_raodmap_status );
+      $bugStatus = bug_get_field ( $bugId, 'status' );
+      $roadmapProfile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
+      $dbRaodmapStatus = $roadmapProfile[ 3 ];
+      $roadmapStatusArray = explode ( ';', $dbRaodmapStatus );
 
-      foreach ( $roadmap_status_array as $roadmap_status )
+      foreach ( $roadmapStatusArray as $roadmapStatus )
       {
-         if ( $bug_status == $roadmap_status )
+         if ( $bugStatus == $roadmapStatus )
          {
             $done = true;
          }
@@ -130,45 +119,45 @@ class roadmap_pro_api
    /**
     * returns the amount of done bugs in a bunch of bugs
     *
-    * @param $bug_ids
-    * @param $profile_id
+    * @param $bugIds
+    * @param $profileId
     * @return int
     */
-   public static function get_done_bug_amount ( $bug_ids, $profile_id )
+   public static function getDoneBugAmount ( $bugIds, $profileId )
    {
-      $done_bug_amount = 0;
-      foreach ( $bug_ids as $bug_id )
+      $doneBugAmount = 0;
+      foreach ( $bugIds as $bugId )
       {
          /** specific profile */
-         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
+         if ( self::checkIssueIsDoneById ( $bugId, $profileId ) )
          {
-            $done_bug_amount++;
+            $doneBugAmount++;
          }
       }
 
-      return $done_bug_amount;
+      return $doneBugAmount;
    }
 
    /**
     * returns the ids of done bugs in a bunch of bugs
     *
-    * @param $bug_ids
-    * @param $profile_id
+    * @param $bugIds
+    * @param $profileId
     * @return array
     */
-   public static function get_done_bug_ids ( $bug_ids, $profile_id )
+   public static function getDoneBugIds ( $bugIds, $profileId )
    {
-      $done_bug_ids = array ();
-      foreach ( $bug_ids as $bug_id )
+      $doneBugIds = array ();
+      foreach ( $bugIds as $bugId )
       {
          /** specific profile */
-         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
+         if ( self::checkIssueIsDoneById ( $bugId, $profileId ) )
          {
-            array_push ( $done_bug_ids, $bug_id );
+            array_push ( $doneBugIds, $bugId );
          }
       }
 
-      return $done_bug_ids;
+      return $doneBugIds;
    }
 
    /**
@@ -176,85 +165,85 @@ class roadmap_pro_api
     *
     * @return array
     */
-   public static function prepare_project_ids ()
+   public static function prepareProjectIds ()
    {
-      $current_project_id = helper_get_current_project ();
-      $sub_project_ids = project_hierarchy_get_all_subprojects ( $current_project_id );
+      $currentProjectId = helper_get_current_project ();
+      $subProjectIds = project_hierarchy_get_all_subprojects ( $currentProjectId );
 
-      $project_ids = array ();
-      if ( $current_project_id > 0 )
+      $projectIds = array ();
+      if ( $currentProjectId > 0 )
       {
-         array_push ( $project_ids, $current_project_id );
+         array_push ( $projectIds, $currentProjectId );
       }
 
-      foreach ( $sub_project_ids as $sub_project_id )
+      foreach ( $subProjectIds as $sub_project_id )
       {
-         array_push ( $project_ids, $sub_project_id );
+         array_push ( $projectIds, $sub_project_id );
       }
 
-      return $project_ids;
+      return $projectIds;
    }
 
    /**
     * returns an array with bug ids and extened information about relations
     *
-    * @param $bug_ids
+    * @param $bugIds
     * @return mixed
     */
-   public static function calculate_bug_relationships ( $bug_ids )
+   public static function calculateBugRelationships ( $bugIds )
    {
-      $roadmap_db = new roadmap_db();
+      $roadmapDb = new roadmap_db();
 
-      $bug_count = count ( $bug_ids );
-      $bug_hash_array = array ();
-      for ( $bug_index = 0; $bug_index < ( $bug_count ); $bug_index++ )
+      $bugCount = count ( $bugIds );
+      $bugHashArray = array ();
+      for ( $index = 0; $index < ( $bugCount ); $index++ )
       {
-         $bug_id = $bug_ids[ $bug_index ];
-         $bug_target_version = bug_get_field ( $bug_id, 'target_version' );
+         $bugId = $bugIds[ $index ];
+         $bugTargetVersion = bug_get_field ( $bugId, 'target_version' );
 
-         $bug_blocking_ids = array ();
-         $bug_blocked_ids = array ();
+         $bugBlockingIds = array ();
+         $bugBlockedIds = array ();
 
-         $blocking_relationship_rows = $roadmap_db->get_bug_relationship ( $bug_id, true );
-         $blocked_relationship_rows = $roadmap_db->get_bug_relationship ( $bug_id, false );
+         $blockingRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, true );
+         $blockedRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, false );
 
-         if ( is_null ( $blocking_relationship_rows ) == false )
+         if ( is_null ( $blockingRelationshipRows ) == false )
          {
-            foreach ( $blocking_relationship_rows as $blocking_relationship )
+            foreach ( $blockingRelationshipRows as $blockingRelationship )
             {
-               $dest_bug_id = $blocking_relationship[ 0 ];
-               $dest_bug_target_version = bug_get_field ( $dest_bug_id, 'target_version' );
+               $destBugId = $blockingRelationship[ 0 ];
+               $destBugTargetVersion = bug_get_field ( $destBugId, 'target_version' );
 
-               if ( $bug_target_version == $dest_bug_target_version )
+               if ( $bugTargetVersion == $destBugTargetVersion )
                {
-                  array_push ( $bug_blocking_ids, $dest_bug_id );
+                  array_push ( $bugBlockingIds, $destBugId );
                }
             }
          }
 
-         if ( is_null ( $blocked_relationship_rows ) == false )
+         if ( is_null ( $blockedRelationshipRows ) == false )
          {
-            foreach ( $blocked_relationship_rows as $blocked_relationship )
+            foreach ( $blockedRelationshipRows as $blocked_relationship )
             {
-               $src_bug_id = $blocked_relationship[ 0 ];
-               $src_bug_target_version = bug_get_field ( $src_bug_id, 'target_version' );
+               $srcBugId = $blocked_relationship[ 0 ];
+               $srcBugTargetVersion = bug_get_field ( $srcBugId, 'target_version' );
 
-               if ( $bug_target_version == $src_bug_target_version )
+               if ( $bugTargetVersion == $srcBugTargetVersion )
                {
-                  array_push ( $bug_blocked_ids, $src_bug_id );
+                  array_push ( $bugBlockedIds, $srcBugId );
                }
             }
          }
 
-         $bug_hash = array (
-            'id' => $bug_id,
-            'blocking_ids' => $bug_blocking_ids,
-            'blocked_ids' => $bug_blocked_ids
+         $bugHash = array (
+            'id' => $bugId,
+            'blocking_ids' => $bugBlockingIds,
+            'blocked_ids' => $bugBlockedIds
          );
 
-         array_push ( $bug_hash_array, $bug_hash );
+         array_push ( $bugHashArray, $bugHash );
       }
 
-      return $bug_hash_array;
+      return $bugHashArray;
    }
 }

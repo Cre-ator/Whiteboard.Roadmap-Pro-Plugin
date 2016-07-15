@@ -28,21 +28,21 @@ class roadmap_db
    /**
     * returns all assigned bug ids to a given target version
     *
-    * @param $project_id
-    * @param $version_name
+    * @param $projectId
+    * @param $versionName
     * @return array|null
     */
-   public function get_bug_ids_by_project_and_version ( $project_id, $version_name )
+   public function dbGetBugIdsByProjectAndVersion ( $projectId, $versionName )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
-      $bug_ids = null;
-      if ( is_numeric ( $project_id ) )
+      $bugIds = null;
+      if ( is_numeric ( $projectId ) )
       {
          $query = /** @lang sql */
             "SELECT id FROM mantis_bug_table
-            WHERE target_version = '" . $version_name . "'
-            AND project_id = " . $project_id;
+            WHERE target_version = '" . $versionName . "'
+            AND project_id = " . $projectId;
 
          $result = $this->mysqli->query ( $query );
 
@@ -50,40 +50,40 @@ class roadmap_db
          {
             while ( $row = $result->fetch_row () )
             {
-               $bug_ids[] = $row[ 0 ];
+               $bugIds[] = $row[ 0 ];
             }
          }
       }
       $this->mysqli->close ();
 
-      return $bug_ids;
+      return $bugIds;
    }
 
    /**
     * inserts a new roadmap profile if there isnt a dupicate by name
     *
-    * @param $profile_name
-    * @param $profile_color
-    * @param $profile_status
-    * @param $profile_priority
+    * @param $profileName
+    * @param $profileColor
+    * @param $profileStatus
+    * @param $profilePriority
     * @return mixed
     */
-   public function insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority )
+   public function dbInsertProfile ( $profileName, $profileColor, $profileStatus, $profilePriority )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $query = /** @lang sql */
          "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio )
-            SELECT null,'" . $profile_name . "','" . $profile_color . "','" . $profile_status . "'," . (int)$profile_priority . "
+            SELECT null,'" . $profileName . "','" . $profileColor . "','" . $profileStatus . "'," . (int)$profilePriority . "
             FROM DUAL WHERE NOT EXISTS (
             SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
-            WHERE profile_name = '" . $profile_name . "')";
+            WHERE profile_name = '" . $profileName . "')";
 
       $this->mysqli->query ( $query );
-      $profile_id = $this->mysqli->insert_id;
+      $profileId = $this->mysqli->insert_id;
       $this->mysqli->close ();
 
-      return $profile_id;
+      return $profileId;
    }
 
    /**
@@ -91,7 +91,7 @@ class roadmap_db
     *
     * @return array|null
     */
-   public function get_roadmap_profiles ()
+   public function dbGetRoadmapProfiles ()
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -117,19 +117,19 @@ class roadmap_db
    /**
     * get a specific roadmap profile
     *
-    * @param $profile_id
+    * @param $profileId
     * @return array|null
     */
-   public function get_roadmap_profile ( $profile_id )
+   public function dbGetRoadmapProfile ( $profileId )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $profile = null;
-      if ( is_numeric ( $profile_id ) )
+      if ( is_numeric ( $profileId ) )
       {
          $query = /** @lang sql */
             "SELECT * FROM mantis_plugin_RoadmapPro_profile_table
-            WHERE id = " . $profile_id;
+            WHERE id = " . $profileId;
 
          $result = $this->mysqli->query ( $query );
 
@@ -144,17 +144,17 @@ class roadmap_db
    /**
     * delete a roadmap profile by its primary id
     *
-    * @param $profile_id
+    * @param $profileId
     */
-   public function delete_profile ( $profile_id )
+   public function dbDeleteProfile ( $profileId )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
-      if ( is_numeric ( $profile_id ) )
+      if ( is_numeric ( $profileId ) )
       {
          $query = /** @lang sql */
             "DELETE FROM mantis_plugin_RoadmapPro_profile_table
-            WHERE id = " . $profile_id;
+            WHERE id = " . $profileId;
 
          $this->mysqli->query ( $query );
       }
@@ -168,7 +168,7 @@ class roadmap_db
     * - config entries
     * - database entities
     */
-   public function reset_plugin ()
+   public function dbResetPlugin ()
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -199,44 +199,13 @@ class roadmap_db
    }
 
    /**
-    * returns true if there is a relationship for two given bug ids
-    *
-    * @param $bug_id_src
-    * @param $bug_id_dest
-    * @return bool
-    */
-
-   public function check_relationship ( $bug_id_src, $bug_id_dest )
-   {
-      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-
-      $query = /** @lang sql */
-         "SELECT * FROM mantis_bug_relationship_table
-            WHERE source_bug_id = " . $bug_id_src . "
-            AND destination_bug_id = " . $bug_id_dest . "
-            AND relationship_type = 2";
-
-      $result = $this->mysqli->query ( $query );
-      $this->mysqli->close ();
-
-      if ( $result->num_rows > 0 )
-      {
-         return true;
-      }
-      else
-      {
-         return false;
-      }
-   }
-
-   /**
     * get the relationship rows for two given bug ids
     *
-    * @param $bug_id
+    * @param $bugId
     * @param $blocking
     * @return array|null
     */
-   public function get_bug_relationship ( $bug_id, $blocking )
+   public function dbGetBugRelationship ( $bugId, $blocking )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -245,7 +214,7 @@ class roadmap_db
       {
          $query = /** @lang sql */
             "SELECT destination_bug_id FROM mantis_bug_relationship_table
-            WHERE source_bug_id = " . $bug_id . "
+            WHERE source_bug_id = " . $bugId . "
             AND relationship_type = 2";
       }
       /** get blocked bug ids */
@@ -253,7 +222,7 @@ class roadmap_db
       {
          $query = /** @lang sql */
             "SELECT source_bug_id FROM mantis_bug_relationship_table
-            WHERE destination_bug_id = " . $bug_id . "
+            WHERE destination_bug_id = " . $bugId . "
             AND relationship_type = 2";
       }
 
@@ -279,7 +248,7 @@ class roadmap_db
     * @param $value
     * @return mixed
     */
-   public function insert_eta_key_value ( $key, $value )
+   private function dbInsertEtaKeyValue ( $key, $value )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -291,10 +260,10 @@ class roadmap_db
             WHERE eta_config_value = '" . $key . "')";
 
       $this->mysqli->query ( $query );
-      $eta_id = $this->mysqli->insert_id;
+      $etaId = $this->mysqli->insert_id;
       $this->mysqli->close ();
 
-      return $eta_id;
+      return $etaId;
    }
 
    /**
@@ -303,10 +272,10 @@ class roadmap_db
     * @param $key
     * @param $value
     */
-   public function update_eta_key_value ( $key, $value )
+   public function dbUpdateEtaKeyValue ( $key, $value )
    {
 
-      if ( $this->check_eta_key_is_set ( $key ) )
+      if ( $this->dbCheckEtaKeyIsSet ( $key ) )
       {
          $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
          $query = /** @lang sql */
@@ -319,7 +288,7 @@ class roadmap_db
       }
       else
       {
-         $this->insert_eta_key_value ( $key, $value );
+         $this->dbInsertEtaKeyValue ( $key, $value );
       }
    }
 
@@ -329,7 +298,7 @@ class roadmap_db
     * @param $key
     * @return bool
     */
-   public function check_eta_key_is_set ( $key )
+   private function dbCheckEtaKeyIsSet ( $key )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -350,7 +319,7 @@ class roadmap_db
       }
    }
 
-   public function get_eta_row_by_key ( $key )
+   public function dbGetEtaRowByKey ( $key )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -360,17 +329,17 @@ class roadmap_db
 
       $result = $this->mysqli->query ( $query );
 
-      $eta_row = null;
+      $etaRow = null;
       if ( 0 != $result->num_rows )
       {
-         $eta_row = $result->fetch_row ();
+         $etaRow = $result->fetch_row ();
       }
       $this->mysqli->close ();
 
-      return $eta_row;
+      return $etaRow;
    }
 
-   public function get_eta_unit ()
+   public function dbGetEtaUnit ()
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -380,14 +349,14 @@ class roadmap_db
 
       $result = $this->mysqli->query ( $query );
 
-      $eta_unit = null;
+      $etaUnit = null;
       if ( 0 != $result->num_rows )
       {
-         $eta_unit = $result->fetch_row ()[ 0 ];
+         $etaUnit = $result->fetch_row ()[ 0 ];
       }
       $this->mysqli->close ();
 
-      return $eta_unit;
+      return $etaUnit;
    }
 
    /**
@@ -396,7 +365,7 @@ class roadmap_db
     * @param $unit
     * @return mixed
     */
-   public function insert_eta_unit ( $unit )
+   private function dbInsertEtaUnit ( $unit )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -408,10 +377,10 @@ class roadmap_db
             WHERE id = 1)";
 
       $this->mysqli->query ( $query );
-      $unit_id = $this->mysqli->insert_id;
+      $unitId = $this->mysqli->insert_id;
       $this->mysqli->close ();
 
-      return $unit_id;
+      return $unitId;
    }
 
    /**
@@ -419,10 +388,10 @@ class roadmap_db
     *
     * @param $unit
     */
-   public function update_eta_unit ( $unit )
+   public function dbUpdateEtaUnit ( $unit )
    {
 
-      if ( $this->check_eta_unit_is_set () )
+      if ( $this->dbCheckEtaUnitIsSet () )
       {
          $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
          $query = /** @lang sql */
@@ -435,7 +404,7 @@ class roadmap_db
       }
       else
       {
-         $this->insert_eta_unit ( $unit );
+         $this->dbInsertEtaUnit ( $unit );
       }
    }
 
@@ -444,7 +413,7 @@ class roadmap_db
     *
     * @return bool
     */
-   public function check_eta_unit_is_set ()
+   private function dbCheckEtaUnitIsSet ()
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 

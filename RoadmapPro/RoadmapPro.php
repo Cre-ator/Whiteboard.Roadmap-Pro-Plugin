@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.0.10';
+      $this->version = '1.0.11';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -73,26 +73,26 @@ class RoadmapProPlugin extends MantisPlugin
 
    function init ()
    {
-      $t_core_path = config_get_global ( 'plugin_path' )
+      $tCorePath = config_get_global ( 'plugin_path' )
          . plugin_get_current ()
          . DIRECTORY_SEPARATOR
          . 'core'
          . DIRECTORY_SEPARATOR;
 
-      require_once ( $t_core_path . 'roadmap_constant_api.php' );
+      require_once ( $tCorePath . 'roadmap_constant_api.php' );
    }
 
-   function get_user_has_level ()
+   function getUserHasLevel ()
    {
-      $project_id = helper_get_current_project ();
-      $user_id = auth_get_current_user_id ();
+      $projectId = helper_get_current_project ();
+      $userId = auth_get_current_user_id ();
 
-      return user_get_access_level ( $user_id, $project_id ) >= plugin_config_get ( 'access_level', ADMINISTRATOR );
+      return user_get_access_level ( $userId, $projectId ) >= plugin_config_get ( 'access_level', ADMINISTRATOR );
    }
 
    function footer ()
    {
-      if ( plugin_config_get ( 'show_footer' ) && $this->get_user_has_level () )
+      if ( plugin_config_get ( 'show_footer' ) && $this->getUserHasLevel () )
       {
          return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
       }
@@ -102,7 +102,7 @@ class RoadmapProPlugin extends MantisPlugin
    function menu ()
    {
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
-         && plugin_config_get ( 'show_menu' ) && $this->get_user_has_level ()
+         && plugin_config_get ( 'show_menu' ) && $this->getUserHasLevel ()
       )
       {
          return '<a href="' . plugin_page ( 'roadmap_page' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a >';

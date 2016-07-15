@@ -7,63 +7,63 @@ auth_reauthenticate ();
 access_ensure_global_level ( plugin_config_get ( 'access_level' ) );
 //form_security_validate ( 'plugin_RoadmapPro_config_update' );
 
-$roadmap_db = new roadmap_db();
-$option_change = gpc_get_bool ( 'config_change', false );
-$option_reset = gpc_get_bool ( 'config_reset', false );
-$option_add_profile = gpc_get_bool ( 'add_profile', false );
+$roadmapDb = new roadmap_db();
+$optionChange = gpc_get_bool ( 'config_change', false );
+$optionReset = gpc_get_bool ( 'config_reset', false );
+$optionAddProfile = gpc_get_bool ( 'add_profile', false );
 
-if ( $option_add_profile )
+if ( $optionAddProfile )
 {
-   $profile_name = trim ( $_POST[ 'profile_name' ] );
-   $profile_color = $_POST[ 'new_profile_color' ];
+   $postProfileName = trim ( $_POST[ 'profile_name' ] );
+   $postProfileColor = $_POST[ 'new_profile_color' ];
 
-   $profile_status = '';
+   $profileStatus = '';
    if ( !empty( $_POST[ 'profile_status' ] ) )
    {
-      $post_profile_status = $_POST[ 'profile_status' ];
-      $counter = count ( $post_profile_status );
-      for ( $status_index = 0; $status_index < $counter; $status_index++ )
+      $postProfileStatus = $_POST[ 'profile_status' ];
+      $counter = count ( $postProfileStatus );
+      for ( $index = 0; $index < $counter; $index++ )
       {
-         $status_value = $post_profile_status[ $status_index ];
-         $profile_status .= $status_value;
-         if ( $status_index < ( $counter - 1 ) )
+         $statusValue = $postProfileStatus[ $index ];
+         $profileStatus .= $statusValue;
+         if ( $index < ( $counter - 1 ) )
          {
-            $profile_status .= ';';
+            $profileStatus .= ';';
          }
 
       }
    }
 
-   $profile_priority = $_POST[ 'profile_priority' ];
+   $postProfilePriority = $_POST[ 'profile_priority' ];
 
-   $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority );
+   $roadmapDb->dbInsertProfile ( $postProfileName, $postProfileColor, $profileStatus, $postProfilePriority );
 }
 
-if ( $option_reset )
+if ( $optionReset )
 {
    print_successful_redirect ( plugin_page ( 'config_reset_ensure', true ) );
 }
 
-if ( $option_change )
+if ( $optionChange )
 {
-   update_single_value ( 'access_level', ADMINISTRATOR );
-   update_button ( 'show_menu' );
-   update_button ( 'show_footer' );
+   updateSingleValue ( 'access_level', ADMINISTRATOR );
+   updateButton ( 'show_menu' );
+   updateButton ( 'show_footer' );
 
    if ( config_get ( 'enable_eta' ) )
    {
-      $eta_user_values = $_POST[ 'eta_value' ];
-      $eta_unit = $_POST[ 'eta_unit' ];
-      $eta_enum_string = config_get ( 'eta_enum_string' );
-      $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
+      $postEtaValue = $_POST[ 'eta_value' ];
+      $postEtaUnit = $_POST[ 'eta_unit' ];
+      $etaEnumString = config_get ( 'eta_enum_string' );
+      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
 
-      $roadmap_db->update_eta_unit ( $eta_unit );
-      for ( $enum_value_index = 0; $enum_value_index < count ( $eta_enum_values ); $enum_value_index++ )
+      $roadmapDb->dbUpdateEtaUnit ( $postEtaUnit );
+      for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
       {
-         $key = $eta_enum_values[ $enum_value_index ];
-         $value = $eta_user_values[ $enum_value_index ];
+         $key = $etaEnumValues[ $index ];
+         $value = $postEtaValue[ $index ];
 
-         $roadmap_db->update_eta_key_value ( $key, $value );
+         $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
       }
    }
 }
@@ -78,7 +78,7 @@ print_successful_redirect ( plugin_page ( 'config_page', true ) );
  * @param $color
  * @return string
  */
-function include_leading_color_identifier ( $color )
+function includeLeadingColorIdentifier ( $color )
 {
    if ( "#" == $color[ 0 ] )
    {
@@ -93,21 +93,21 @@ function include_leading_color_identifier ( $color )
 /**
  * Updates a specific color value in the plugin
  *
- * @param $field_name
- * @param $default_color
+ * @param $fieldName
+ * @param $defaultColor
  */
-function update_color ( $field_name, $default_color )
+function updateColor ( $fieldName, $defaultColor )
 {
-   $default_color = include_leading_color_identifier ( $default_color );
-   $iA_background_color = include_leading_color_identifier ( gpc_get_string ( $field_name, $default_color ) );
+   $defaultColor = includeLeadingColorIdentifier ( $defaultColor );
+   $currentColor = includeLeadingColorIdentifier ( gpc_get_string ( $fieldName, $defaultColor ) );
 
-   if ( plugin_config_get ( $field_name ) != $iA_background_color && plugin_config_get ( $field_name ) != '' )
+   if ( plugin_config_get ( $fieldName ) != $currentColor && plugin_config_get ( $fieldName ) != '' )
    {
-      plugin_config_set ( $field_name, $iA_background_color );
+      plugin_config_set ( $fieldName, $currentColor );
    }
-   elseif ( plugin_config_get ( $field_name ) == '' )
+   elseif ( plugin_config_get ( $fieldName ) == '' )
    {
-      plugin_config_set ( $field_name, $default_color );
+      plugin_config_set ( $fieldName, $defaultColor );
    }
 }
 
@@ -116,7 +116,7 @@ function update_color ( $field_name, $default_color )
  *
  * @param $config
  */
-function update_button ( $config )
+function updateButton ( $config )
 {
    $button = gpc_get_int ( $config );
 
@@ -132,40 +132,22 @@ function update_button ( $config )
  * @param $value
  * @param $constant
  */
-function update_single_value ( $value, $constant )
+function updateSingleValue ( $value, $constant )
 {
-   $act_value = null;
+   $currentValue = null;
 
    if ( is_int ( $value ) )
    {
-      $act_value = gpc_get_int ( $value, $constant );
+      $currentValue = gpc_get_int ( $value, $constant );
    }
 
    if ( is_string ( $value ) )
    {
-      $act_value = gpc_get_string ( $value, $constant );
+      $currentValue = gpc_get_string ( $value, $constant );
    }
 
-   if ( plugin_config_get ( $value ) != $act_value )
+   if ( plugin_config_get ( $value ) != $currentValue )
    {
-      plugin_config_set ( $value, $act_value );
-   }
-}
-
-/**
- * Iterates through a specific amount and updates each value
- *
- * @param $value
- * @param $constant
- */
-function update_multiple_values ( $value, $constant )
-{
-   $column_amount = plugin_config_get ( 'CAmount' );
-
-   for ( $columnIndex = 1; $columnIndex <= $column_amount; $columnIndex++ )
-   {
-      $act_value = $value . $columnIndex;
-
-      update_single_value ( $act_value, $constant );
+      plugin_config_set ( $value, $currentValue );
    }
 }

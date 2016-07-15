@@ -57,3 +57,16 @@ function del_profile_row ( initial_row_count )
         $ ( '#profile_container #profile_row:last' ).fadeOut ();
     }
 }
+
+// function checkProfileChange ()
+// {
+//     // firstSelector = document.getElementsByName ( "top-id" );
+//     var selectorName = "top-id";
+//     var secondSelector = document.getElementsByName ( selectorName );
+//
+//     secondSelector.addEventListener ( "onchange", function ()
+//         {
+//             alert ( "changed" );
+//         }
+//     );
+// }

@@ -42,9 +42,9 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
    public function testGetRoadmapProfiles ()
    {
       $roadmap_db = new roadmap_db();
-      $profile_a = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '30;40;50;80;90' ];
-      $profile_b = [ 0 => 2, 1 => 'Bearbeitung fertig', 2 => 'A7FF87', 3 => '80;90' ];
-      $profile_c = [ 0 => 2, 1 => 'Bearbeitung fertig', 2 => 'A7FF87', 3 => '70;90' ];
+      $profile_a = [ 0 => 3, 1 => 'Analyse fertig', 2 => 'FFC67A', 3 => '30;40;50;80;90', 4 => 2 ];
+      $profile_b = [ 0 => 4, 1 => 'Bearbeitung fertig', 2 => 'BAFF61', 3 => '80;90', 4 => 3 ];
+      $profile_c = [ 0 => 4, 1 => 'Bearbeitung fertig', 2 => 'BAFF61', 3 => '70;90', 4 => 3 ];
       $result_valid = [ 0 => $profile_a, 1 => $profile_b ];
       $result_invalid = [ 0 => $profile_a, 1 => $profile_c ];
 
@@ -58,12 +58,13 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
    public function testGetRoadmapProfile ()
    {
       $roadmap_db = new roadmap_db();
-      $profile_id = 1;
-      $result_valid = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '30;40;50;80;90' ];
-      $result_invalid_a = [ 0 => 2, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90' ];
-      $result_invalid_b = [ 0 => 1, 1 => 'Analüse fertig', 2 => 'E5FF63', 3 => '30;40;50;80;90' ];
-      $result_invalid_c = [ 0 => 1, 1 => 'Analyse fertig', 2 => '1E5FF63', 3 => '30;40;50;80;90' ];
-      $result_invalid_d = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90' ];
+      $profile_id = 3;
+      $result_valid = [ 0 => 3, 1 => 'Analyse fertig', 2 => 'FFC67A', 3 => '30;40;50;80;90', 4 => 2 ];
+      $result_invalid_a = [ 0 => 2, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 2 ];
+      $result_invalid_b = [ 0 => 1, 1 => 'Analüse fertig', 2 => 'E5FF63', 3 => '30;40;50;80;90', 4 => 2 ];
+      $result_invalid_c = [ 0 => 1, 1 => 'Analyse fertig', 2 => '1E5FF63', 3 => '30;40;50;80;90', 4 => 2 ];
+      $result_invalid_d = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 2 ];
+      $result_invalid_e = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 3 ];
 
       $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
       /** valid */
@@ -74,6 +75,7 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $this->assertNotEquals ( $result_invalid_b, $db_result );
       $this->assertNotEquals ( $result_invalid_c, $db_result );
       $this->assertNotEquals ( $result_invalid_d, $db_result );
+      $this->assertNotEquals ( $result_invalid_e, $db_result );
       $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( '1 AND profile_color=\'E5FF63\'' ) );
       $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( '' ) );
       $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( 'hallo' ) );
@@ -87,9 +89,10 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $profile_name = 'Testprofil';
       $profile_color = '000000';
       $profile_status = '10;20;50';
+      $profile_priority = 10;
 
-      $profile_id = $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status );
-      $profile = [ 0 => $profile_id, 1 => 'Testprofil', 2 => '000000', 3 => '10;20;50' ];
+      $profile_id = $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority );
+      $profile = [ 0 => $profile_id, 1 => 'Testprofil', 2 => '000000', 3 => '10;20;50', 4 => 10 ];
 
       /** get profile from tested function @testGetRoadmapProfile */
       $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
@@ -102,10 +105,5 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
       /** valid */
       $this->assertEquals ( null, $db_result );
-   }
-
-   public function testCheckRelationship ()
-   {
-      $roadmap_db = new roadmap_db();
    }
 }

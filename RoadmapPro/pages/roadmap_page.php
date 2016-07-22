@@ -133,7 +133,7 @@ function processTable ( $profileId )
          {
             $useEta = roadmap_pro_api::checkEtaIsSet ( $bugIds );
             $doneEta = 0;
-            $profileProgressValueArray = array ();
+            $profileHashMap = array ();
             /** define and print project title */
             if ( $printedProjectTitle == false )
             {
@@ -174,7 +174,7 @@ function processTable ( $profileId )
             if ( $profileId == -1 )
             {
                $scaledData = calcScaledData ( $bugIds, $useEta, $overallBugAmount );
-               $profileProgressValueArray = $scaledData[ 0 ];
+               $profileHashMap = $scaledData[ 0 ];
                $progressInPercent = $scaledData[ 1 ];
             }
             else
@@ -185,7 +185,7 @@ function processTable ( $profileId )
             }
 
             /** print version progress bar */
-            printVersionProgress ( $bugIds, $profileId, $progressInPercent, $profileProgressValueArray, $useEta, $doneEta );
+            printVersionProgress ( $bugIds, $profileId, $progressInPercent, $profileHashMap, $useEta, $doneEta );
             /** print bug list */
             printBugList ( $bugIds, $profileId );
             /** print text progress */
@@ -215,10 +215,10 @@ function calcScaledData ( $bugIds, $useEta, $overallBugAmount )
    $sumProgressDoneBugAmount = 0;
    $sumProgressDoneBugPercent = 0;
    $sumProgressDoneEta = 0;
-   $sumProgressDoneEtaPercent = 0;
    $fullEta = ( roadmap_pro_api::getFullEta ( $bugIds ) ) * $profileCount;
-   foreach ( $roadmapProfiles as $roadmapProfile )
+   for ( $index = 0; $index < $profileCount; $index++ )
    {
+      $roadmapProfile = $roadmapProfiles[ $index ];
       $tProfileId = $roadmapProfile[ 0 ];
       $tDoneBugAmount = roadmap_pro_api::getDoneBugAmount ( $bugIds, $tProfileId );
       $sumProgressDoneBugAmount += $tDoneBugAmount;
@@ -233,16 +233,20 @@ function calcScaledData ( $bugIds, $useEta, $overallBugAmount )
          }
          $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
          $sumProgressDoneEta += $doneEta;
-         $sumProgressDoneEtaPercent += $doneEtaPercent;
 
-         $profileHash = $tProfileId . ';' . $sumProgressDoneEtaPercent . ';' . $doneEtaPercent;
+         $profileHash = $tProfileId . ';' . $doneEtaPercent;
       }
       else
       {
          $tVersionProgress = ( $tDoneBugAmount / $overallBugAmount );
          $progessDonePercent = round ( ( $tVersionProgress * 100 / $profileCount ), 1 );
+         if ( round ( ( $sumProgressDoneBugPercent + $progessDonePercent ), 1 ) == 99.9 )
+         {
+            $progessDonePercent = 100 - $sumProgressDoneBugPercent;
+         }
          $sumProgressDoneBugPercent += $progessDonePercent;
-         $profileHash = $tProfileId . ';' . $sumProgressDoneBugPercent . ';' . $progessDonePercent;
+
+         $profileHash = $tProfileId . ';' . $progessDonePercent;
       }
 
       array_push ( $profileProgressValueArray, $profileHash );
@@ -364,17 +368,17 @@ function printLinkStringWithGetParameters ( $linkDescription, $profileId = null 
    echo '</a> ]';
 }
 
-function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileProgressValueArray, $useEta, $doneEta )
+function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileHashMap, $useEta, $doneEta )
 {
    global $roadmapDb;
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
-   echo '<div class="progress9000">';
+   echo '<div class="progress9001">';
    if ( $useEta && config_get ( 'enable_eta' ) )
    {
       if ( $profileId == -1 )
       {
-         printScaledProgressbar ( $profileProgressValueArray, $progressPercent, $bugIds, true );
+         printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, true );
       }
       else
       {
@@ -387,7 +391,7 @@ function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileP
    {
       if ( $profileId == -1 )
       {
-         printScaledProgressbar ( $profileProgressValueArray, $progressPercent, $bugIds );
+         printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds );
       }
       else
       {
@@ -403,7 +407,7 @@ function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileP
 
 function printSingleProgressbar ( $progress, $progressString )
 {
-   echo '<span class="bar" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
+   echo '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
 }
 
 function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $useEta = false )
@@ -411,21 +415,33 @@ function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $u
    global $roadmapDb;
    if ( empty( $profileHashMap ) == false )
    {
-      $profileHashMap = array_reverse ( $profileHashMap );
-      foreach ( $profileHashMap as $profileHash )
+      $profileHashCount = count ( $profileHashMap );
+      for ( $index = 0; $index < $profileHashCount; $index++ )
       {
          /** extract profile data */
-         $profileHash = explode ( ';', $profileHash );
+         $profileHash = explode ( ';', $profileHashMap[ $index ] );
          $hashProfileId = $profileHash[ 0 ];
-         $hashSumProgress = $profileHash[ 1 ];
-         $hashProgress = round ( $profileHash[ 2 ], 1 );
+         $hashProgress = round ( $profileHash[ 1 ], 1 );
 
          /** get profile color */
          $dbProfileRow = $roadmapDb->dbGetRoadmapProfile ( $hashProfileId );
          $profileColor = '#' . $dbProfileRow[ 2 ];
 
-         echo '<span class="scaledbar" style="width: ' . $hashSumProgress . '%; background: ' . $profileColor .
-            '; border: solid 1px ' . $profileColor . '">' . $hashProgress . '%</span>';
+         /** first bar */
+         if ( $index == 0 )
+         {
+            echo '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div><!--';
+         }
+         /** n - 2 (first, last) following */
+         elseif ( $index == ( $profileHashCount - 1 ) )
+         {
+            echo '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div>';
+         }
+         /** last bar */
+         else
+         {
+            echo '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div><!--';
+         }
       }
    }
 
@@ -455,67 +471,54 @@ function printBugList ( $bugIds, $profileId )
       $bugEta = bug_get_field ( $bugId, 'eta' );
       $bugBlockingIds = $bug[ 'blocking_ids' ];
       $bugBlockedIds = $bug[ 'blocked_ids' ];
-      echo '<div class="tr">' . PHP_EOL;
-      echo '<div class="td">';
+      $bugIsDone = roadmap_pro_api::checkIssueIsDoneById ( $bugId, $profileId );
+      $hasBlocked = ( empty ( $bugBlockedIds ) == false );
+      $hasBlocking = ( empty ( $bugBlockingIds ) == false );
+      $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
+
+      $htmlOutput = '<div class="tr">';
       /** line through, if bug is done */
-      if ( roadmap_pro_api::checkIssueIsDoneById ( $bugId, $profileId ) )
+      if ( $bugIsDone )
       {
-         echo '<span style="text-decoration: line-through;">';
+         $htmlOutput .= '<div class="td done">';
       }
-      echo print_bug_link ( $bugId, bug_format_id ( $bugId ) ) . ':&nbsp;';
-      /** symbol when eta is set */
-      if ( ( $bugEta > 10 ) && config_get ( 'enable_eta' ) )
+      else
       {
-         echo '<img src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" height="12" width="12" />&nbsp;';
+         $htmlOutput .= '<div class="td">';
+      }
+      $htmlOutput .= string_get_bug_view_link ( $bugId ) . '&nbsp;';
+      /** symbol when eta is set */
+      if ( $useEta )
+      {
+         $htmlOutput .= '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
       }
       /** symbol when bug is blocking */
-      if ( empty ( $bugBlockedIds ) == false )
+      if ( $hasBlocked )
       {
-         $blockedIdString = lang_get ( 'blocks' ) . '&nbsp;';
-         $blockedIdCount = count ( $bugBlockedIds );
-         for ( $index = 0; $index < $blockedIdCount; $index++ )
-         {
-            $blockedIdString .= bug_format_id ( $bugBlockedIds[ $index ] );
-            if ( $index < ( $blockedIdCount - 1 ) )
-            {
-               $blockedIdString .= ',&nbsp;';
-            }
-         }
-         echo '<img src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png' . '" alt="' . $blockedIdString .
-            '" title="' . $blockedIdString . '" height="12" width="12" />&nbsp;';
+         $blockedIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockedIds, true );
+         $htmlOutput .= '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png' . '" alt="' . $blockedIdString .
+            '" title="' . $blockedIdString . '" />&nbsp;';
       }
       /** symbol when bug is blocked by */
-      if ( empty ( $bugBlockingIds ) == false )
+      if ( $hasBlocking )
       {
-         $blockingIdString = lang_get ( 'dependant_on' ) . '&nbsp;';
-         $blockingIdCount = count ( $bugBlockingIds );
-         for ( $index = 0; $index < $blockingIdCount; $index++ )
-         {
-            $blockingIdString .= bug_format_id ( $bugBlockingIds[ $index ] );
-            if ( $index < ( $blockingIdCount - 1 ) )
-            {
-               $blockingIdString .= ',&nbsp;';
-            }
-         }
-         echo '<img src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blockingIdString .
-            '" title="' . $blockingIdString . '" height="12" width="12" />&nbsp;';
+         $blockingIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockingIds, false );
+         $htmlOutput .= '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blockingIdString .
+            '" title="' . $blockingIdString . '" />&nbsp;';
       }
-      echo string_display ( bug_get_field ( $bugId, 'summary' ) );
+      $htmlOutput .= string_display ( bug_get_field ( $bugId, 'summary' ) );
       if ( $userId > 0 )
       {
-         echo '&nbsp;(<a href="' . config_get ( 'path' ) . '/view_user_page.php?id=' . $userId . '">';
-         echo user_get_name ( $userId );
-         echo '</a>' . ')';
+         $htmlOutput .= '&nbsp;(<a href="' . config_get ( 'path' ) . '/view_user_page.php?id=' . $userId . '">' .
+            user_get_name ( $userId ) . '</a>' . ')';
       }
 
-      echo '&nbsp;-&nbsp;'
+      $htmlOutput .= '&nbsp;-&nbsp;'
          . string_display_line ( get_enum_element ( 'status', bug_get_field ( $bugId, 'status' ) ) ) . '.';
-      if ( roadmap_pro_api::checkIssueIsDoneById ( $bugId, $profileId ) )
-      {
-         echo '</span>';
-      }
-      echo '</div>' . PHP_EOL;
-      echo '</div>' . PHP_EOL;
+      $htmlOutput .= '</div>' . PHP_EOL;
+      $htmlOutput .= '</div>' . PHP_EOL;
+
+      echo $htmlOutput;
    }
 }
 

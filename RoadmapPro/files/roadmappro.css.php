@@ -22,10 +22,9 @@ hr.version-separator {
    float: left;
 }
 
-.progress9000 {
+.progress9001 {
    position: relative;
    background: #fff;
-   background-color: #fff;
    width: 400px;
    height: 25px;
    border: 1px solid #d7d7d7;
@@ -34,38 +33,36 @@ hr.version-separator {
    border-radius: 6px;
    margin-top: 1em;
    margin-bottom: 1em;
-   padding: 1px 4px 1px 1px;
-   float: left;
+   padding: 0 0 0 0;
 }
 
-.progress9000 .bar {
-   padding: 0px 0px 0px 0px;
-   display: block;
-   position: relative;
-   background: <?php echo $background ?>;
+.progress9001 .bar {
+   display: inline-block;
+   font-weight: normal;
+   height: 23px;
+   color: #111;
+}
+
+.progress9001 .single {
    text-align: center;
-   font-weight: normal;
-   height: 1.5em;
-   line-height: 1.4em;
-   color: #111;
-   border: solid 1px <?php echo $background ?>;
-   -moz-border-radius: 4px;
-   -webkit-border-radius: 4px;
+   background: <?php echo $background ?>;
    border-radius: 4px;
 }
 
-.progress9000 .scaledbar {
-   padding: 0px 0px 0px 1px;
-   display: block;
-   position: absolute;
-   text-align: right;
-   font-weight: normal;
-   height: 1.5em;
-   line-height: 1.4em;
-   color: #111;
-   -moz-border-radius: 4px;
-   -webkit-border-radius: 4px;
-   border-radius: 4px;
+.progress9001 .left {
+   text-align: left;
+   border-top-left-radius: 4px;
+   border-bottom-left-radius: 4px;
+}
+
+.progress9001 .middle {
+   text-align: left;
+}
+
+.progress9001 .right {
+   text-align: left;
+   border-top-right-radius: 4px;
+   border-bottom-right-radius: 4px;
 }
 
 pre {
@@ -269,4 +266,13 @@ div {
    position: relative;
    left: 56%;
    overflow: hidden;
+}
+
+.done {
+   text-decoration: line-through;
+}
+
+.symbol {
+   height: 12px;
+   width: 12px;
 }

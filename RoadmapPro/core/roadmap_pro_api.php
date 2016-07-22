@@ -273,4 +273,27 @@ class roadmap_pro_api
 
       return $userHasLevel;
    }
+
+   public static function generateBlockIdString ( $bugIds, $blocked )
+   {
+      if ( $blocked == true )
+      {
+         $blockIdString = lang_get ( 'blocks' ) . '&nbsp;';
+      }
+      else
+      {
+         $blockIdString = lang_get ( 'dependant_on' ) . '&nbsp;';
+      }
+      $blockedIdCount = count ( $bugIds );
+      for ( $index = 0; $index < $blockedIdCount; $index++ )
+      {
+         $blockIdString .= bug_format_id ( $bugIds[ $index ] );
+         if ( $index < ( $blockedIdCount - 1 ) )
+         {
+            $blockIdString .= ',&nbsp;';
+         }
+      }
+
+      return $blockIdString;
+   }
 }

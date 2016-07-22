@@ -37,9 +37,10 @@ hr.version-separator {
 }
 
 .progress9001 .bar {
+   padding: 3px;
    display: inline-block;
    font-weight: normal;
-   height: 23px;
+   height: 100%;
    color: #111;
 }
 

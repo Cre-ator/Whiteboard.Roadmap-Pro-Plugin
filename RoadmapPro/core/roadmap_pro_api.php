@@ -185,6 +185,16 @@ class roadmap_pro_api
    }
 
    /**
+    * returns true, if the used mantis version is release 1.2.x
+    *
+    * @return bool
+    */
+   public static function check_mantis_version_is_released ()
+   {
+      return substr ( MANTIS_VERSION, 0, 4 ) == '1.2.';
+   }
+
+   /**
     * returns an array with bug ids and extened information about relations
     *
     * @param $bugIds

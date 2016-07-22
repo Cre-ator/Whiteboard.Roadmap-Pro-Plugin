@@ -20,7 +20,7 @@ function processPage ()
 
    html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
    echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>' . "\n";
-   echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
+   echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
    html_page_top2 ();
    echo '<body onload="checkProfileChange()">', "\n";
 
@@ -85,7 +85,7 @@ function processTable ( $profileId )
       }
 
       $printedProjectTitle = false;
-      $projectName = project_get_name ( $projectId );
+      $projectName = string_display ( project_get_name ( $projectId ) );
       $versions = array_reverse ( version_get_all_rows ( $projectId ) );
 
       /** specific version selected */
@@ -133,9 +133,18 @@ function processTable ( $profileId )
             /** define and print project title */
             if ( $printedProjectTitle == false )
             {
-               $projectTitle = '<span class="pagetitle">' . string_display ( $projectName ) . '&nbsp;-&nbsp;'
-                  . lang_get ( 'roadmap' ) . '</span>';
-               printWrapperInHTML ( $projectTitle );
+               $profile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
+               $profileName = string_display ( $profile[ 1 ] );
+               echo '<span class="pagetitle">';
+               if ( $profileId == -1 )
+               {
+                  echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+               }
+               else
+               {
+                  echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, $profileName );
+               }
+               echo '</span>';
                $printedProjectTitle = true;
             }
             /** define and print release title */

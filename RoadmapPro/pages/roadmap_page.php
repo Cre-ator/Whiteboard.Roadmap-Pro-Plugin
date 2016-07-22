@@ -22,7 +22,7 @@ function processPage ()
    echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>' . "\n";
    echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
    html_page_top2 ();
-   echo '<body onload="checkProfileChange()">', "\n";
+   echo '<body>', "\n";
 
    if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
       file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' )
@@ -32,9 +32,10 @@ function processPage ()
       whiteboard_print_api::printWhiteboardMenu ();
    }
 
-
+   $currentProjectId = helper_get_current_project ();
+   $userHasAccessInProjectHierarchy = roadmap_pro_api::checkHierarchyUserHasAccessInAnyProject ( $currentProjectId );
    /** print profile menu bar */
-   if ( is_null ( $roadmapDb->dbGetRoadmapProfiles () ) == false )
+   if ( ( is_null ( $roadmapDb->dbGetRoadmapProfiles () ) == false ) && ( $userHasAccessInProjectHierarchy == true ) )
    {
       printProfileSwitcher ();
    }
@@ -45,7 +46,10 @@ function processPage ()
       echo '<div align="center">';
       echo '<hr size="1" width="100%" />';
       echo '<div class="table">';
-      processTable ( $getProfileId );
+      if ( $userHasAccessInProjectHierarchy == true )
+      {
+         processTable ( $getProfileId );
+      }
       echo '</div>';
       echo '</div>';
    }

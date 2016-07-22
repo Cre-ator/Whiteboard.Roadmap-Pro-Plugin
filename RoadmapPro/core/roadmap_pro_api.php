@@ -246,4 +246,31 @@ class roadmap_pro_api
 
       return $bugHashArray;
    }
+
+   /**
+    * returns true, if the user has access to any subproject or selected project
+    *
+    * @param $projectId
+    * @return bool
+    */
+   public static function checkHierarchyUserHasAccessInAnyProject ( $projectId )
+   {
+      $userHasLevel = false;
+      $projects = project_hierarchy_get_all_subprojects ( $projectId );
+      array_push ( $projects, $projectId );
+
+      foreach ( $projects as $project )
+      {
+         $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $project );
+         $tmpUserHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
+         $tmpUserHasPluginLevel = plugin_config_get ( 'access_level' ) <= $userAccessLevel;
+         if ( ( $tmpUserHasProjectLevel == true ) && ( $tmpUserHasPluginLevel == true ) )
+         {
+            $userHasLevel = true;
+            break;
+         }
+      }
+
+      return $userHasLevel;
+   }
 }

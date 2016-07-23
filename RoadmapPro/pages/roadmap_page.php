@@ -22,8 +22,6 @@ function processPage ()
    echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>' . "\n";
    echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
    html_page_top2 ();
-   echo '<body>', "\n";
-
    if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
       file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' )
    )

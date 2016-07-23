@@ -69,10 +69,7 @@ $profiles = $roadmapDb->dbGetRoadmapProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {
-   print_config_table_row ();
    print_config_table_title_row ( 6, 'config_page_roadmap_profile_management' );
-   echo '</tr>';
-
    print_config_table_row ();
    print_config_table_category_col ( 1, 1, 'config_page_profile_name' );
    print_config_table_category_col ( 1, 1, 'config_page_profile_status' );

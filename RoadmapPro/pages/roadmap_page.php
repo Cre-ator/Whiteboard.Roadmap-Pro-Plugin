@@ -32,13 +32,8 @@ function processPage ()
       whiteboard_print_api::printWhiteboardMenu ();
    }
 
-   $currentProjectId = helper_get_current_project ();
-   $userHasAccessInProjectHierarchy = roadmap_pro_api::checkHierarchyUserHasAccessInAnyProject ( $currentProjectId );
    /** print profile menu bar */
-   if ( ( is_null ( $roadmapDb->dbGetRoadmapProfiles () ) == false ) && ( $userHasAccessInProjectHierarchy == true ) )
-   {
-      printProfileSwitcher ();
-   }
+   printProfileSwitcher ();
 
    if ( isset( $_GET[ 'profile_id' ] ) )
    {
@@ -46,10 +41,7 @@ function processPage ()
       echo '<div align="center">';
       echo '<hr size="1" width="100%" />';
       echo '<div class="table">';
-      if ( $userHasAccessInProjectHierarchy == true )
-      {
-         processTable ( $getProfileId );
-      }
+      processTable ( $getProfileId );
       echo '</div>';
       echo '</div>';
    }

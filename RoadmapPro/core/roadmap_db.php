@@ -66,15 +66,16 @@ class roadmap_db
     * @param $profileColor
     * @param $profileStatus
     * @param $profilePriority
+    * @param $profileEffort
     * @return mixed
     */
-   public function dbInsertProfile ( $profileName, $profileColor, $profileStatus, $profilePriority )
+   public function dbInsertProfile ( $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $query = /** @lang sql */
-         "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio )
-            SELECT null,'" . $profileName . "','" . $profileColor . "','" . $profileStatus . "'," . (int)$profilePriority . "
+         "INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio, profile_effort )
+            SELECT null,'" . $profileName . "','" . $profileColor . "','" . $profileStatus . "'," . (int)$profilePriority . "," . (int)$profileEffort . "
             FROM DUAL WHERE NOT EXISTS (
             SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
             WHERE profile_name = '" . $profileName . "')";
@@ -84,6 +85,24 @@ class roadmap_db
       $this->mysqli->close ();
 
       return $profileId;
+   }
+
+   public function dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort )
+   {
+      if ( is_numeric ( $profileId ) )
+      {
+         $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+         $query = /** @lang sql */
+            "UPDATE mantis_plugin_RoadmapPro_profile_table
+               SET profile_name = '" . $profileName . "', profile_color= '" . $profileColor . "', 
+                  profile_status= '" . $profileStatus . "', profile_prio= '" . $profilePriority . "', 
+                  profile_effort= '" . $profileEffort . "'
+               WHERE id=" . $profileId;
+
+         $this->mysqli->query ( $query );
+         $this->mysqli->close ();
+      }
    }
 
    /**

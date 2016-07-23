@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.0.14';
+      $this->version = '1.0.15';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -35,7 +35,6 @@ class RoadmapProPlugin extends MantisPlugin
       (
          'show_menu' => ON,
          'show_footer' => ON,
-         'access_level' => ADMINISTRATOR
       );
    }
 
@@ -50,7 +49,8 @@ class RoadmapProPlugin extends MantisPlugin
             profile_name    C(250)  DEFAULT '',
             profile_color   C(250)  DEFAULT '',
             profile_status  C(250)  DEFAULT '',
-            profile_prio    I       DEFAULT 0
+            profile_prio    I       DEFAULT 0,
+            profile_effort  I       DEFAULT 0
             " )
          ),
          array
@@ -82,17 +82,9 @@ class RoadmapProPlugin extends MantisPlugin
       require_once ( $tCorePath . 'roadmap_constant_api.php' );
    }
 
-   function getUserHasLevel ()
-   {
-      $projectId = helper_get_current_project ();
-      $userId = auth_get_current_user_id ();
-
-      return user_get_access_level ( $userId, $projectId ) >= plugin_config_get ( 'access_level', ADMINISTRATOR );
-   }
-
    function footer ()
    {
-      if ( plugin_config_get ( 'show_footer' ) && $this->getUserHasLevel () )
+      if ( plugin_config_get ( 'show_footer' ) )
       {
          return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
       }
@@ -102,7 +94,7 @@ class RoadmapProPlugin extends MantisPlugin
    function menu ()
    {
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
-         && plugin_config_get ( 'show_menu' ) && $this->getUserHasLevel ()
+         && plugin_config_get ( 'show_menu' )
       )
       {
          return '<a href="' . plugin_page ( 'roadmap_page' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a >';

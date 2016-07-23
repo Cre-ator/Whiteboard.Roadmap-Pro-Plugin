@@ -258,32 +258,12 @@ class roadmap_pro_api
    }
 
    /**
-    * returns true, if the user has access to any subproject or selected project
+    * generates string for blocked/blocking ids
     *
-    * @param $projectId
-    * @return bool
+    * @param $bugIds
+    * @param $blocked
+    * @return string
     */
-   public static function checkHierarchyUserHasAccessInAnyProject ( $projectId )
-   {
-      $userHasLevel = false;
-      $projects = project_hierarchy_get_all_subprojects ( $projectId );
-      array_push ( $projects, $projectId );
-
-      foreach ( $projects as $project )
-      {
-         $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $project );
-         $tmpUserHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
-         $tmpUserHasPluginLevel = plugin_config_get ( 'access_level' ) <= $userAccessLevel;
-         if ( ( $tmpUserHasProjectLevel == true ) && ( $tmpUserHasPluginLevel == true ) )
-         {
-            $userHasLevel = true;
-            break;
-         }
-      }
-
-      return $userHasLevel;
-   }
-
    public static function generateBlockIdString ( $bugIds, $blocked )
    {
       if ( $blocked == true )
@@ -305,5 +285,38 @@ class roadmap_pro_api
       }
 
       return $blockIdString;
+   }
+
+   /**
+    * returns true, if there is a duplicate entry.
+    *
+    * @param $array
+    * @return bool
+    */
+   public static function checkArrayForDuplicates ( $array )
+   {
+      return count ( $array ) !== count ( array_unique ( $array ) );
+   }
+
+   /**
+    * returns db-conform string with status values for a profile
+    *
+    * @param $statusValues
+    * @return string
+    */
+   public static function generateDbStatusValueString ( $statusValues )
+   {
+      $profileStatus = '';
+      $limit = count ( $statusValues );
+      for ( $index = 0; $index < $limit; $index++ )
+      {
+         $profileStatus .= $statusValues[ $index ];
+         if ( $index < ( $limit - 1 ) )
+         {
+            $profileStatus .= ';';
+         }
+      }
+
+      return $profileStatus;
    }
 }

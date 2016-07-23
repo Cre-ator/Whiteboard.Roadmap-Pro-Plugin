@@ -277,3 +277,9 @@ div {
    height: 12px;
    width: 12px;
 }
+
+tbody tr[class="newRow"]
+{
+   background-color: #6d6d6d;
+   color: #000000;
+}

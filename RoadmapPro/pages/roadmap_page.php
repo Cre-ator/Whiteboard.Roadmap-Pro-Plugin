@@ -362,7 +362,6 @@ function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileH
 {
    echo '<div class="tr">' . PHP_EOL;
    echo '<div class="td">';
-   echo '<div class="progress9001">';
    if ( $useEta && config_get ( 'enable_eta' ) )
    {
       if ( $profileId == -1 )
@@ -390,19 +389,21 @@ function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileH
          printSingleProgressbar ( $progressPercent, $progressString );
       }
    }
-   echo '</div>';
    echo '</div>' . PHP_EOL;
    echo '</div>' . PHP_EOL;
 }
 
 function printSingleProgressbar ( $progress, $progressString )
 {
+   echo '<div class="progress9001">';
    echo '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
+   echo '</div>';
 }
 
 function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $useEta = false )
 {
    global $roadmapDb;
+   echo '<div class="progress9001">';
    if ( empty( $profileHashMap ) == false )
    {
       $profileHashCount = count ( $profileHashMap );
@@ -441,6 +442,7 @@ function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $u
    if ( $useEta == true )
    {
       $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
+      /** TODO dynamic eta unit */
       echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $fullEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
    }
    else
@@ -449,6 +451,7 @@ function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $u
       echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
    }
    echo ')';
+   echo '</div>';
 }
 
 function printBugList ( $bugIds, $profileId )

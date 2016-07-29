@@ -18,7 +18,7 @@ hr.version-separator {
    height: 25px;
    margin-top: 1em;
    margin-bottom: 1em;
-   padding: 1px 4px 1px 1px;
+   padding: 0 0 0 0;
    float: left;
 }
 
@@ -34,6 +34,7 @@ hr.version-separator {
    margin-top: 1em;
    margin-bottom: 1em;
    padding: 0 0 0 0;
+   float: left;
 }
 
 .progress9001 .bar {

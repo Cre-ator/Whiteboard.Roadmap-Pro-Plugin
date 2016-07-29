@@ -1,4 +1,5 @@
 var newProfileCounter = 0;
+var newThresholdCounter = 0;
 
 function addProfileRow(statusValues, statusStrings) {
     var tableId = "profiles";
@@ -46,8 +47,34 @@ function addProfileRow(statusValues, statusStrings) {
     window.dispatchEvent(evt);
 }
 
-function delProfileRow(initialRowCount) {
-    var tableId = "profiles";
+function addThresholdRow() {
+    var tableId = "thresholds";
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName("tr").length;
+    var tr = table.insertRow(rows);
+    var td1 = document.createElement("td");
+    var td2 = document.createElement("td");
+    var td3 = document.createElement("td");
+    var td4 = document.createElement("td");
+    var td5 = document.createElement("td");
+
+    /** from */
+    td1.innerHTML = '<input type="text" name="threshold-from[]" size="15" maxlength="128" value="">';
+    /** to */
+    td2.innerHTML = '<input type="text" name="threshold-to[]" size="15" maxlength="128" value="">';
+    /** unit */
+    td3.innerHTML = '<input type="text" name="new-threshold-unit-' + newThresholdCounter + '" size="15" maxlength="128" value="">';
+    newThresholdCounter++;
+    /** factor */
+    td4.innerHTML = '<input type="text" name="threshold-factor[]" size="15" maxlength="128" value="">';
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
+}
+function delRow(initialRowCount, tableId) {
     var table = document.getElementById(tableId);
     var rows = table.getElementsByTagName("tr").length;
 

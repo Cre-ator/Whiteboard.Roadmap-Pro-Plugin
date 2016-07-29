@@ -309,4 +309,54 @@ class roadmap_pro_api
 
       return $profileStatus;
    }
+
+   /**
+    * assign a given eta value to a specified eta unit
+    *
+    * @param $eta
+    * @return array
+    */
+   public static function calculateEtaUnit ( $eta )
+   {
+      $roadmapDb = new roadmap_db();
+
+      $backupString = array ();
+      $backupString[ 0 ] = $eta;
+      $backupString[ 1 ] = plugin_lang_get ( 'config_page_eta_unit' );
+      $etaString = array ();
+      $thresholds = $roadmapDb->dbGetEtaThresholds ();
+      $thresholdCount = count ( $thresholds );
+      if ( $thresholdCount < 1 )
+      {
+         $etaString = $backupString;
+      }
+      else
+      {
+         for ( $index = 0; $index < $thresholdCount; $index++ )
+         {
+            $thresholdRow = $thresholds[ $index ];
+            $thresholdFrom = $thresholdRow[ 1 ];
+            $thresholdTo = $thresholdRow[ 2 ];
+
+            if ( ( $eta > $thresholdFrom ) && ( $eta < $thresholdTo ) )
+            {
+               $thresholdUnit = $thresholdRow[ 3 ];
+               $thresholdFactor = $thresholdRow[ 4 ];
+
+               $newEta = round ( ( $eta / $thresholdFactor ), 2 );
+               $etaString[ 0 ] = $newEta;
+               $etaString[ 1 ] = $thresholdUnit;
+            }
+         }
+      }
+
+      if ( empty( $etaString ) == false )
+      {
+         return $etaString;
+      }
+      else
+      {
+         return $backupString;
+      }
+   }
 }

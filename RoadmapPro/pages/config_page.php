@@ -58,8 +58,77 @@ if ( config_get ( 'enable_eta' ) )
       echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
    }
+
+   roadmap_html_api::htmlPluginConfigCloseTable ();
+
+   roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'thresholds' );
+   echo '<tr>';
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_eta_threshold_management', 6 );
+   echo '</tr>';
+   echo '<tr>';
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_from' );
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_to' );
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_factor' );
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+   echo '</tr>';
+   $etaThresholdRows = $roadmapDb->dbGetEtaThresholds ();
+   $thresholdCount = count ( $etaThresholdRows );
+   if ( $thresholdCount > 0 )
+   {
+      /** iterate through thresholds */
+      for ( $index = 0; $index < $thresholdCount; $index++ )
+      {
+         $thresholdRow = $etaThresholdRows[ $index ];
+         $thresholdId = $thresholdRow[ 0 ];
+         $thresholdFrom = $thresholdRow[ 1 ];
+         $thresholdTo = $thresholdRow[ 2 ];
+         $thresholdUnit = $thresholdRow[ 3 ];
+         $thresholdFactor = $thresholdRow[ 4 ];
+
+         echo '<tr>';
+         /** threshold from */
+         echo '<td>';
+         echo '<input type="hidden" name="threshold-id[]" value="' . $thresholdId . '" />';
+         echo '<input type="text" name="threshold-from[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFrom ) . '" />';
+         echo '</td>';
+         echo '<td>';
+         echo '<input type="text" name="threshold-to[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdTo ) . '" />';
+         echo '</td>';
+         echo '<td>';
+         echo '<input type="text" name="threshold-unit[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdUnit ) . '" />';
+         echo '</td>';
+         echo '<td>';
+         echo '<input type="text" name="threshold-factor[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFactor ) . '" />';
+         echo '</td>';
+
+         echo '<td>';
+         echo '<a class="button" href="' . plugin_page ( 'config_delete_threshold' ) .
+            '&amp;threshold_id=' . $thresholdId . '">';
+         echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
+         echo '</a>';
+         echo '</td>';
+
+         echo '</tr>';
+      }
+   }
 }
 roadmap_html_api::htmlPluginConfigCloseTable ();
+
+if ( config_get ( 'enable_eta' ) )
+{
+   roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+   /** todo +/- button */
+   echo '<tbody>';
+   echo '<tr class="foot-row">';
+   echo '<td class="left">';
+   echo '<input type="button" value="+" onclick="addThresholdRow()" />&nbsp;';
+   echo '<input type="button" value="-" onclick="delRow(' . $thresholdCount . ', \'thresholds\')" />&nbsp;';
+   echo '</td>';
+   echo '</tr>';
+   echo '</tbody>';
+   roadmap_html_api::htmlPluginConfigCloseTable ();
+}
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
 /** show profiles */
@@ -78,7 +147,6 @@ $profiles = $roadmapDb->dbGetRoadmapProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {
-
    /** iterate through profiles */
    for ( $index = 0; $index < $profileCount; $index++ )
    {
@@ -137,7 +205,7 @@ $jsStatusEnumStringArray = json_encode ( $statusEnumStrings );
 echo '<script type="text/javascript">var statusValues =' . $jsStatusEnumValueArray . ';var statusStrings =' . $jsStatusEnumStringArray . ';</script>';
 echo '<td class="left">';
 echo '<input type="button" value="+" onclick="addProfileRow(statusValues,statusStrings)" />&nbsp;';
-echo '<input type="button" value="-" onclick="delProfileRow(' . $profileCount . ')" />&nbsp;';
+echo '<input type="button" value="-" onclick="delRow(' . $profileCount . ', \'profiles\')" />&nbsp;';
 echo '</td>';
 
 echo '<td class="center" colspan="5">';

@@ -69,7 +69,8 @@ class roadmap_html_api
    {
       if ( $useEta == true )
       {
-         echo $tempEta . plugin_lang_get ( 'config_page_eta_unit' );
+         $calculatedEta = roadmap_pro_api::calculateEtaUnit ( $tempEta );
+         echo $calculatedEta[ 0 ] . '&nbsp;' . $calculatedEta[ 1 ];
       }
       else
       {
@@ -136,8 +137,9 @@ class roadmap_html_api
       echo '<div class="progress-suffix">';
       if ( $useEta == true )
       {
-         /** TODO dynamic eta unit */
-         echo '&nbsp;(' . $doneEta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $fullEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
+         $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
+         $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
+         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
       }
       else
       {
@@ -247,8 +249,10 @@ class roadmap_html_api
          else
          {
             $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
-            /** TODO dynamic eta unit */
-            $progressString = $doneEta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $fullEta . plugin_lang_get ( 'config_page_eta_unit' );
+
+            $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
+            $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
+            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString );
          }
       }

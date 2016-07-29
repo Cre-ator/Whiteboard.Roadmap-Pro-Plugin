@@ -16,28 +16,84 @@ if ( $optionReset == true )
 
 if ( $optionChange == true )
 {
+   updateButton ( 'show_menu' );
+   updateButton ( 'show_footer' );
+   if ( config_get ( 'enable_eta' ) )
+   {
+      processEta ();
+   }
+   processProfiles ();
+
+   form_security_purge ( 'plugin_RoadmapPro_config_update' );
+   print_successful_redirect ( plugin_page ( 'config_page', true ) );
+}
+
+function processEta ()
+{
+   global $roadmapDb;
+
+   $postEtaThresholdIds = $_POST[ 'threshold-id' ];
+   $postEtaThresholdFrom = $_POST[ 'threshold-from' ];
+   $postEtaThresholdTo = $_POST[ 'threshold-to' ];
+   $postEtaThresholdUnit = $_POST[ 'threshold-unit' ];
+   $postEtaThresholdFactor = $_POST[ 'threshold-factor' ];
+
+   $postEtaValue = $_POST[ 'eta_value' ];
+   $etaEnumString = config_get ( 'eta_enum_string' );
+   $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
+
+   for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
+   {
+      $key = $etaEnumValues[ $index ];
+      $value = $postEtaValue[ $index ];
+
+      $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
+   }
+
+   if ( is_null ( $postEtaThresholdFrom ) == false )
+   {
+      /** process existing thresholds */
+      $thresholdIdCount = count ( $postEtaThresholdIds );
+      for ( $index = 0; $index < $thresholdIdCount; $index++ )
+      {
+         $thresholdUnit = $postEtaThresholdUnit[ $index ];
+         if ( strlen ( $thresholdUnit ) > 0 )
+         {
+            $thresholdId = $postEtaThresholdIds[ $index ];
+            $thresholdFrom = $postEtaThresholdFrom[ $index ];
+            $thresholdTo = $postEtaThresholdTo[ $index ];
+            $thresholdFactor = $postEtaThresholdFactor[ $index ];
+
+            $roadmapDb->dbUpdateEtaThresholdValue ( $thresholdId, $thresholdFrom, $thresholdTo, $thresholdUnit, $thresholdFactor );
+         }
+      }
+
+      /** process new thresholds */
+      $overallThresholdCount = count ( $postEtaThresholdFrom );
+      $newThresholdIndex = 0;
+      for ( $newIndex = $thresholdIdCount; $newIndex < $overallThresholdCount; $newIndex++ )
+      {
+         $newThresholdUnit = $_POST[ 'new-threshold-unit-' . $newThresholdIndex ];
+         $newThresholdFrom = $postEtaThresholdFrom[ $newIndex ];
+         $newThresholdTo = $postEtaThresholdTo[ $newIndex ];
+         $thresholdFactor = $postEtaThresholdFactor[ $newIndex ];
+
+         $roadmapDb->dbInsertEtaThresholdValue ( $newThresholdFrom, $newThresholdTo, $newThresholdUnit, $thresholdFactor );
+
+         $newThresholdIndex++;
+      }
+   }
+}
+
+function processProfiles ()
+{
+   global $roadmapDb;
+
    $postProfileIds = $_POST[ 'profile-id' ];
    $postProfileNames = $_POST[ 'profile-name' ];
    $postProfileColor = $_POST[ 'profile-color' ];
    $postProfilePriority = $_POST[ 'profile-prio' ];
    $postProfileEffort = $_POST[ 'profile-effort' ];
-   updateButton ( 'show_menu' );
-   updateButton ( 'show_footer' );
-   if ( config_get ( 'enable_eta' ) )
-   {
-      $postEtaValue = $_POST[ 'eta_value' ];
-      $postEtaUnit = $_POST[ 'eta_unit' ];
-      $etaEnumString = config_get ( 'eta_enum_string' );
-      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-
-      for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
-      {
-         $key = $etaEnumValues[ $index ];
-         $value = $postEtaValue[ $index ];
-
-         $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
-      }
-   }
 
    if ( is_null ( $postProfileNames ) == false )
    {
@@ -51,17 +107,17 @@ if ( $optionChange == true )
          $profileIdCount = count ( $postProfileIds );
          for ( $index = 0; $index < $profileIdCount; $index++ )
          {
-            $profileName = $postProfileNames[ $index ];
-            if ( strlen ( $profileName ) > 0 )
+            $thresholdUnit = $postProfileNames[ $index ];
+            if ( strlen ( $thresholdUnit ) > 0 )
             {
                $postProfileStatus = $_POST[ 'profile-status-' . $index ];
                $profileStatus = roadmap_pro_api::generateDbStatusValueString ( $postProfileStatus );
-               $profileId = $postProfileIds[ $index ];
-               $profileColor = $postProfileColor[ $index ];
-               $profilePriority = $postProfilePriority[ $index ];
+               $thresholdId = $postProfileIds[ $index ];
+               $thresholdFrom = $postProfileColor[ $index ];
+               $thresholdTo = $postProfilePriority[ $index ];
                $profileEffort = $postProfileEffort[ $index ];
 
-               $roadmapDb->dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort );
+               $roadmapDb->dbUpdateProfile ( $thresholdId, $thresholdUnit, $thresholdFrom, $profileStatus, $thresholdTo, $profileEffort );
             }
          }
 
@@ -86,8 +142,6 @@ if ( $optionChange == true )
          }
       }
    }
-   form_security_purge ( 'plugin_RoadmapPro_config_update' );
-   print_successful_redirect ( plugin_page ( 'config_page', true ) );
 }
 
 

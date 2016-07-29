@@ -357,4 +357,68 @@ class roadmap_db
 
       return $etaRow;
    }
+
+   public function dbInsertEtaThresholdValue ( $from, $to, $unit, $factor )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      $query = /** @lang sql */
+         "INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
+            SELECT null,'" . $from . "','" . $to . "','" . $unit . "','" . $factor . "'
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_etathreshold_table
+            WHERE eta_thr_unit = '" . $unit . "')";
+
+      $this->mysqli->query ( $query );
+      $etaId = $this->mysqli->insert_id;
+      $this->mysqli->close ();
+
+      return $etaId;
+   }
+
+   public function dbUpdateEtaThresholdValue ( $id, $from, $to, $unit, $factor )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+      $query = /** @lang sql */
+         "UPDATE mantis_plugin_RoadmapPro_etathreshold_table
+               SET eta_thr_from='" . $from . "',eta_thr_to='" . $to . "',eta_thr_unit='" . $unit . "',eta_thr_factor='" . $factor . "'
+               WHERE id = '" . $id . "'";
+
+      $this->mysqli->query ( $query );
+      $this->mysqli->close ();
+   }
+
+   public function dbGetEtaThresholds ()
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+      $query = /** @lang sql */
+         "SELECT * FROM mantis_plugin_RoadmapPro_etathreshold_table";
+
+      $result = $this->mysqli->query ( $query );
+
+      $etaThresholdRows = null;
+      if ( 0 != $result->num_rows )
+      {
+         while ( $row = $result->fetch_row () )
+         {
+            $etaThresholdRows[] = $row;
+         }
+      }
+      $this->mysqli->close ();
+
+      return $etaThresholdRows;
+   }
+
+   public function dbDeleteEtaThreshold ( $id )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      $query = /** @lang sql */
+         "DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table
+            WHERE id = " . $id;
+
+      $this->mysqli->query ( $query );
+
+      $this->mysqli->close ();
+   }
 }

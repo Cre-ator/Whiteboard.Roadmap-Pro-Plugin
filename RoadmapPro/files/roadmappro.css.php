@@ -157,70 +157,8 @@ div.spacer {
    margin-top: 30px;
 }
 
-.title_row {
-   background-color: #ffffff;
-   color: #000000;
-   font-weight: bold;
-   text-align: left;
-}
-
-.category_name_field {
-   background-color: #c8c8e8;
-   color: #000000;
-   font-weight: bold;
-}
-
-.category_value_field-0 {
-   background-color: #d8d8d8;
-   color: #000000;
-}
-
-.category_value_field-1 {
-   background-color: #e8e8e8;
-   color: #000000;
-}
-
-.grid_center {
-   text-align: center;
-}
-
-.surrounder {
-   border: solid 1px #000000;
-}
-
 * {
    box-sizing: border-box;
-}
-
-.gridcol-1 {
-   width: 16.66%;
-}
-
-.gridcol-2 {
-   width: 33.33%;
-}
-
-.gridcol-3 {
-   width: 50%;
-}
-
-.gridcol-4 {
-   width: 66.66%;
-}
-
-.gridcol-5 {
-   width: 83.33%;
-}
-
-.gridcol-6 {
-   width: 100%;
-}
-
-[class*="gridcol-"] {
-   float: left;
-   min-height: 27px;
-   word-wrap: break-word;
-   /*   border: 1px solid #c13cff;*/
 }
 
 .row {
@@ -237,38 +175,6 @@ div {
    padding: 1px;
 }
 
-#container2 {
-   clear: left;
-   float: left;
-   width: 100%;
-   overflow: hidden;
-   background: #ffa7a7; /* column 2 background colour */
-}
-
-#container1 {
-   float: left;
-   width: 100%;
-   position: relative;
-   right: 50%;
-   background: #fff689; /* column 1 background colour */
-}
-
-#col1 {
-   float: left;
-   width: 46%;
-   position: relative;
-   left: 52%;
-   overflow: hidden;
-}
-
-#col2 {
-   float: left;
-   width: 46%;
-   position: relative;
-   left: 56%;
-   overflow: hidden;
-}
-
 .done {
    text-decoration: line-through;
 }
@@ -276,10 +182,4 @@ div {
 .symbol {
    height: 12px;
    width: 12px;
-}
-
-tbody tr[class="newRow"]
-{
-   background-color: #6d6d6d;
-   color: #000000;
 }

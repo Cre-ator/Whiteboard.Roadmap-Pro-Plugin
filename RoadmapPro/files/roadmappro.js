@@ -36,7 +36,6 @@ function addProfileRow ( statusValues, statusStrings )
     /** document type */
     td6.innerHTML = '';
 
-    tr.className += "newRow";
     tr.appendChild ( td1 );
     tr.appendChild ( td2 );
     tr.appendChild ( td3 );
@@ -55,7 +54,7 @@ function delProfileRow ( initialRowCount )
     var table = document.getElementById ( tableId );
     var rows = table.getElementsByTagName ( "tr" ).length;
 
-    if ( rows > ( initialRowCount + 3 ) )
+    if ( rows > ( initialRowCount + 2 ) )
     {
         document.getElementById ( tableId ).deleteRow ( --rows );
     }

@@ -39,15 +39,11 @@ if ( config_get ( 'enable_eta' ) )
    echo '<tr>';
    roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_eta_management', 3 );
    echo '</tr>';
-   echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit' );
-   echo '<td colspan="2"><input type="text" id="eta_unit" name="eta_unit" size="15" maxlength="128" value="' . $roadmapDb->dbGetEtaUnit () . '"/></td>';
-   echo '</tr>';
 
    echo '<tr>';
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_name' );
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit' );
+   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    echo '</tr>';
    /** eta management */
 
@@ -59,7 +55,7 @@ if ( config_get ( 'enable_eta' ) )
       echo '<tr>';
       echo '<td>' . string_display_line ( get_enum_element ( 'eta', $etaEnumValue ) ) . '</td>';
       echo '<td><input type="text" name="eta_value[]" value="' . $roadmapDb->dbGetEtaRowByKey ( $etaEnumValue )[ 2 ] . '"/></td>';
-      echo '<td colspan="4">' . $roadmapDb->dbGetEtaUnit () . '</td>';
+      echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
    }
 }
@@ -67,21 +63,21 @@ roadmap_html_api::htmlPluginConfigCloseTable ();
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
 /** show profiles */
+echo '<tr>';
+roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
+echo '</tr>';
+echo '<tr>';
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_status' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_color' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_prio' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+echo '</tr>';
 $profiles = $roadmapDb->dbGetRoadmapProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {
-   echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
-   echo '</tr>';
-   echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_status' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_color' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_prio' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
-   echo '</tr>';
 
    /** iterate through profiles */
    for ( $index = 0; $index < $profileCount; $index++ )

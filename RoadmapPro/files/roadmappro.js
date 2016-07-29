@@ -1,23 +1,21 @@
 var newProfileCounter = 0;
 
-function addProfileRow ( statusValues, statusStrings )
-{
+function addProfileRow(statusValues, statusStrings) {
     var tableId = "profiles";
-    var table = document.getElementById ( tableId );
-    var rows = table.getElementsByTagName ( "tr" ).length;
-    var tr = table.insertRow ( rows );
-    var td1 = document.createElement ( "td" );
-    var td2 = document.createElement ( "td" );
-    var td3 = document.createElement ( "td" );
-    var td4 = document.createElement ( "td" );
-    var td5 = document.createElement ( "td" );
-    var td6 = document.createElement ( "td" );
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName("tr").length;
+    var tr = table.insertRow(rows);
+    var td1 = document.createElement("td");
+    var td2 = document.createElement("td");
+    var td3 = document.createElement("td");
+    var td4 = document.createElement("td");
+    var td5 = document.createElement("td");
+    var td6 = document.createElement("td");
 
     var optionstring = '';
-    for ( var i = 0; i < statusValues.length; i++ )
-    {
-        var value = statusValues[ i ];
-        var string = statusStrings[ i ];
+    for (var i = 0; i < statusValues.length; i++) {
+        var value = statusValues[i];
+        var string = statusStrings[i];
 
         optionstring += '<option value="' + value + '">' + string + '</option>'
     }
@@ -36,26 +34,24 @@ function addProfileRow ( statusValues, statusStrings )
     /** document type */
     td6.innerHTML = '';
 
-    tr.appendChild ( td1 );
-    tr.appendChild ( td2 );
-    tr.appendChild ( td3 );
-    tr.appendChild ( td4 );
-    tr.appendChild ( td5 );
-    tr.appendChild ( td6 );
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
+    tr.appendChild(td6);
 
-    var evt = document.createEvent ( 'Event' );
-    evt.initEvent ( 'load', false, false );
-    window.dispatchEvent ( evt );
+    var evt = document.createEvent('Event');
+    evt.initEvent('load', false, false);
+    window.dispatchEvent(evt);
 }
 
-function delProfileRow ( initialRowCount )
-{
+function delProfileRow(initialRowCount) {
     var tableId = "profiles";
-    var table = document.getElementById ( tableId );
-    var rows = table.getElementsByTagName ( "tr" ).length;
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName("tr").length;
 
-    if ( rows > ( initialRowCount + 2 ) )
-    {
-        document.getElementById ( tableId ).deleteRow ( --rows );
+    if (rows > ( initialRowCount + 2 )) {
+        document.getElementById(tableId).deleteRow(--rows);
     }
 }

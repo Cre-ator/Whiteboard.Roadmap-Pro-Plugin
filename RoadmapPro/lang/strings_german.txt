@@ -10,7 +10,7 @@ $s_plugin_RoadmapPro_config_page_show_footer = 'Plugin Informationen in Fußzeil
 $s_plugin_RoadmapPro_config_page_roadmap_profile_management = 'Roadmap Profilverwaltung';
 $s_plugin_RoadmapPro_config_page_eta_name = 'Bezeichnung';
 $s_plugin_RoadmapPro_config_page_eta_value = 'Wert';
-$s_plugin_RoadmapPro_config_page_eta_unit = 'Einheit';
+$s_plugin_RoadmapPro_config_page_eta_unit_title = 'Einheit';
 
 $s_plugin_RoadmapPro_config_page_profile_name = 'Name';
 $s_plugin_RoadmapPro_config_page_profile_status = 'Status';
@@ -18,6 +18,7 @@ $s_plugin_RoadmapPro_config_page_profile_color = 'Farbe';
 $s_plugin_RoadmapPro_config_page_profile_prio = 'Priorität';
 $s_plugin_RoadmapPro_config_page_profile_effort = 'Aufwand';
 $s_plugin_RoadmapPro_config_page_profile_action = 'Aktion';
+$s_plugin_RoadmapPro_config_page_eta_unit = 'Stunde';
 $s_plugin_RoadmapPro_config_page_add_profile = 'Profil hinzufügen';
 $s_plugin_RoadmapPro_config_page_profile_list = 'Angelegte Profile';
 $s_plugin_RoadmapPro_config_page_delete_profile = 'Entfernen';

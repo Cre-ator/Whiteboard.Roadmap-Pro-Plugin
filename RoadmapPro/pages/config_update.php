@@ -9,88 +9,87 @@ $roadmapDb = new roadmap_db();
 $optionChange = gpc_get_bool ( 'config_change', false );
 $optionReset = gpc_get_bool ( 'config_reset', false );
 
-if ( $optionReset )
+if ( $optionReset == true )
 {
    print_successful_redirect ( plugin_page ( 'config_reset_ensure', true ) );
 }
 
-if ( $optionChange )
+if ( $optionChange == true )
 {
    $postProfileIds = $_POST[ 'profile-id' ];
    $postProfileNames = $_POST[ 'profile-name' ];
    $postProfileColor = $_POST[ 'profile-color' ];
    $postProfilePriority = $_POST[ 'profile-prio' ];
    $postProfileEffort = $_POST[ 'profile-effort' ];
-
-   if ( roadmap_pro_api::checkArrayForDuplicates ( $postProfileNames ) == true )
+   updateButton ( 'show_menu' );
+   updateButton ( 'show_footer' );
+   if ( config_get ( 'enable_eta' ) )
    {
-      /** error message */
-   }
-   else
-   {
-      updateButton ( 'show_menu' );
-      updateButton ( 'show_footer' );
+      $postEtaValue = $_POST[ 'eta_value' ];
+      $postEtaUnit = $_POST[ 'eta_unit' ];
+      $etaEnumString = config_get ( 'eta_enum_string' );
+      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
 
-      if ( config_get ( 'enable_eta' ) )
+      for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
       {
-         $postEtaValue = $_POST[ 'eta_value' ];
-         $postEtaUnit = $_POST[ 'eta_unit' ];
-         $etaEnumString = config_get ( 'eta_enum_string' );
-         $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
+         $key = $etaEnumValues[ $index ];
+         $value = $postEtaValue[ $index ];
 
-         $roadmapDb->dbUpdateEtaUnit ( $postEtaUnit );
-         for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
-         {
-            $key = $etaEnumValues[ $index ];
-            $value = $postEtaValue[ $index ];
-
-            $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
-         }
-      }
-
-      /** process existing profiles */
-      $profileIdCount = count ( $postProfileIds );
-      for ( $index = 0; $index < $profileIdCount; $index++ )
-      {
-         $profileName = $postProfileNames[ $index ];
-         if ( strlen ( $profileName ) > 0 )
-         {
-            $postProfileStatus = $_POST[ 'profile-status-' . $index ];
-            $profileStatus = roadmap_pro_api::generateDbStatusValueString ( $postProfileStatus );
-            $profileId = $postProfileIds[ $index ];
-            $profileColor = $postProfileColor[ $index ];
-            $profilePriority = $postProfilePriority[ $index ];
-            $profileEffort = $postProfileEffort[ $index ];
-
-            $roadmapDb->dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort );
-         }
-      }
-
-      /** process new profiles */
-      $overallProfileCount = count ( $postProfileNames );
-      $newStatusIndex = 0;
-      for ( $newIndex = $profileIdCount; $newIndex < $overallProfileCount; $newIndex++ )
-      {
-         $newProfileName = $postProfileNames[ $newIndex ];
-         if ( strlen ( $newProfileName ) > 0 )
-         {
-            $postNewProfileStatus = $_POST[ 'new-status-' . $newStatusIndex ];
-            $newProfileStatus = roadmap_pro_api::generateDbStatusValueString ( $postNewProfileStatus );
-            $newProfileColor = $postProfileColor[ $newIndex ];
-            $newProfilePriority = $postProfilePriority[ $newIndex ];
-            $newProfileEffort = $postProfileEffort[ $newIndex ];
-
-            $roadmapDb->dbInsertProfile ( $newProfileName, $newProfileColor, $newProfileStatus, $newProfilePriority, $newProfileEffort );
-         }
-
-         $newStatusIndex++;
+         $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
       }
    }
+
+   if ( is_null ( $postProfileNames ) == false )
+   {
+      if ( roadmap_pro_api::checkArrayForDuplicates ( $postProfileNames ) == true )
+      {
+         /** error message */
+      }
+      else
+      {
+         /** process existing profiles */
+         $profileIdCount = count ( $postProfileIds );
+         for ( $index = 0; $index < $profileIdCount; $index++ )
+         {
+            $profileName = $postProfileNames[ $index ];
+            if ( strlen ( $profileName ) > 0 )
+            {
+               $postProfileStatus = $_POST[ 'profile-status-' . $index ];
+               $profileStatus = roadmap_pro_api::generateDbStatusValueString ( $postProfileStatus );
+               $profileId = $postProfileIds[ $index ];
+               $profileColor = $postProfileColor[ $index ];
+               $profilePriority = $postProfilePriority[ $index ];
+               $profileEffort = $postProfileEffort[ $index ];
+
+               $roadmapDb->dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort );
+            }
+         }
+
+         /** process new profiles */
+         $overallProfileCount = count ( $postProfileNames );
+         $newStatusIndex = 0;
+         for ( $newIndex = $profileIdCount; $newIndex < $overallProfileCount; $newIndex++ )
+         {
+            $newProfileName = $postProfileNames[ $newIndex ];
+            if ( strlen ( $newProfileName ) > 0 )
+            {
+               $postNewProfileStatus = $_POST[ 'new-status-' . $newStatusIndex ];
+               $newProfileStatus = roadmap_pro_api::generateDbStatusValueString ( $postNewProfileStatus );
+               $newProfileColor = $postProfileColor[ $newIndex ];
+               $newProfilePriority = $postProfilePriority[ $newIndex ];
+               $newProfileEffort = $postProfileEffort[ $newIndex ];
+
+               $roadmapDb->dbInsertProfile ( $newProfileName, $newProfileColor, $newProfileStatus, $newProfilePriority, $newProfileEffort );
+            }
+
+            $newStatusIndex++;
+         }
+      }
+   }
+   form_security_purge ( 'plugin_RoadmapPro_config_update' );
+   print_successful_redirect ( plugin_page ( 'config_page', true ) );
 }
 
-form_security_purge ( 'plugin_RoadmapPro_config_update' );
-
-print_successful_redirect ( plugin_page ( 'config_page', true ) );
 
 /**
  * Adds the "#"-Tag if necessary

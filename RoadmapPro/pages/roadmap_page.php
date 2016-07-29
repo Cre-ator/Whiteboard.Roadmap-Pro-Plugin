@@ -160,7 +160,6 @@ function processTable ( $profileId )
             printWrapperInHTML ( $versionDescription );
 
 
-            $doneBugAmount = 0;
             if ( $profileId == -1 )
             {
                $scaledData = calcScaledData ( $bugIds, $useEta, $overallBugAmount );
@@ -181,6 +180,7 @@ function processTable ( $profileId )
             /** print text progress */
             if ( $profileId >= 0 )
             {
+               $doneBugAmount = roadmap_pro_api::getDoneBugAmount ( $bugIds, $profileId );
                printVersionProgressAsText ( $overallBugAmount, $doneBugAmount, $progressInPercent, $useEta );
             }
             /** print spacer */
@@ -403,6 +403,8 @@ function printSingleProgressbar ( $progress, $progressString )
 function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $useEta = false )
 {
    global $roadmapDb;
+   $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
+   $doneEta = 0;
    echo '<div class="progress9001">';
    if ( empty( $profileHashMap ) == false )
    {
@@ -418,37 +420,67 @@ function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $u
          $dbProfileRow = $roadmapDb->dbGetRoadmapProfile ( $hashProfileId );
          $profileColor = '#' . $dbProfileRow[ 2 ];
 
+         $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
+
          /** first bar */
          if ( $index == 0 )
          {
-            echo '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div><!--';
+            echo '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+            if ( $useEta == true )
+            {
+
+               echo $tempEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
+            }
+            else
+            {
+               echo $hashProgress . '%';
+            }
+            echo '</div><!--';
          }
          /** n - 2 (first, last) following */
          elseif ( $index == ( $profileHashCount - 1 ) )
          {
-            echo '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div>';
+            echo '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+            if ( $useEta == true )
+            {
+               echo $tempEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
+            }
+            else
+            {
+               echo $hashProgress . '%';
+            }
+            echo '</div>';
          }
          /** last bar */
          else
          {
-            echo '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">' . $hashProgress . '%</div><!--';
+            echo '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+            if ( $useEta == true )
+            {
+               echo $tempEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
+            }
+            else
+            {
+               echo $hashProgress . '%';
+            }
+            echo '</div><!--';
          }
+
+         $doneEta += $tempEta;
       }
    }
 
    echo '</div>';
    echo '<div class="progress-suffix">';
-   echo '&nbsp;(' . $progressPercent . '%';
    if ( $useEta == true )
    {
-      $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
       /** TODO dynamic eta unit */
-      echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $fullEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
+      echo '&nbsp;(' . $doneEta . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $fullEta . '&nbsp;' . plugin_lang_get ( 'config_page_eta_unit' );
    }
    else
    {
       $bugCount = count ( $bugIds );
-      echo '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+      echo '&nbsp;(' . $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
    }
    echo ')';
    echo '</div>';

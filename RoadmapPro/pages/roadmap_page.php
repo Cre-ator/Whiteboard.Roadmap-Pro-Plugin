@@ -56,10 +56,17 @@ function processPage ()
 function processTable ( $profileId )
 {
    global $roadmapDb;
+   $projectIds = array ();
+   $versions = array ();
+
    $getVersionId = $_GET[ 'version_id' ];
    $getProjectId = $_GET[ 'project_id' ];
 
-   $projectIds = roadmap_pro_api::prepareProjectIds ();
+   /** no specific project or version */
+   if ( ( $getProjectId == null ) && ( $getVersionId == null ) )
+   {
+      $projectIds = roadmap_pro_api::prepareProjectIds ();
+   }
 
    /** specific project selected */
    if ( $getProjectId != null )
@@ -67,6 +74,25 @@ function processTable ( $profileId )
       $projectIds = array ();
       array_push ( $projectIds, $getProjectId );
    }
+
+   /** specific version selected */
+   if ( $getVersionId != null )
+   {
+      $version = array ();
+      $version[ 'id' ] = $getVersionId;
+      $version[ 'version' ] = version_get_field ( $getVersionId, 'version' );
+      $version[ 'date_order' ] = version_get_field ( $getVersionId, 'date_order' );
+      $version[ 'released' ] = version_get_field ( $getVersionId, 'released' );
+      $version[ 'description' ] = version_get_field ( $getVersionId, 'description' );
+
+      $versions = array ();
+      array_push ( $versions, $version );
+
+      $versionRelatedProjectId = version_get_field ( $getVersionId, 'project_id' );
+      $projectIds = array ();
+      array_push ( $projectIds, $versionRelatedProjectId );
+   }
+
 
    /** iterate through projects */
    foreach ( $projectIds as $projectId )
@@ -82,20 +108,10 @@ function processTable ( $profileId )
 
       $printedProjectTitle = false;
       $projectName = string_display ( project_get_name ( $projectId ) );
-      $versions = array_reverse ( version_get_all_rows ( $projectId ) );
 
-      /** specific version selected */
-      if ( $getVersionId != null )
+      if ( $getVersionId == null )
       {
-         $version = array ();
-         $version[ 'id' ] = $getVersionId;
-         $version[ 'version' ] = version_get_field ( $getVersionId, 'version' );
-         $version[ 'date_order' ] = version_get_field ( $getVersionId, 'date_order' );
-         $version[ 'released' ] = version_get_field ( $getVersionId, 'released' );
-         $version[ 'description' ] = version_get_field ( $getVersionId, 'description' );
-
-         $versions = array ();
-         array_push ( $versions, $version );
+         $versions = array_reverse ( version_get_all_rows ( $projectId ) );
       }
 
       /** iterate through versions */

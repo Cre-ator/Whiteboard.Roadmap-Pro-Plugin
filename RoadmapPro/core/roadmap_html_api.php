@@ -4,7 +4,6 @@ require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
 
 class roadmap_html_api
 {
-
    /**
     * Prints a radio button element
     *
@@ -87,7 +86,7 @@ class roadmap_html_api
 
    private static function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $useEta = false )
    {
-      global $roadmapDb;
+      $roadmapDb = new roadmap_db();
       $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
       $doneEta = 0;
       echo '<div class="progress9001">';
@@ -177,7 +176,7 @@ class roadmap_html_api
 
    public static function printProfileSwitcher ()
    {
-      global $roadmapDb;
+      $roadmapDb = new roadmap_db();
       $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
 
       echo '<div class="table_center">' . PHP_EOL;
@@ -329,5 +328,33 @@ class roadmap_html_api
          echo '</div>' . PHP_EOL;
          echo '</div>' . PHP_EOL;
       }
+   }
+
+   public static function htmlPluginProjectTitle ( $profileId, $projectName )
+   {
+      $roadmapDb = new roadmap_db();
+      $profile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
+      $profileName = string_display ( $profile[ 1 ] );
+
+      echo '<span class="pagetitle">';
+      if ( $profileId == -1 )
+      {
+         echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+      }
+      else
+      {
+         echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, $profileName );
+      }
+      echo '</span>';
+   }
+
+   public static function htmlPluginSpacer ()
+   {
+      echo '<div class="spacer"></div>';
+   }
+
+   public static function htmlPluginSeparator ()
+   {
+      echo '<hr class="project-separator" />';
    }
 }

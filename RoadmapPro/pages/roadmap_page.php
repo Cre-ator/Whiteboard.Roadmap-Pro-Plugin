@@ -20,7 +20,7 @@ function processPage ()
    }
 
    html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
-   echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>' . "\n";
+   echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>';
    echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
    html_page_top2 ();
    if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
@@ -55,6 +55,7 @@ function processPage ()
 
 function processTable ( $profileId )
 {
+   global $roadmapDb;
    $getVersionId = $_GET[ 'version_id' ];
    $getProjectId = $_GET[ 'project_id' ];
 
@@ -116,7 +117,6 @@ function processTable ( $profileId )
 
          $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
 
-         global $roadmapDb;
          $bugIds = $roadmapDb->dbGetBugIdsByProjectAndVersion ( $projectId, $versionName );
          $overallBugAmount = count ( $bugIds );
 
@@ -128,18 +128,7 @@ function processTable ( $profileId )
             /** define and print project title */
             if ( $printedProjectTitle == false )
             {
-               $profile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
-               $profileName = string_display ( $profile[ 1 ] );
-               echo '<span class="pagetitle">';
-               if ( $profileId == -1 )
-               {
-                  echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
-               }
-               else
-               {
-                  echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, $profileName );
-               }
-               echo '</span>';
+               roadmap_html_api::htmlPluginProjectTitle ( $profileId, $projectName );
                $printedProjectTitle = true;
             }
             /** define and print release title */
@@ -162,13 +151,13 @@ function processTable ( $profileId )
 
             if ( $profileId == -1 )
             {
-               $scaledData = calcScaledData ( $bugIds, $useEta, $overallBugAmount );
+               $scaledData = roadmap_pro_api::calcScaledData ( $bugIds, $useEta, $overallBugAmount );
                $profileHashMap = $scaledData[ 0 ];
                $progressInPercent = $scaledData[ 1 ];
             }
             else
             {
-               $singleData = calcSingleData ( $bugIds, $profileId, $useEta, $overallBugAmount );
+               $singleData = roadmap_pro_api::calcSingleData ( $bugIds, $profileId, $useEta, $overallBugAmount );
                $doneEta = $singleData[ 0 ];
                $progressInPercent = $singleData[ 1 ];
             }
@@ -184,106 +173,14 @@ function processTable ( $profileId )
                roadmap_html_api::printVersionProgressAsText ( $overallBugAmount, $doneBugAmount, $progressInPercent, $useEta );
             }
             /** print spacer */
-            echo '<div class="spacer"></div>';
+            roadmap_html_api::htmlPluginSpacer ();
             $projectSeperator = true;
          }
       }
       /** print separator */
       if ( $projectSeperator == true )
       {
-         echo '<hr class="project-separator" />';
+         roadmap_html_api::htmlPluginSeparator ();
       }
    }
-}
-
-function calcScaledData ( $bugIds, $useEta, $overallBugAmount )
-{
-   global $roadmapDb;
-   $profileProgressValueArray = array ();
-   $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
-   $profileCount = count ( $roadmapProfiles );
-   $sumProgressDoneBugAmount = 0;
-   $sumProgressDoneBugPercent = 0;
-   $sumProgressDoneEta = 0;
-   $fullEta = ( roadmap_pro_api::getFullEta ( $bugIds ) ) * $profileCount;
-   for ( $index = 0; $index < $profileCount; $index++ )
-   {
-      $roadmapProfile = $roadmapProfiles[ $index ];
-      $tProfileId = $roadmapProfile[ 0 ];
-      $tDoneBugAmount = roadmap_pro_api::getDoneBugAmount ( $bugIds, $tProfileId );
-      $sumProgressDoneBugAmount += $tDoneBugAmount;
-      if ( $useEta )
-      {
-         /** calculate eta for profile */
-         $doneEta = 0;
-         $doneBugIds = roadmap_pro_api::getDoneBugIds ( $bugIds, $tProfileId );
-         foreach ( $doneBugIds as $doneBugId )
-         {
-            $doneEta += roadmap_pro_api::getSingleEta ( $doneBugId );
-         }
-         $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
-         $sumProgressDoneEta += $doneEta;
-
-         $profileHash = $tProfileId . ';' . $doneEtaPercent;
-      }
-      else
-      {
-         $tVersionProgress = ( $tDoneBugAmount / $overallBugAmount );
-         $progessDonePercent = round ( ( $tVersionProgress * 100 / $profileCount ), 1 );
-         if ( round ( ( $sumProgressDoneBugPercent + $progessDonePercent ), 1 ) == 99.9 )
-         {
-            $progessDonePercent = 100 - $sumProgressDoneBugPercent;
-         }
-         $sumProgressDoneBugPercent += $progessDonePercent;
-
-         $profileHash = $tProfileId . ';' . $progessDonePercent;
-      }
-
-      array_push ( $profileProgressValueArray, $profileHash );
-   }
-
-   /** whole progress of the version */
-   if ( $useEta )
-   {
-      $wholeProgress = ( $sumProgressDoneEta / $fullEta );
-   }
-   else
-   {
-      $wholeProgress = ( ( $sumProgressDoneBugAmount / $profileCount ) / $overallBugAmount );
-   }
-   $progressPercent = round ( ( $wholeProgress * 100 ), 1 );
-
-   $result = [ 0 => $profileProgressValueArray, 1 => $progressPercent ];
-
-   return $result;
-}
-
-function calcSingleData ( $bugIds, $profileId, $useEta, $overallBugAmount )
-{
-   $fullEta = ( roadmap_pro_api::getFullEta ( $bugIds ) );
-   $doneEta = 0;
-   if ( $useEta )
-   {
-      $doneBugIds = roadmap_pro_api::getDoneBugIds ( $bugIds, $profileId );
-      foreach ( $doneBugIds as $doneBugId )
-      {
-         $doneEta += roadmap_pro_api::getSingleEta ( $doneBugId );
-      }
-
-      $progressPercent = 0;
-      if ( $fullEta > 0 )
-      {
-         $progressPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
-      }
-   }
-   else
-   {
-      $doneBugAmount = roadmap_pro_api::getDoneBugAmount ( $bugIds, $profileId );
-      $progress = ( $doneBugAmount / $overallBugAmount );
-      $progressPercent = round ( ( $progress * 100 ), 1 );
-   }
-
-   $result = [ 0 => $doneEta, 1 => $progressPercent ];
-
-   return $result;
 }

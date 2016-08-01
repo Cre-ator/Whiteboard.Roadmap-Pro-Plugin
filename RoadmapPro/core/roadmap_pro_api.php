@@ -145,7 +145,7 @@ class roadmap_pro_api
     * @param $profileId
     * @return array
     */
-   public static function getDoneBugIds ( $bugIds, $profileId )
+   private static function getDoneBugIds ( $bugIds, $profileId )
    {
       $doneBugIds = array ();
       foreach ( $bugIds as $bugId )
@@ -358,5 +358,114 @@ class roadmap_pro_api
       {
          return $backupString;
       }
+   }
+
+   /**
+    * calculate the data for summed process
+    *
+    * @param $bugIds
+    * @param $useEta
+    * @param $overallBugAmount
+    * @return array
+    */
+   public static function calcScaledData ( $bugIds, $useEta, $overallBugAmount )
+   {
+      $roadmapDb = new roadmap_db();
+      $profileProgressValueArray = array ();
+      $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
+      $profileCount = count ( $roadmapProfiles );
+      $sumProgressDoneBugAmount = 0;
+      $sumProgressDoneBugPercent = 0;
+      $sumProgressDoneEta = 0;
+      $fullEta = ( self::getFullEta ( $bugIds ) ) * $profileCount;
+      for ( $index = 0; $index < $profileCount; $index++ )
+      {
+         $roadmapProfile = $roadmapProfiles[ $index ];
+         $tProfileId = $roadmapProfile[ 0 ];
+         $tDoneBugAmount = self::getDoneBugAmount ( $bugIds, $tProfileId );
+         $sumProgressDoneBugAmount += $tDoneBugAmount;
+         if ( $useEta )
+         {
+            /** calculate eta for profile */
+            $doneEta = 0;
+            $doneBugIds = self::getDoneBugIds ( $bugIds, $tProfileId );
+            foreach ( $doneBugIds as $doneBugId )
+            {
+               $doneEta += self::getSingleEta ( $doneBugId );
+            }
+            $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
+            $sumProgressDoneEta += $doneEta;
+
+            $profileHash = $tProfileId . ';' . $doneEtaPercent;
+         }
+         else
+         {
+            $tVersionProgress = ( $tDoneBugAmount / $overallBugAmount );
+            $progessDonePercent = round ( ( $tVersionProgress * 100 / $profileCount ), 1 );
+            if ( round ( ( $sumProgressDoneBugPercent + $progessDonePercent ), 1 ) == 99.9 )
+            {
+               $progessDonePercent = 100 - $sumProgressDoneBugPercent;
+            }
+            $sumProgressDoneBugPercent += $progessDonePercent;
+
+            $profileHash = $tProfileId . ';' . $progessDonePercent;
+         }
+
+         array_push ( $profileProgressValueArray, $profileHash );
+      }
+
+      /** whole progress of the version */
+      if ( $useEta )
+      {
+         $wholeProgress = ( $sumProgressDoneEta / $fullEta );
+      }
+      else
+      {
+         $wholeProgress = ( ( $sumProgressDoneBugAmount / $profileCount ) / $overallBugAmount );
+      }
+      $progressPercent = round ( ( $wholeProgress * 100 ), 1 );
+
+      $result = [ 0 => $profileProgressValueArray, 1 => $progressPercent ];
+
+      return $result;
+   }
+
+   /**
+    * calculate the data for single process
+    *
+    * @param $bugIds
+    * @param $profileId
+    * @param $useEta
+    * @param $overallBugAmount
+    * @return array
+    */
+   public static function calcSingleData ( $bugIds, $profileId, $useEta, $overallBugAmount )
+   {
+      $fullEta = ( self::getFullEta ( $bugIds ) );
+      $doneEta = 0;
+      if ( $useEta )
+      {
+         $doneBugIds = self::getDoneBugIds ( $bugIds, $profileId );
+         foreach ( $doneBugIds as $doneBugId )
+         {
+            $doneEta += self::getSingleEta ( $doneBugId );
+         }
+
+         $progressPercent = 0;
+         if ( $fullEta > 0 )
+         {
+            $progressPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
+         }
+      }
+      else
+      {
+         $doneBugAmount = self::getDoneBugAmount ( $bugIds, $profileId );
+         $progress = ( $doneBugAmount / $overallBugAmount );
+         $progressPercent = round ( ( $progress * 100 ), 1 );
+      }
+
+      $result = [ 0 => $doneEta, 1 => $progressPercent ];
+
+      return $result;
    }
 }

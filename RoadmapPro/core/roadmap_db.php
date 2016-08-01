@@ -147,7 +147,7 @@ class roadmap_db
       if ( is_numeric ( $profileId ) )
       {
          $query = /** @lang sql */
-            "SELECT * FROM mantis_plugin_RoadmapPro_profile_table
+            "SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profile_table
             WHERE id = " . $profileId;
 
          $result = $this->mysqli->query ( $query );

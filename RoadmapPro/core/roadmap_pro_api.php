@@ -8,54 +8,6 @@ require_once ( __DIR__ . '/roadmap_db.php' );
  */
 class roadmap_pro_api
 {
-   /**
-    * returns true if every item of bug id array has set eta value
-    *
-    * @param $bugIds
-    * @return bool
-    */
-   public static function checkEtaIsSet ( $bugIds )
-   {
-      $set = true;
-      foreach ( $bugIds as $bugId )
-      {
-         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-         if ( ( is_null ( $bugEtaValue ) ) || ( $bugEtaValue == 10 ) )
-         {
-            $set = false;
-         }
-      }
-
-      return $set;
-   }
-
-   /**
-    * returns the eta value of a single bug
-    *
-    * @param $bugId
-    * @return float|int
-    */
-   public static function getSingleEta ( $bugId )
-   {
-      $roadmapDb = new roadmap_db();
-
-      $eta = 0;
-      $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-
-      $etaEnumString = config_get ( 'eta_enum_string' );
-      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-
-      foreach ( $etaEnumValues as $enumValue )
-      {
-         if ( $enumValue == $bugEtaValue )
-         {
-            $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
-            $eta = $etaRow[ 2 ];
-         }
-      }
-
-      return $eta;
-   }
 
    /**
     * returns the eta value of a bunch of bugs
@@ -89,102 +41,6 @@ class roadmap_pro_api
    }
 
    /**
-    * returns true if the issue is done like it is defined in the profile preference
-    *
-    * @param $bugId
-    * @param $profileId
-    * @return bool
-    */
-   public static function checkIssueIsDoneById ( $bugId, $profileId )
-   {
-      $roadmapDb = new roadmap_db();
-      $done = false;
-
-      $bugStatus = bug_get_field ( $bugId, 'status' );
-      $roadmapProfile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
-      $dbRaodmapStatus = $roadmapProfile[ 3 ];
-      $roadmapStatusArray = explode ( ';', $dbRaodmapStatus );
-
-      foreach ( $roadmapStatusArray as $roadmapStatus )
-      {
-         if ( $bugStatus == $roadmapStatus )
-         {
-            $done = true;
-         }
-      }
-
-      return $done;
-   }
-
-   /**
-    * returns the amount of done bugs in a bunch of bugs
-    *
-    * @param $bugIds
-    * @param $profileId
-    * @return int
-    */
-   public static function getDoneBugAmount ( $bugIds, $profileId )
-   {
-      $doneBugAmount = 0;
-      foreach ( $bugIds as $bugId )
-      {
-         /** specific profile */
-         if ( self::checkIssueIsDoneById ( $bugId, $profileId ) )
-         {
-            $doneBugAmount++;
-         }
-      }
-
-      return $doneBugAmount;
-   }
-
-   /**
-    * returns the ids of done bugs in a bunch of bugs
-    *
-    * @param $bugIds
-    * @param $profileId
-    * @return array
-    */
-   private static function getDoneBugIds ( $bugIds, $profileId )
-   {
-      $doneBugIds = array ();
-      foreach ( $bugIds as $bugId )
-      {
-         /** specific profile */
-         if ( self::checkIssueIsDoneById ( $bugId, $profileId ) )
-         {
-            array_push ( $doneBugIds, $bugId );
-         }
-      }
-
-      return $doneBugIds;
-   }
-
-   /**
-    * returns all subproject ids incl. the selected one except it is zero
-    *
-    * @return array
-    */
-   public static function prepareProjectIds ()
-   {
-      $currentProjectId = helper_get_current_project ();
-      $subProjectIds = project_hierarchy_get_all_subprojects ( $currentProjectId );
-
-      $projectIds = array ();
-      if ( $currentProjectId > 0 )
-      {
-         array_push ( $projectIds, $currentProjectId );
-      }
-
-      foreach ( $subProjectIds as $sub_project_id )
-      {
-         array_push ( $projectIds, $sub_project_id );
-      }
-
-      return $projectIds;
-   }
-
-   /**
     * returns an array with bug ids and extened information about relations
     *
     * @param $bugIds
@@ -207,7 +63,7 @@ class roadmap_pro_api
          $blockingRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, true );
          $blockedRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, false );
 
-         if ( is_null ( $blockingRelationshipRows ) == false )
+         if ( $blockingRelationshipRows != null )
          {
             foreach ( $blockingRelationshipRows as $blockingRelationship )
             {
@@ -221,7 +77,7 @@ class roadmap_pro_api
             }
          }
 
-         if ( is_null ( $blockedRelationshipRows ) == false )
+         if ( $blockedRelationshipRows != null )
          {
             foreach ( $blockedRelationshipRows as $blocked_relationship )
             {
@@ -361,111 +217,33 @@ class roadmap_pro_api
    }
 
    /**
-    * calculate the data for summed process
+    * returns the generated title string
     *
-    * @param $bugIds
-    * @param $useEta
-    * @param $overallBugAmount
-    * @return array
-    */
-   public static function calcScaledData ( $bugIds, $useEta, $overallBugAmount )
-   {
-      $roadmapDb = new roadmap_db();
-      $profileProgressValueArray = array ();
-      $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
-      $profileCount = count ( $roadmapProfiles );
-      $sumProgressDoneBugAmount = 0;
-      $sumProgressDoneBugPercent = 0;
-      $sumProgressDoneEta = 0;
-      $fullEta = ( self::getFullEta ( $bugIds ) ) * $profileCount;
-      for ( $index = 0; $index < $profileCount; $index++ )
-      {
-         $roadmapProfile = $roadmapProfiles[ $index ];
-         $tProfileId = $roadmapProfile[ 0 ];
-         $tDoneBugAmount = self::getDoneBugAmount ( $bugIds, $tProfileId );
-         $sumProgressDoneBugAmount += $tDoneBugAmount;
-         if ( $useEta )
-         {
-            /** calculate eta for profile */
-            $doneEta = 0;
-            $doneBugIds = self::getDoneBugIds ( $bugIds, $tProfileId );
-            foreach ( $doneBugIds as $doneBugId )
-            {
-               $doneEta += self::getSingleEta ( $doneBugId );
-            }
-            $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
-            $sumProgressDoneEta += $doneEta;
-
-            $profileHash = $tProfileId . ';' . $doneEtaPercent;
-         }
-         else
-         {
-            $tVersionProgress = ( $tDoneBugAmount / $overallBugAmount );
-            $progessDonePercent = round ( ( $tVersionProgress * 100 / $profileCount ), 1 );
-            if ( round ( ( $sumProgressDoneBugPercent + $progessDonePercent ), 1 ) == 99.9 )
-            {
-               $progessDonePercent = 100 - $sumProgressDoneBugPercent;
-            }
-            $sumProgressDoneBugPercent += $progessDonePercent;
-
-            $profileHash = $tProfileId . ';' . $progessDonePercent;
-         }
-
-         array_push ( $profileProgressValueArray, $profileHash );
-      }
-
-      /** whole progress of the version */
-      if ( $useEta )
-      {
-         $wholeProgress = ( $sumProgressDoneEta / $fullEta );
-      }
-      else
-      {
-         $wholeProgress = ( ( $sumProgressDoneBugAmount / $profileCount ) / $overallBugAmount );
-      }
-      $progressPercent = round ( ( $wholeProgress * 100 ), 1 );
-
-      $result = [ 0 => $profileProgressValueArray, 1 => $progressPercent ];
-
-      return $result;
-   }
-
-   /**
-    * calculate the data for single process
-    *
-    * @param $bugIds
     * @param $profileId
-    * @param $useEta
-    * @param $overallBugAmount
-    * @return array
+    * @param $projectId
+    * @param $version
+    * @return string
     */
-   public static function calcSingleData ( $bugIds, $profileId, $useEta, $overallBugAmount )
+   public static function getReleasedTitleString ( $profileId, $projectId, $version )
    {
-      $fullEta = ( self::getFullEta ( $bugIds ) );
-      $doneEta = 0;
-      if ( $useEta )
-      {
-         $doneBugIds = self::getDoneBugIds ( $bugIds, $profileId );
-         foreach ( $doneBugIds as $doneBugId )
-         {
-            $doneEta += self::getSingleEta ( $doneBugId );
-         }
+      $versionId = $version[ 'id' ];
+      $versionName = $version[ 'version' ];
+      $versionDate = $version[ 'date_order' ];
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
+      $projectName = string_display ( project_get_name ( $projectId ) );
 
-         $progressPercent = 0;
-         if ( $fullEta > 0 )
-         {
-            $progressPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
-         }
-      }
-      else
-      {
-         $doneBugAmount = self::getDoneBugAmount ( $bugIds, $profileId );
-         $progress = ( $doneBugAmount / $overallBugAmount );
-         $progressPercent = round ( ( $progress * 100 ), 1 );
-      }
+      $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' )
+         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '">'
+         . string_display_line ( $projectName ) . '</a>&nbsp;-'
+         . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' )
+         . '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
+         . string_display_line ( $versionName ) . '</a>'
+         . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;'
+         . $versionReleaseDate . ')&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
+         . FILTER_PROPERTY_PROJECT_ID . '=' . $projectId . '&amp;'
+         . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $versionName ) . '">'
+         . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
-      $result = [ 0 => $doneEta, 1 => $progressPercent ];
-
-      return $result;
+      return $releaseTitleString;
    }
 }

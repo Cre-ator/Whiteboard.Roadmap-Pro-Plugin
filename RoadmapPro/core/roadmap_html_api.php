@@ -48,7 +48,7 @@ class roadmap_html_api
    public static function htmlPluginConfigOpenTable ( $class, $id = null )
    {
       $htmlString = '<table align="center" cellspacing="1" class="' . $class . '"';
-      if ( is_null ( $id ) == false )
+      if ( $id != null )
       {
          $htmlString .= ' id="' . $id . '"';
       }
@@ -138,7 +138,7 @@ class roadmap_html_api
       {
          $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
-         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
+         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
       }
       else
       {
@@ -211,7 +211,7 @@ class roadmap_html_api
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
       /** check specific profile id is given */
-      if ( is_null ( $profileId ) == false )
+      if ( $profileId != null )
       {
          echo $profileId;
       }
@@ -282,7 +282,8 @@ class roadmap_html_api
          $bugEta = bug_get_field ( $bugId, 'eta' );
          $bugBlockingIds = $bug[ 'blocking_ids' ];
          $bugBlockedIds = $bug[ 'blocked_ids' ];
-         $bugIsDone = roadmap_pro_api::checkIssueIsDoneById ( $bugId, $profileId );
+         $roadmapBugData = new roadmap_bugdata( $bugIds, $profileId );
+         $bugIsDone = $roadmapBugData->checkIssueIsDoneById ( $bugId );
          $hasBlocked = ( empty ( $bugBlockedIds ) == false );
          $hasBlocking = ( empty ( $bugBlockingIds ) == false );
          $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
@@ -330,11 +331,12 @@ class roadmap_html_api
       }
    }
 
-   public static function htmlPluginProjectTitle ( $profileId, $projectName )
+   public static function htmlPluginProjectTitle ( $profileId, $projectId )
    {
       $roadmapDb = new roadmap_db();
       $profile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
       $profileName = string_display ( $profile[ 1 ] );
+      $projectName = string_display ( project_get_name ( $projectId ) );
 
       echo '<span class="pagetitle">';
       if ( $profileId == -1 )
@@ -356,5 +358,16 @@ class roadmap_html_api
    public static function htmlPluginSeparator ()
    {
       echo '<hr class="project-separator" />';
+   }
+
+   public static function htmlPluginTriggerWhiteboardMenu ()
+   {
+      if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
+         file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' )
+      )
+      {
+         require_once __DIR__ . '/../../WhiteboardMenu/core/whiteboard_print_api.php';
+         whiteboard_print_api::printWhiteboardMenu ();
+      }
    }
 }

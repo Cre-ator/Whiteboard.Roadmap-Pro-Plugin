@@ -251,44 +251,48 @@ class roadmap
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
       $profileCount = count ( $roadmapProfiles );
-      $sumProgressDoneBugAmount = 0;
-      $sumProgressDoneBugPercent = 0;
-      $sumProgressDoneEta = 0;
-      $fullEta = ( $this->getFullEta () ) * $profileCount;
+      $sumProfileEffort = $roadmapDb->dbGetSumProfileEffort ();
 
+      $wholeProgress = 0;
       /** iterate through profiles */
       for ( $index = 0; $index < $profileCount; $index++ )
       {
          $roadmapProfile = $roadmapProfiles[ $index ];
          $tProfileId = $roadmapProfile[ 0 ];
          $this->setProfileId ( $tProfileId );
-
+         /** effort factor */
+         $tProfileEffort = $roadmapProfile[ 5 ];
+         /** uniform distribution when no effort is set */
+         if ( $sumProfileEffort == 0 )
+         {
+            $tProfileEffortFactor = ( 1 / $profileCount );
+         }
+         else
+         {
+            $tProfileEffortFactor = round ( ( $tProfileEffort / $sumProfileEffort ), 2 );
+         }
+         /** bug data */
          $doneBugIds = $this->getDoneBugIds ();
          $tDoneBugAmount = count ( $doneBugIds );
-         $sumProgressDoneBugAmount += $tDoneBugAmount;
          if ( $useEta )
          {
             /** calculate eta for profile */
+            $fullEta = ( $this->getFullEta () ) * $profileCount;
             $doneEta = 0;
             foreach ( $doneBugIds as $doneBugId )
             {
                $doneEta += $this->getSingleEta ( $doneBugId );
             }
-            $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
-            $sumProgressDoneEta += $doneEta;
-
+            $doneEtaPercent = ( ( $doneEta / ( $fullEta ) ) * 100 );
+            $doneEtaPercent = $doneEtaPercent * $profileCount * $tProfileEffortFactor;
+            $wholeProgress += $doneEtaPercent;
             $profileHash = $tProfileId . ';' . $doneEtaPercent;
          }
          else
          {
             $tVersionProgress = ( $tDoneBugAmount / $allBugCount );
-            $progessDonePercent = round ( ( $tVersionProgress * 100 / $profileCount ), 1 );
-            if ( round ( ( $sumProgressDoneBugPercent + $progessDonePercent ), 1 ) == 99.9 )
-            {
-               $progessDonePercent = 100 - $sumProgressDoneBugPercent;
-            }
-            $sumProgressDoneBugPercent += $progessDonePercent;
-
+            $progessDonePercent = ( $tVersionProgress * 100 * $tProfileEffortFactor );
+            $wholeProgress += $progessDonePercent;
             $profileHash = $tProfileId . ';' . $progessDonePercent;
          }
 
@@ -297,16 +301,7 @@ class roadmap
          $this->setProfileId ( -1 );
       }
 
-      /** whole progress of the version */
-      if ( $useEta )
-      {
-         $wholeProgress = ( $sumProgressDoneEta / $fullEta );
-      }
-      else
-      {
-         $wholeProgress = ( ( $sumProgressDoneBugAmount / $profileCount ) / $allBugCount );
-      }
-      $this->progressPercent = round ( ( $wholeProgress * 100 ), 1 );
+      $this->progressPercent = $wholeProgress;
    }
 
    public function getProfileHashArray ()

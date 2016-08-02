@@ -73,7 +73,7 @@ class roadmap_html_api
       }
       else
       {
-         echo $hashProgress . '%';
+         echo round ( $hashProgress, 1 ) . '%';
       }
    }
 
@@ -103,7 +103,7 @@ class roadmap_html_api
             /** extract profile data */
             $profileHash = explode ( ';', $profileHashMap[ $index ] );
             $hashProfileId = $profileHash[ 0 ];
-            $hashProgress = round ( $profileHash[ 1 ], 1 );
+            $hashProgress = $profileHash[ 1 ];
 
             /** get profile color */
             $dbProfileRow = $roadmapDb->dbGetRoadmapProfile ( $hashProfileId );
@@ -143,12 +143,12 @@ class roadmap_html_api
       {
          $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
-         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
       }
       else
       {
          $bugCount = count ( $bugIds );
-         echo '&nbsp;(' . $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . round ( $progressPercent, 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';

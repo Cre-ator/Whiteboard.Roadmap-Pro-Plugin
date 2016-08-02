@@ -421,4 +421,22 @@ class roadmap_db
 
       $this->mysqli->close ();
    }
+
+   public function dbGetSumProfileEffort ()
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+      $query = /** @lang sql */
+         "SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table";
+
+      $result = $this->mysqli->query ( $query );
+
+      $sumProfileEffort = 0;
+      if ( 0 != $result->num_rows )
+      {
+         $sumProfileEffort = $result->fetch_row ()[0];
+      }
+      $this->mysqli->close ();
+
+      return $sumProfileEffort;
+   }
 }

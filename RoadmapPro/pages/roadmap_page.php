@@ -5,7 +5,7 @@ require_once ( __DIR__ . '/../core/roadmap_html_api.php' );
 require_once ( __DIR__ . '/../core/roadmap_db.php' );
 require_once ( __DIR__ . '/../core/roadmap_data.php' );
 require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
-require_once ( __DIR__ . '/../core/roadmap_bugdata.php' );
+require_once ( __DIR__ . '/../core/roadmap.php' );
 
 $roadmapDb = new roadmap_db();
 $defaultProfileColor = 'FFFFFF';
@@ -53,11 +53,11 @@ function processTable ( $profileId )
 
    $getVersionId = $_GET[ 'version_id' ];
    $getProjectId = $_GET[ 'project_id' ];
-   $roadmapData = new roadmap_data( $getVersionId, $getProjectId );
-   $roadmapData->calcProjectVersionContent ();
+   $roadmap = new roadmap_data( $getVersionId, $getProjectId );
+   $roadmap->calcProjectVersionContent ();
 
-   $projectIds = $roadmapData->getProjectIds ();
-   $versions = $roadmapData->getVersions ();
+   $projectIds = $roadmap->getProjectIds ();
+   $versions = $roadmap->getVersions ();
 
    /** iterate through projects */
    foreach ( $projectIds as $projectId )
@@ -83,25 +83,21 @@ function processTable ( $profileId )
       for ( $index = 0; $index < $versionCount; $index++ )
       {
          $version = $versions[ $index ];
-         $versionName = $version[ 'version' ];
-         $versionReleased = $version[ 'released' ];
-         $versionDescription = $version[ 'description' ];
 
          /** skip released versions */
+         $versionReleased = $version[ 'released' ];
          if ( $versionReleased == 1 )
          {
             continue;
          }
 
+         $versionName = $version[ 'version' ];
          $bugIds = $roadmapDb->dbGetBugIdsByProjectAndVersion ( $projectId, $versionName );
          $overallBugAmount = count ( $bugIds );
 
          if ( $overallBugAmount > 0 )
          {
-            $roadmapData = new roadmap_bugdata( $bugIds, $profileId );
-            $useEta = $roadmapData->getEtaIsSet ();
-            $doneEta = 0;
-            $profileHashMap = array ();
+            $roadmap = new roadmap( $bugIds, $profileId );
             /** define and print project title */
             if ( $printedProjectTitle == false )
             {
@@ -112,31 +108,16 @@ function processTable ( $profileId )
             $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $projectId, $version );
             roadmap_html_api::printWrapperInHTML ( $releaseTitleString );
             /** print version description */
+            $versionDescription = $version[ 'description' ];
             roadmap_html_api::printWrapperInHTML ( $versionDescription );
-
-            if ( $profileId == -1 )
-            {
-               $scaledRoadmap = new roadmap_bugdata( $bugIds, $profileId );
-               $scaledRoadmap->calcData ();
-               $profileHashMap = $scaledRoadmap->getProfileProgressValueArray ();
-               $progressInPercent = $scaledRoadmap->getProgressPercent ();
-            }
-            else
-            {
-               $singleRoadmap = new roadmap_bugdata( $bugIds, $profileId );
-               $doneEta = $singleRoadmap->getDoneEta ();
-               $progressInPercent = $singleRoadmap->getSingleProgressPercent ();
-            }
-
             /** print version progress bar */
-            roadmap_html_api::printVersionProgress ( $bugIds, $profileId, $progressInPercent, $profileHashMap, $useEta, $doneEta );
+            roadmap_html_api::printVersionProgress ( $roadmap );
             /** print bug list */
-            roadmap_html_api::printBugList ( $bugIds, $profileId );
+            roadmap_html_api::printBugList ( $roadmap );
             /** print text progress */
             if ( $profileId >= 0 )
             {
-               $doneBugAmount = count ( $roadmapData->getDoneBugIds () );
-               roadmap_html_api::printVersionProgressAsText ( $overallBugAmount, $doneBugAmount, $progressInPercent, $useEta );
+               roadmap_html_api::printVersionProgressAsText ( $roadmap );
             }
             /** print spacer */
             roadmap_html_api::htmlPluginSpacer ();

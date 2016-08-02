@@ -6,25 +6,26 @@
  * Date: 02.08.2016
  * Time: 00:13
  */
-class roadmap_bugdata
+class roadmap
 {
    private $bugIds;
    private $profileId;
    private $doneEta;
    private $progressPercent;
-   private $profileProgressValueArray;
+   private $profileHashArray;
 
    private $etaIsSet;
    private $singleEta;
    private $fullEta;
    private $doneBugIds;
+   private $issueIsDone;
 
    function __construct ( $bugIds, $profileId )
    {
       $this->bugIds = $bugIds;
       $this->profileId = $profileId;
       $this->doneBugIds = array ();
-      $this->profileProgressValueArray = array ();
+      $this->profileHashArray = array ();
    }
 
    public function getEtaIsSet ()
@@ -63,12 +64,28 @@ class roadmap_bugdata
       return $this->progressPercent;
    }
 
+   public function getIssueIsDone ( $bugId )
+   {
+      $this->checkIssueIsDoneById ( $bugId );
+      return $this->issueIsDone;
+   }
+
+   public function getProfileId ()
+   {
+      return $this->profileId;
+   }
+
+   public function getBugIds ()
+   {
+      return $this->bugIds;
+   }
+
    public function setProfileId ( $profileId )
    {
       $this->profileId = $profileId;
    }
 
-   public function resetDoneBugIds ()
+   private function resetDoneBugIds ()
    {
       $this->doneBugIds = array ();
    }
@@ -99,6 +116,7 @@ class roadmap_bugdata
    private function calcFullEta ()
    {
       $roadmapDb = new roadmap_db();
+      $this->fullEta = 0;
       foreach ( $this->bugIds as $bugId )
       {
          $bugEtaValue = bug_get_field ( $bugId, 'eta' );
@@ -151,7 +169,7 @@ class roadmap_bugdata
       foreach ( $this->bugIds as $bugId )
       {
          /** specific profile */
-         if ( $this->checkIssueIsDoneById ( $bugId ) == true )
+         if ( $this->getIssueIsDone ( $bugId ) == true )
          {
             array_push ( $this->doneBugIds, $bugId );
             $this->doneBugIds = array_unique ( $this->doneBugIds );
@@ -165,10 +183,10 @@ class roadmap_bugdata
     * @param $bugId
     * @return bool
     */
-   public function checkIssueIsDoneById ( $bugId )
+   private function checkIssueIsDoneById ( $bugId )
    {
       $roadmapDb = new roadmap_db();
-      $done = false;
+      $this->issueIsDone = false;
 
       $bugStatus = bug_get_field ( $bugId, 'status' );
       $roadmapProfile = $roadmapDb->dbGetRoadmapProfile ( $this->profileId );
@@ -179,23 +197,20 @@ class roadmap_bugdata
       {
          if ( $bugStatus == $roadmapStatus )
          {
-            $done = true;
+            $this->issueIsDone = true;
          }
       }
-
-      return $done;
    }
 
    private function calcDoneEta ()
    {
-      $roadmapBugData = new roadmap_bugdata( $this->bugIds, $this->profileId );
       $this->doneEta = 0;
-      $doneBugIds = $roadmapBugData->getDoneBugIds ();
-      if ( $roadmapBugData->getEtaIsSet () )
+      $doneBugIds = $this->getDoneBugIds ();
+      if ( $this->getEtaIsSet () )
       {
          foreach ( $doneBugIds as $doneBugId )
          {
-            $this->doneEta += $roadmapBugData->getSingleEta ( $doneBugId );
+            $this->doneEta += $this->getSingleEta ( $doneBugId );
          }
       }
    }
@@ -226,34 +241,29 @@ class roadmap_bugdata
       }
    }
 
-
-
-
-
-   public function calcData ()
+   private function calcScaledData ()
    {
       /** object initialization */
       $roadmapDb = new roadmap_db();
-      $roadmapBugData = new roadmap_bugdata( $this->bugIds, $this->profileId );
 
       /** variables */
       $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
-      $useEta = $roadmapBugData->getEtaIsSet ();
+      $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
       $profileCount = count ( $roadmapProfiles );
       $sumProgressDoneBugAmount = 0;
       $sumProgressDoneBugPercent = 0;
       $sumProgressDoneEta = 0;
-      $fullEta = ( $roadmapBugData->getFullEta () ) * $profileCount;
+      $fullEta = ( $this->getFullEta () ) * $profileCount;
 
       /** iterate through profiles */
       for ( $index = 0; $index < $profileCount; $index++ )
       {
          $roadmapProfile = $roadmapProfiles[ $index ];
          $tProfileId = $roadmapProfile[ 0 ];
-         $roadmapBugData->setProfileId ( $tProfileId );
+         $this->setProfileId ( $tProfileId );
 
-         $doneBugIds = $roadmapBugData->getDoneBugIds ();
+         $doneBugIds = $this->getDoneBugIds ();
          $tDoneBugAmount = count ( $doneBugIds );
          $sumProgressDoneBugAmount += $tDoneBugAmount;
          if ( $useEta )
@@ -262,7 +272,7 @@ class roadmap_bugdata
             $doneEta = 0;
             foreach ( $doneBugIds as $doneBugId )
             {
-               $doneEta += $roadmapBugData->getSingleEta ( $doneBugId );
+               $doneEta += $this->getSingleEta ( $doneBugId );
             }
             $doneEtaPercent = round ( ( ( $doneEta / $fullEta ) * 100 ), 1 );
             $sumProgressDoneEta += $doneEta;
@@ -282,9 +292,9 @@ class roadmap_bugdata
             $profileHash = $tProfileId . ';' . $progessDonePercent;
          }
 
-         array_push ( $this->profileProgressValueArray, $profileHash );
-         $roadmapBugData->resetDoneBugIds ();
-         $roadmapBugData->setProfileId ( $this->profileId );
+         array_push ( $this->profileHashArray, $profileHash );
+         $this->resetDoneBugIds ();
+         $this->setProfileId ( -1 );
       }
 
       /** whole progress of the version */
@@ -299,12 +309,13 @@ class roadmap_bugdata
       $this->progressPercent = round ( ( $wholeProgress * 100 ), 1 );
    }
 
-   public function getProfileProgressValueArray ()
+   public function getProfileHashArray ()
    {
-      return $this->profileProgressValueArray;
+      $this->calcScaledData ();
+      return $this->profileHashArray;
    }
 
-   public function getProgressPercent ()
+   public function getSclaedProgressPercent ()
    {
       return $this->progressPercent;
    }

@@ -84,10 +84,15 @@ class roadmap_html_api
       echo '</div>';
    }
 
-   private static function printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, $useEta = false )
+   private static function printScaledProgressbar ( roadmap $roadmap )
    {
       $roadmapDb = new roadmap_db();
-      $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
+
+      $useEta = $roadmap->getEtaIsSet ();
+      $bugIds = $roadmap->getBugIds ();
+      $profileHashMap = $roadmap->getProfileHashArray ();
+      $progressPercent = $roadmap->getSclaedProgressPercent ();
+      $fullEta = $roadmap->getFullEta ();
       $doneEta = 0;
       echo '<div class="progress9001">';
       if ( empty( $profileHashMap ) == false )
@@ -149,8 +154,12 @@ class roadmap_html_api
       echo '</div>';
    }
 
-   public static function printVersionProgressAsText ( $overallBugAmount, $doneBugAmount, $progressPercent, $useEta )
+   public static function printVersionProgressAsText ( roadmap $roadmap )
    {
+      $overallBugAmount = count ( $roadmap->getBugIds () );
+      $doneBugAmount = count ( $roadmap->getDoneBugIds () );
+      $progressPercent = $roadmap->getSingleProgressPercent ();
+      $useEta = $roadmap->getEtaIsSet ();
       echo '<div class="tr">' . PHP_EOL;
       echo '<div class="td">';
       if ( $useEta && config_get ( 'enable_eta' ) )
@@ -235,45 +244,46 @@ class roadmap_html_api
       echo '</a> ]';
    }
 
-   public static function printVersionProgress ( $bugIds, $profileId, $progressPercent, $profileHashMap, $useEta, $doneEta )
+   public static function printVersionProgress ( roadmap $roadmap )
    {
       echo '<div class="tr">' . PHP_EOL;
       echo '<div class="td">';
-      if ( $useEta && config_get ( 'enable_eta' ) )
+      $profileId = $roadmap->getProfileId ();
+      if ( $profileId == -1 )
       {
-         if ( $profileId == -1 )
-         {
-            self::printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds, true );
-         }
-         else
-         {
-            $fullEta = roadmap_pro_api::getFullEta ( $bugIds );
-
-            $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
-            $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
-            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
-            self::printSingleProgressbar ( $progressPercent, $progressString );
-         }
+         self::printScaledProgressbar ( $roadmap );
       }
       else
       {
-         if ( $profileId == -1 )
+         $useEta = $roadmap->getEtaIsSet ();
+         $doneEta = $roadmap->getDoneEta ();
+         $fullEta = $roadmap->getFullEta ();
+         $progressPercent = $roadmap->getSingleProgressPercent ();
+         if ( $useEta && config_get ( 'enable_eta' ) )
          {
-            self::printScaledProgressbar ( $profileHashMap, $progressPercent, $bugIds );
+            $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
+            $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
+            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp' . $calculatedDoneEta[ 1 ] .
+               '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
+            self::printSingleProgressbar ( $progressPercent, $progressString );
          }
          else
          {
+            $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
             $progressString = $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString );
          }
       }
+
       echo '</div>' . PHP_EOL;
       echo '</div>' . PHP_EOL;
    }
 
-   public static function printBugList ( $bugIds, $profileId )
+   public static function printBugList ( roadmap $roadmap )
    {
+      $bugIds = $roadmap->getBugIds ();
+
       $bugIdsDetailed = roadmap_pro_api::calculateBugRelationships ( $bugIds );
       foreach ( $bugIdsDetailed as $bug )
       {
@@ -282,15 +292,11 @@ class roadmap_html_api
          $bugEta = bug_get_field ( $bugId, 'eta' );
          $bugBlockingIds = $bug[ 'blocking_ids' ];
          $bugBlockedIds = $bug[ 'blocked_ids' ];
-         $roadmapBugData = new roadmap_bugdata( $bugIds, $profileId );
-         $bugIsDone = $roadmapBugData->checkIssueIsDoneById ( $bugId );
-         $hasBlocked = ( empty ( $bugBlockedIds ) == false );
-         $hasBlocking = ( empty ( $bugBlockingIds ) == false );
          $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
 
          echo '<div class="tr">';
          /** line through, if bug is done */
-         if ( $bugIsDone )
+         if ( $roadmap->getIssueIsDone ( $bugId ) )
          {
             echo '<div class="td done">';
          }
@@ -305,14 +311,14 @@ class roadmap_html_api
             echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
          }
          /** symbol when bug is blocking */
-         if ( $hasBlocked )
+         if ( empty ( $bugBlockedIds ) == false )
          {
             $blockedIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockedIds, true );
             echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png' . '" alt="' . $blockedIdString .
                '" title="' . $blockedIdString . '" />&nbsp;';
          }
          /** symbol when bug is blocked by */
-         if ( $hasBlocking )
+         if ( empty ( $bugBlockingIds ) == false )
          {
             $blockingIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockingIds, false );
             echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blockingIdString .

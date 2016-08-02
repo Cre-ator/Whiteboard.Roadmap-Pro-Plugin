@@ -8,38 +8,6 @@ require_once ( __DIR__ . '/roadmap_db.php' );
  */
 class roadmap_pro_api
 {
-
-   /**
-    * returns the eta value of a bunch of bugs
-    *
-    * @param $bugIds
-    * @return float|int
-    */
-   public static function getFullEta ( $bugIds )
-   {
-      $roadmapDb = new roadmap_db();
-
-      $fullEta = 0;
-      foreach ( $bugIds as $bugId )
-      {
-         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-
-         $etaEnumString = config_get ( 'eta_enum_string' );
-         $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-
-         foreach ( $etaEnumValues as $enumValue )
-         {
-            if ( $enumValue == $bugEtaValue )
-            {
-               $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
-               $fullEta += $etaRow[ 2 ];
-            }
-         }
-      }
-
-      return $fullEta;
-   }
-
    /**
     * returns an array with bug ids and extened information about relations
     *

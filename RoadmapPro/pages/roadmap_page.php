@@ -85,6 +85,7 @@ function processTable ( $profileId )
       }
 
       # iterate through versions
+      $projectTitlePrinted = false;
       $versionCount = count ( $versions );
       for ( $index = 0; $index < $versionCount; $index++ )
       {
@@ -105,12 +106,13 @@ function processTable ( $profileId )
          {
             $roadmap = new roadmap( $bugIds, $profileId );
             # define and print project title
-            if ( $index == 0 )
+            if ( !$projectTitlePrinted )
             {
                # print project title
                roadmap_html_api::htmlPluginProjectTitle ( $profileId, $projectId );
                # add project title to directory
                roadmap_html_api::htmlPluginAddDirectoryProjectEntry ( $projectId );
+               $projectTitlePrinted = true;
             }
             # add version to directory
             roadmap_html_api::htmlPluginAddDirectoryVersionEntry ( project_get_name ( $projectId ), $versionName );

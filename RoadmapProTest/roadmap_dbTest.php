@@ -24,19 +24,19 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $invalid_bug_ids = [ 0 => 30, 1 => 32 ];
 
       /** valid */
-      $this->assertInternalType ( 'array', $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, $version_name ) );
-      $this->assertEquals ( $bug_ids, $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, $version_name ) );
+      $this->assertInternalType ( 'array', $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
+      $this->assertEquals ( $bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
       /** invalid */
-      $this->assertNotEquals ( $invalid_bug_ids, $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, $version_name ) );
-      $this->assertNotEquals ( $bug_ids, $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, $invalid_version_name ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( $project_id, '' ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 0, $version_name ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 250, '' ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 0, '' ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 'hallo', '' ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 0, 0 ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( '', 0 ) );
-      $this->assertEquals ( null, $roadmap_db->get_bug_ids_by_project_and_version ( 'hallo', 0 ) );
+      $this->assertNotEquals ( $invalid_bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
+      $this->assertNotEquals ( $bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $invalid_version_name ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, '' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, $version_name ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 250, '' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, '' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 'hallo', '' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, 0 ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( '', 0 ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 'hallo', 0 ) );
    }
 
    public function testGetRoadmapProfiles ()
@@ -49,10 +49,10 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $result_invalid = [ 0 => $profile_a, 1 => $profile_c ];
 
       /** valid */
-      $this->assertInternalType ( 'array', $roadmap_db->get_roadmap_profiles () );
-      $this->assertEquals ( $result_valid, $roadmap_db->get_roadmap_profiles () );
+      $this->assertInternalType ( 'array', $roadmap_db->dbGetRoadmapProfiles () );
+      $this->assertEquals ( $result_valid, $roadmap_db->dbGetRoadmapProfiles () );
       /** invalid */
-      $this->assertNotEquals ( $result_invalid, $roadmap_db->get_roadmap_profiles () );
+      $this->assertNotEquals ( $result_invalid, $roadmap_db->dbGetRoadmapProfiles () );
    }
 
    public function testGetRoadmapProfile ()
@@ -66,7 +66,7 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $result_invalid_d = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 2 ];
       $result_invalid_e = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 3 ];
 
-      $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
+      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
       /** valid */
       $this->assertInternalType ( 'array', $db_result );
       $this->assertEquals ( $result_valid, $db_result );
@@ -76,10 +76,10 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $this->assertNotEquals ( $result_invalid_c, $db_result );
       $this->assertNotEquals ( $result_invalid_d, $db_result );
       $this->assertNotEquals ( $result_invalid_e, $db_result );
-      $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( '1 AND profile_color=\'E5FF63\'' ) );
-      $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( '' ) );
-      $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( 'hallo' ) );
-      $this->assertEquals ( null, $roadmap_db->get_roadmap_profile ( 9999 ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( '1 AND profile_color=\'E5FF63\'' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( '' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( 'hallo' ) );
+      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( 9999 ) );
    }
 
    public function testInsertDeleteProfile ()
@@ -91,18 +91,18 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $profile_status = '10;20;50';
       $profile_priority = 10;
 
-      $profile_id = $roadmap_db->insert_profile ( $profile_name, $profile_color, $profile_status, $profile_priority );
+      $profile_id = $roadmap_db->dbInsertProfile ( $profile_name, $profile_color, $profile_status, $profile_priority );
       $profile = [ 0 => $profile_id, 1 => 'Testprofil', 2 => '000000', 3 => '10;20;50', 4 => 10 ];
 
       /** get profile from tested function @testGetRoadmapProfile */
-      $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
+      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
       /** valid */
       $this->assertEquals ( $profile, $db_result );
 
       /** delete profile */
-      $roadmap_db->delete_profile ( $profile_id );
+      $roadmap_db->dbDeleteProfile ( $profile_id );
       /** get profile from tested function @testGetRoadmapProfile */
-      $db_result = $roadmap_db->get_roadmap_profile ( $profile_id );
+      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
       /** valid */
       $this->assertEquals ( null, $db_result );
    }

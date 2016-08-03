@@ -49,22 +49,26 @@ hr.version-separator {
    text-align: center;
    background: <?php echo $background ?>;
    border-radius: 4px;
+   float: left;
 }
 
 .progress9001 .left {
    text-align: left;
    border-top-left-radius: 4px;
    border-bottom-left-radius: 4px;
+   float: left;
 }
 
 .progress9001 .middle {
    text-align: left;
+   float: left;
 }
 
 .progress9001 .right {
    text-align: left;
    border-top-right-radius: 4px;
    border-bottom-right-radius: 4px;
+   float: left;
 }
 
 pre {
@@ -150,6 +154,7 @@ div.td {
    display: table-cell;
    border: none;
    padding: 5px;
+   float: left;
 }
 
 div.spacer {
@@ -183,4 +188,8 @@ div {
 .symbol {
    height: 12px;
    width: 12px;
+}
+
+.pagetitle {
+   float: left;
 }

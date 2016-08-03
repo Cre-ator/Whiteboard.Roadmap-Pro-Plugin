@@ -193,3 +193,21 @@ div {
 .pagetitle {
    float: left;
 }
+
+a.directory {
+   color: black;
+   background: transparent;
+   text-decoration: none;
+}
+
+a.project {
+   font-size: larger;
+}
+
+a.version {
+
+}
+
+a.directory:hover {
+   text-decoration: underline;
+}

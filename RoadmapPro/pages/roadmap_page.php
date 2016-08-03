@@ -59,11 +59,13 @@ function processTable ( $profileId )
    $projectIds = $roadmap->getProjectIds ();
    $versions = $roadmap->getVersions ();
 
+   # initialize directoy
+   roadmap_html_api::htmlPluginDirectory ();
+
    # iterate through projects
    foreach ( $projectIds as $projectId )
    {
       $projectSeperator = false;
-      $printedProjectTitle = false;
       $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
       $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
 
@@ -99,11 +101,15 @@ function processTable ( $profileId )
          {
             $roadmap = new roadmap( $bugIds, $profileId );
             # define and print project title
-            if ( $printedProjectTitle == false )
+            if ( $index == 0 )
             {
+               # print project title
                roadmap_html_api::htmlPluginProjectTitle ( $profileId, $projectId );
-               $printedProjectTitle = true;
+               # add project title to directory
+               roadmap_html_api::htmlPluginAddDirectoryProjectEntry ( $projectId );
             }
+            # add version to directory
+            roadmap_html_api::htmlPluginAddDirectoryVersionEntry ( project_get_name ( $projectId ), $versionName );
             # define and print release title
             $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $projectId, $version );
             roadmap_html_api::printWrapperInHTML ( $releaseTitleString );
@@ -113,7 +119,10 @@ function processTable ( $profileId )
             # print version progress bar
             roadmap_html_api::printVersionProgress ( $roadmap );
             # print bug list
-            roadmap_html_api::printBugList ( $roadmap );
+            $doingBugIds = $roadmap->getDoingBugIds ();
+            $doneBugIds = $roadmap->getDoneBugIds ();
+            roadmap_html_api::printBugList ( $doingBugIds );
+            roadmap_html_api::printBugList ( $doneBugIds, true );
             # print text progress
             if ( $profileId >= 0 )
             {

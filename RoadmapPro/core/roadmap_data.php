@@ -23,19 +23,19 @@ class roadmap_data
 
    public function calcProjectVersionContent ()
    {
-      /** no specific project or version */
+      # no specific project or version
       if ( ( $this->getProjectId == null ) && ( $this->getVersionId == null ) )
       {
          $this->prepareProjectIds ();
       }
 
-      /** specific project selected */
+      # specific project selected
       if ( $this->getProjectId != null )
       {
          array_push ( $this->projectIds, $this->getProjectId );
       }
 
-      /** specific version selected */
+      # specific version selected
       if ( $this->getVersionId != null )
       {
          $this->prepareVersionBasedData ();

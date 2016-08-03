@@ -1,5 +1,7 @@
 <?php
 require_once ( __DIR__ . '/roadmap_db.php' );
+require_once ( __DIR__ . '/roadmap_html_api.php' );
+require_once ( __DIR__ . '/roadmap.php' );
 
 /**
  * Class version_management_api
@@ -108,7 +110,7 @@ class roadmap_pro_api
       $projectName = string_display ( project_get_name ( $projectId ) );
 
       $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' )
-         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '">'
+         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="' . $versionName . '">'
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
          . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' )
          . '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'

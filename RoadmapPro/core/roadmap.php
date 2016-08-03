@@ -17,6 +17,7 @@ class roadmap
    private $etaIsSet;
    private $singleEta;
    private $fullEta;
+   private $doingBugIds;
    private $doneBugIds;
    private $issueIsDone;
 
@@ -25,6 +26,7 @@ class roadmap
       $this->bugIds = $bugIds;
       $this->profileId = $profileId;
       $this->doneBugIds = array ();
+      $this->doingBugIds = array ();
       $this->profileHashArray = array ();
    }
 
@@ -50,6 +52,12 @@ class roadmap
    {
       $this->calcDoneBugIds ();
       return $this->doneBugIds;
+   }
+
+   public function getDoingBugIds ()
+   {
+      $this->calcDoingBugIds ();
+      return $this->doingBugIds;
    }
 
    public function getDoneEta ()
@@ -168,11 +176,24 @@ class roadmap
    {
       foreach ( $this->bugIds as $bugId )
       {
-         /** specific profile */
-         if ( $this->getIssueIsDone ( $bugId ) == true )
+         $this->getIssueIsDone ( $bugId );
+         if ( $this->issueIsDone )
          {
             array_push ( $this->doneBugIds, $bugId );
             $this->doneBugIds = array_unique ( $this->doneBugIds );
+         }
+      }
+   }
+
+   private function calcDoingBugIds ()
+   {
+      foreach ( $this->bugIds as $bugId )
+      {
+         $this->getIssueIsDone ( $bugId );
+         if ( $this->issueIsDone == false )
+         {
+            array_push ( $this->doingBugIds, $bugId );
+            $this->doingBugIds = array_unique ( $this->doingBugIds );
          }
       }
    }
@@ -243,10 +264,10 @@ class roadmap
 
    private function calcScaledData ()
    {
-      /** object initialization */
+      # object initialization
       $roadmapDb = new roadmap_db();
 
-      /** variables */
+      # variables
       $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
@@ -254,15 +275,15 @@ class roadmap
       $sumProfileEffort = $roadmapDb->dbGetSumProfileEffort ();
 
       $wholeProgress = 0;
-      /** iterate through profiles */
+      # iterate through profiles
       for ( $index = 0; $index < $profileCount; $index++ )
       {
          $roadmapProfile = $roadmapProfiles[ $index ];
          $tProfileId = $roadmapProfile[ 0 ];
          $this->setProfileId ( $tProfileId );
-         /** effort factor */
+         # effort factor
          $tProfileEffort = $roadmapProfile[ 5 ];
-         /** uniform distribution when no effort is set */
+         # uniform distribution when no effort is set
          if ( $sumProfileEffort == 0 )
          {
             $tProfileEffortFactor = ( 1 / $profileCount );
@@ -271,12 +292,12 @@ class roadmap
          {
             $tProfileEffortFactor = round ( ( $tProfileEffort / $sumProfileEffort ), 2 );
          }
-         /** bug data */
+         # bug data
          $doneBugIds = $this->getDoneBugIds ();
          $tDoneBugAmount = count ( $doneBugIds );
          if ( $useEta )
          {
-            /** calculate eta for profile */
+            # calculate eta for profile
             $fullEta = ( $this->getFullEta () ) * $profileCount;
             $doneEta = 0;
             foreach ( $doneBugIds as $doneBugId )

@@ -74,6 +74,7 @@ function addThresholdRow() {
     tr.appendChild(td4);
     tr.appendChild(td5);
 }
+
 function delRow(initialRowCount, tableId) {
     var table = document.getElementById(tableId);
     var rows = table.getElementsByTagName("tr").length;
@@ -81,4 +82,33 @@ function delRow(initialRowCount, tableId) {
     if (rows > ( initialRowCount + 2 )) {
         document.getElementById(tableId).deleteRow(--rows);
     }
+}
+
+function addVersionEntryToDirectory(projectName, versionName) {
+    var table = document.getElementById(projectName);
+
+    var trdiv = document.createElement("div");
+    trdiv.className = 'tr';
+    table.appendChild(trdiv);
+
+    var tddiv = document.createElement("div");
+    tddiv.className = 'td';
+    tddiv.innerHTML = '<a class="directory version" href="#' + versionName + '">' + versionName + '</a>';
+
+    trdiv.appendChild(tddiv);
+}
+
+function addProjectEntryToDirectory(tableId, projectId, projectName) {
+    var table = document.getElementById(tableId);
+
+    var trdiv = document.createElement("div");
+    trdiv.className = 'tr';
+    table.appendChild(trdiv);
+
+    var tddiv = document.createElement("div");
+    tddiv.className = 'td';
+    tddiv.id = projectName;
+    tddiv.innerHTML = '<a class="directory project" href="#' + projectId + '' + projectName + '">' + projectName + '</a>';
+
+    trdiv.appendChild(tddiv);
 }

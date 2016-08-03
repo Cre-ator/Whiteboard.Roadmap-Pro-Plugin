@@ -181,6 +181,15 @@ class roadmap_html_api
       echo '</div>' . PHP_EOL;
    }
 
+   public static function htmlPluginDirectory ()
+   {
+      echo '<div class="table" id="directory">';
+      echo '<span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_directory' ) . '</span>';
+      echo '</div>';
+      self::htmlPluginSeparator ();
+      self::htmlPluginSpacer ();
+   }
+
    public static function printProfileSwitcher ()
    {
       $roadmapDb = new roadmap_db();
@@ -278,17 +287,15 @@ class roadmap_html_api
       echo '</div>' . PHP_EOL;
    }
 
-   public static function printBugList ( roadmap $roadmap )
+   public static function printBugList ( $bugIds, $doneBugs = false )
    {
-      $bugIds = $roadmap->getBugIds ();
       foreach ( $bugIds as $bugId )
       {
          $bug = bug_get ( $bugId );
          $userId = $bug->handler_id;
-         $bugIsDone = $roadmap->getIssueIsDone ( $bugId );
          echo '<div class="tr">';
          # line through, if bug is done
-         self::htmlPluginBugCol ( $bugIsDone );
+         self::htmlPluginBugCol ( $doneBugs );
          # bug id
          echo string_get_bug_view_link ( $bugId ) . '&nbsp;';
          # bug category
@@ -305,10 +312,10 @@ class roadmap_html_api
          }
          # bug status
          echo '&nbsp;-&nbsp;' . string_display_line ( get_enum_element ( 'status', $bug->status ) ) . '.';
-         echo '</div>' . PHP_EOL;
-         echo '</div>' . PHP_EOL;
+         echo '</div>' . PHP_EOL . '</div>' . PHP_EOL;
       }
    }
+
 
    public static function htmlPluginBugCol ( $bugIsDone )
    {
@@ -329,7 +336,7 @@ class roadmap_html_api
       $profileName = string_display ( $profile[ 1 ] );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
-      echo '<span class="pagetitle">';
+      echo '<span class="pagetitle" id="' . $projectId . $projectName . '">';
       if ( $profileId == -1 )
       {
          echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
@@ -360,5 +367,20 @@ class roadmap_html_api
          require_once __DIR__ . '/../../WhiteboardMenu/core/whiteboard_print_api.php';
          whiteboard_print_api::printWhiteboardMenu ();
       }
+   }
+
+   public static function htmlPluginAddDirectoryVersionEntry ( $projectName, $versionName )
+   {
+      echo '<script type="text/javascript">';
+      echo 'addVersionEntryToDirectory (\'' . $projectName . '\',\'' . $versionName . '\')';
+      echo '</script>';
+   }
+
+   public static function htmlPluginAddDirectoryProjectEntry ( $projectId )
+   {
+      $projectName = project_get_name ( $projectId );
+      echo '<script type="text/javascript">';
+      echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\')';
+      echo '</script>';
    }
 }

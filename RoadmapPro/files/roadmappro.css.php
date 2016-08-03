@@ -18,14 +18,13 @@ hr.version-separator {
    height: 25px;
    margin-top: 1em;
    margin-bottom: 1em;
-   padding: 1px 4px 1px 1px;
+   padding: 0 0 0 0;
    float: left;
 }
 
-.progress9000 {
+.progress9001 {
    position: relative;
    background: #fff;
-   background-color: #fff;
    width: 400px;
    height: 25px;
    border: 1px solid #d7d7d7;
@@ -34,38 +33,42 @@ hr.version-separator {
    border-radius: 6px;
    margin-top: 1em;
    margin-bottom: 1em;
-   padding: 1px 4px 1px 1px;
+   padding: 0 0 0 0;
    float: left;
 }
 
-.progress9000 .bar {
-   padding: 0px 0px 0px 0px;
-   display: block;
-   position: relative;
-   background: <?php echo $background ?>;
-   text-align: center;
+.progress9001 .bar {
+   padding: 3px;
+   display: inline-block;
    font-weight: normal;
-   height: 1.5em;
-   line-height: 1.4em;
+   height: 100%;
    color: #111;
-   border: solid 1px <?php echo $background ?>;
-   -moz-border-radius: 4px;
-   -webkit-border-radius: 4px;
-   border-radius: 4px;
 }
 
-.progress9000 .scaledbar {
-   padding: 0px 0px 0px 1px;
-   display: block;
-   position: absolute;
-   text-align: right;
-   font-weight: normal;
-   height: 1.5em;
-   line-height: 1.4em;
-   color: #111;
-   -moz-border-radius: 4px;
-   -webkit-border-radius: 4px;
+.progress9001 .single {
+   text-align: center;
+   background: <?php echo $background ?>;
    border-radius: 4px;
+   float: left;
+}
+
+.progress9001 .left {
+   text-align: left;
+   border-top-left-radius: 4px;
+   border-bottom-left-radius: 4px;
+   float: left;
+}
+
+.progress9001 .middle {
+   text-align: left;
+   float: left;
+}
+
+.progress9001 .right {
+   text-align: left;
+   border-top-right-radius: 4px;
+   border-bottom-right-radius: 4px;
+   float: left;
 }
 
 pre {
@@ -151,6 +154,7 @@ div.td {
    display: table-cell;
    border: none;
    padding: 5px;
+   float: left;
 }
 
 div.spacer {
@@ -159,70 +163,8 @@ div.spacer {
    margin-top: 30px;
 }
 
-.title_row {
-   background-color: #ffffff;
-   color: #000000;
-   font-weight: bold;
-   text-align: left;
-}
-
-.category_name_field {
-   background-color: #c8c8e8;
-   color: #000000;
-   font-weight: bold;
-}
-
-.category_value_field-0 {
-   background-color: #d8d8d8;
-   color: #000000;
-}
-
-.category_value_field-1 {
-   background-color: #e8e8e8;
-   color: #000000;
-}
-
-.grid_center {
-   text-align: center;
-}
-
-.surrounder {
-   border: solid 1px #000000;
-}
-
 * {
    box-sizing: border-box;
-}
-
-.gridcol-1 {
-   width: 16.66%;
-}
-
-.gridcol-2 {
-   width: 33.33%;
-}
-
-.gridcol-3 {
-   width: 50%;
-}
-
-.gridcol-4 {
-   width: 66.66%;
-}
-
-.gridcol-5 {
-   width: 83.33%;
-}
-
-.gridcol-6 {
-   width: 100%;
-}
-
-[class*="gridcol-"] {
-   float: left;
-   min-height: 27px;
-   word-wrap: break-word;
-   /*   border: 1px solid #c13cff;*/
 }
 
 .row {
@@ -239,34 +181,43 @@ div {
    padding: 1px;
 }
 
-#container2 {
-   clear: left;
-   float: left;
-   width: 100%;
-   overflow: hidden;
-   background: #ffa7a7; /* column 2 background colour */
+.done {
+   text-decoration: line-through;
 }
 
-#container1 {
-   float: left;
-   width: 100%;
-   position: relative;
-   right: 50%;
-   background: #fff689; /* column 1 background colour */
+.symbol {
+   height: 12px;
+   width: 12px;
 }
 
-#col1 {
+.pagetitle {
    float: left;
-   width: 46%;
-   position: relative;
-   left: 52%;
-   overflow: hidden;
 }
 
-#col2 {
-   float: left;
-   width: 46%;
-   position: relative;
-   left: 56%;
-   overflow: hidden;
+a.directory {
+   color: black;
+   background: transparent;
+   text-decoration: none;
+}
+
+a.project {
+   font-size: larger;
+}
+
+a.version {
+
+}
+
+a.directory:hover {
+   text-decoration: underline;
+}
+
+.back-to-top {
+   position: fixed;
+   right: 20px;
+   bottom: 20px;
+   text-indent: -9999px;
+   height: 46px;
+   width: 46px;
+   background: url("sprite.png") no-repeat -11px -474px;
 }

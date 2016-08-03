@@ -12,9 +12,9 @@ function processPage ()
 {
    auth_reauthenticate ();
 
-   $getProfileId = $_GET[ 'profile_id' ];
+   $getThresholdId = $_GET[ 'threshold_id' ];
    $roadmapDb = new roadmap_db();
-   $roadmapDb->dbDeleteProfile ( $getProfileId );
+   $roadmapDb->dbDeleteEtaThreshold ( $getThresholdId );
 
    # redirect to view page
    print_successful_redirect ( plugin_page ( 'config_page', true ) );

@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.0.10';
+      $this->version = '1.1.5';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -35,7 +35,6 @@ class RoadmapProPlugin extends MantisPlugin
       (
          'show_menu' => ON,
          'show_footer' => ON,
-         'access_level' => ADMINISTRATOR
       );
    }
 
@@ -50,7 +49,8 @@ class RoadmapProPlugin extends MantisPlugin
             profile_name    C(250)  DEFAULT '',
             profile_color   C(250)  DEFAULT '',
             profile_status  C(250)  DEFAULT '',
-            profile_prio    I       DEFAULT 0
+            profile_prio    I       DEFAULT 0,
+            profile_effort  I       DEFAULT 0
             " )
          ),
          array
@@ -63,9 +63,12 @@ class RoadmapProPlugin extends MantisPlugin
          ),
          array
          (
-            'CreateTableSQL', array ( plugin_table ( 'unit' ), "
+            'CreateTableSQL', array ( plugin_table ( 'etathreshold' ), "
             id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
-            eta_unit           C(250)  DEFAULT ''
+            eta_thr_from       C(250)  DEFAULT '',
+            eta_thr_to         C(250)  DEFAULT '',
+            eta_thr_unit       C(250)  DEFAULT '',
+            eta_thr_factor     C(250)  DEFAULT ''
             " )
          )
       );
@@ -73,26 +76,18 @@ class RoadmapProPlugin extends MantisPlugin
 
    function init ()
    {
-      $t_core_path = config_get_global ( 'plugin_path' )
+      $tCorePath = config_get_global ( 'plugin_path' )
          . plugin_get_current ()
          . DIRECTORY_SEPARATOR
          . 'core'
          . DIRECTORY_SEPARATOR;
 
-      require_once ( $t_core_path . 'roadmap_constant_api.php' );
-   }
-
-   function get_user_has_level ()
-   {
-      $project_id = helper_get_current_project ();
-      $user_id = auth_get_current_user_id ();
-
-      return user_get_access_level ( $user_id, $project_id ) >= plugin_config_get ( 'access_level', ADMINISTRATOR );
+      require_once ( $tCorePath . 'roadmap_constant_api.php' );
    }
 
    function footer ()
    {
-      if ( plugin_config_get ( 'show_footer' ) && $this->get_user_has_level () )
+      if ( plugin_config_get ( 'show_footer' ) )
       {
          return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
       }
@@ -102,7 +97,7 @@ class RoadmapProPlugin extends MantisPlugin
    function menu ()
    {
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
-         && plugin_config_get ( 'show_menu' ) && $this->get_user_has_level ()
+         && plugin_config_get ( 'show_menu' )
       )
       {
          return '<a href="' . plugin_page ( 'roadmap_page' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a >';

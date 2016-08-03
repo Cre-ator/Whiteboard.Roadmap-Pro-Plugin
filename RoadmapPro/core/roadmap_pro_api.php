@@ -1,5 +1,7 @@
 <?php
 require_once ( __DIR__ . '/roadmap_db.php' );
+require_once ( __DIR__ . '/roadmap_html_api.php' );
+require_once ( __DIR__ . '/roadmap.php' );
 
 /**
  * Class version_management_api
@@ -9,252 +11,221 @@ require_once ( __DIR__ . '/roadmap_db.php' );
 class roadmap_pro_api
 {
    /**
-    * returns true, if the used mantis version is release 1.2.x
+    * returns true, if there is a duplicate entry.
     *
+    * @param $array
     * @return bool
     */
-   public static function check_mantis_version_is_released ()
+   public static function checkArrayForDuplicates ( $array )
    {
-      return substr ( MANTIS_VERSION, 0, 4 ) == '1.2.';
+      return count ( $array ) !== count ( array_unique ( $array ) );
    }
 
    /**
-    * returns true if every item of bug id array has set eta value
+    * returns db-conform string with status values for a profile
     *
-    * @param $bug_ids
-    * @return bool
+    * @param $statusValues
+    * @return string
     */
-   public static function check_eta_is_set ( $bug_ids )
+   public static function generateDbStatusValueString ( $statusValues )
    {
-      $set = true;
-      foreach ( $bug_ids as $bug_id )
+      $profileStatus = '';
+      $limit = count ( $statusValues );
+      for ( $index = 0; $index < $limit; $index++ )
       {
-         $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
-         if ( ( is_null ( $bug_eta_value ) ) || ( $bug_eta_value == 10 ) )
+         $profileStatus .= $statusValues[ $index ];
+         if ( $index < ( $limit - 1 ) )
          {
-            $set = false;
+            $profileStatus .= ';';
          }
       }
 
-      return $set;
+      return $profileStatus;
    }
 
    /**
-    * returns the eta value of a single bug
+    * assign a given eta value to a specified eta unit
     *
-    * @param $bug_id
-    * @return float|int
-    */
-   public static function get_single_eta ( $bug_id )
-   {
-      $roadmap_db = new roadmap_db();
-
-      $eta = 0;
-      $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
-
-      $eta_enum_string = config_get ( 'eta_enum_string' );
-      $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
-
-      foreach ( $eta_enum_values as $enum_value )
-      {
-         if ( $enum_value == $bug_eta_value )
-         {
-            $eta_row = $roadmap_db->get_eta_row_by_key ( $enum_value );
-            $eta = $eta_row[ 2 ];
-         }
-      }
-
-      return $eta;
-   }
-
-   /**
-    * returns the eta value of a bunch of bugs
-    *
-    * @param $bug_ids
-    * @return float|int
-    */
-   public static function get_full_eta ( $bug_ids )
-   {
-      $roadmap_db = new roadmap_db();
-
-      $full_eta = 0;
-      foreach ( $bug_ids as $bug_id )
-      {
-         $bug_eta_value = bug_get_field ( $bug_id, 'eta' );
-
-         $eta_enum_string = config_get ( 'eta_enum_string' );
-         $eta_enum_values = MantisEnum::getValues ( $eta_enum_string );
-
-         foreach ( $eta_enum_values as $enum_value )
-         {
-            if ( $enum_value == $bug_eta_value )
-            {
-               $eta_row = $roadmap_db->get_eta_row_by_key ( $enum_value );
-               $full_eta += $eta_row[ 2 ];
-            }
-         }
-      }
-
-      return $full_eta;
-   }
-
-   /**
-    * returns true if the issue is done like it is defined in the profile preference
-    *
-    * @param $bug_id
-    * @param $profile_id
-    * @return bool
-    */
-   public static function check_issue_is_done_by_id ( $bug_id, $profile_id )
-   {
-      $roadmap_db = new roadmap_db();
-
-      $done = false;
-
-      $bug_status = bug_get_field ( $bug_id, 'status' );
-      $roadmap_profile = $roadmap_db->get_roadmap_profile ( $profile_id );
-      $db_raodmap_status = $roadmap_profile[ 3 ];
-      $roadmap_status_array = explode ( ';', $db_raodmap_status );
-
-      foreach ( $roadmap_status_array as $roadmap_status )
-      {
-         if ( $bug_status == $roadmap_status )
-         {
-            $done = true;
-         }
-      }
-
-      return $done;
-   }
-
-   /**
-    * returns the amount of done bugs in a bunch of bugs
-    *
-    * @param $bug_ids
-    * @param $profile_id
-    * @return int
-    */
-   public static function get_done_bug_amount ( $bug_ids, $profile_id )
-   {
-      $done_bug_amount = 0;
-      foreach ( $bug_ids as $bug_id )
-      {
-         /** specific profile */
-         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
-         {
-            $done_bug_amount++;
-         }
-      }
-
-      return $done_bug_amount;
-   }
-
-   /**
-    * returns the ids of done bugs in a bunch of bugs
-    *
-    * @param $bug_ids
-    * @param $profile_id
+    * @param $eta
     * @return array
     */
-   public static function get_done_bug_ids ( $bug_ids, $profile_id )
+   public static function calculateEtaUnit ( $eta )
    {
-      $done_bug_ids = array ();
-      foreach ( $bug_ids as $bug_id )
+      $roadmapDb = new roadmap_db();
+
+      $backupString = array ();
+      $backupString[ 0 ] = $eta;
+      $backupString[ 1 ] = plugin_lang_get ( 'config_page_eta_unit' );
+      $etaString = array ();
+      $thresholds = $roadmapDb->dbGetEtaThresholds ();
+      $thresholdCount = count ( $thresholds );
+      if ( $thresholdCount < 1 )
       {
-         /** specific profile */
-         if ( self::check_issue_is_done_by_id ( $bug_id, $profile_id ) )
+         $etaString = $backupString;
+      }
+      else
+      {
+         for ( $index = 0; $index < $thresholdCount; $index++ )
          {
-            array_push ( $done_bug_ids, $bug_id );
+            $thresholdRow = $thresholds[ $index ];
+            $thresholdFrom = $thresholdRow[ 1 ];
+            $thresholdTo = $thresholdRow[ 2 ];
+
+            if ( ( $eta > $thresholdFrom ) && ( $eta < $thresholdTo ) )
+            {
+               $thresholdUnit = $thresholdRow[ 3 ];
+               $thresholdFactor = $thresholdRow[ 4 ];
+
+               $newEta = round ( ( $eta / $thresholdFactor ), 2 );
+               $etaString[ 0 ] = $newEta;
+               $etaString[ 1 ] = $thresholdUnit;
+            }
          }
       }
 
-      return $done_bug_ids;
+      if ( empty( $etaString ) == false )
+      {
+         return $etaString;
+      }
+      else
+      {
+         return $backupString;
+      }
    }
 
    /**
-    * returns all subproject ids incl. the selected one except it is zero
+    * returns the generated title string
     *
-    * @return array
+    * @param $profileId
+    * @param $projectId
+    * @param $version
+    * @return string
     */
-   public static function prepare_project_ids ()
+   public static function getReleasedTitleString ( $profileId, $projectId, $version )
    {
-      $current_project_id = helper_get_current_project ();
-      $sub_project_ids = project_hierarchy_get_all_subprojects ( $current_project_id );
+      $versionId = $version[ 'id' ];
+      $versionName = $version[ 'version' ];
+      $versionDate = $version[ 'date_order' ];
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
+      $projectName = string_display ( project_get_name ( $projectId ) );
 
-      $project_ids = array ();
-      if ( $current_project_id > 0 )
-      {
-         array_push ( $project_ids, $current_project_id );
-      }
+      $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' )
+         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="' . $versionName . '">'
+         . string_display_line ( $projectName ) . '</a>&nbsp;-'
+         . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' )
+         . '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
+         . string_display_line ( $versionName ) . '</a>'
+         . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;'
+         . $versionReleaseDate . ')&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
+         . FILTER_PROPERTY_PROJECT_ID . '=' . $projectId . '&amp;'
+         . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $versionName ) . '">'
+         . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
-      foreach ( $sub_project_ids as $sub_project_id )
-      {
-         array_push ( $project_ids, $sub_project_id );
-      }
-
-      return $project_ids;
+      return $releaseTitleString;
    }
 
-   /**
-    * returns an array with bug ids and extened information about relations
-    *
-    * @param $bug_ids
-    * @return mixed
-    */
-   public static function calculate_bug_relationships ( $bug_ids )
+   public static function calcBugSmybols ( $bugId )
    {
-      $roadmap_db = new roadmap_db();
+      $bugStatus = bug_get_field ( $bugId, 'status' );
+      $allRelationships = relationship_get_all ( $bugId, $t_show_project );
+      $allRelationshipsCount = count ( $allRelationships );
+      $stopFlag = false;
+      $forbiddenFlag = false;
+      $warningFlag = false;
+      $bugEta = bug_get_field ( $bugId, 'eta' );
+      $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
+      $stopAltText = "";
+      $forbiddenAltText = "";
+      $warningAltText = "";
+      $href = string_get_bug_view_url ( $bugId ) . '#relationships_open';
 
-      $bug_count = count ( $bug_ids );
-      $bug_hash_array = array ();
-      for ( $bug_index = 0; $bug_index < ( $bug_count ); $bug_index++ )
+      for ( $index = 0; $index < $allRelationshipsCount; $index++ )
       {
-         $bug_id = $bug_ids[ $bug_index ];
-         $bug_target_version = bug_get_field ( $bug_id, 'target_version' );
-
-         $bug_blocking_ids = array ();
-         $bug_blocked_ids = array ();
-
-         $blocking_relationship_rows = $roadmap_db->get_bug_relationship ( $bug_id, true );
-         $blocked_relationship_rows = $roadmap_db->get_bug_relationship ( $bug_id, false );
-
-         if ( is_null ( $blocking_relationship_rows ) == false )
-         {
-            foreach ( $blocking_relationship_rows as $blocking_relationship )
-            {
-               $dest_bug_id = $blocking_relationship[ 0 ];
-               $dest_bug_target_version = bug_get_field ( $dest_bug_id, 'target_version' );
-
-               if ( $bug_target_version == $dest_bug_target_version )
-               {
-                  array_push ( $bug_blocking_ids, $dest_bug_id );
-               }
-            }
+         $relationShip = $allRelationships [ $index ];
+         if ( $bugId == $relationShip->src_bug_id )
+         {  # root bug is in the src side, related bug in the dest side
+            $destinationBugId = $relationShip->dest_bug_id;
+            $relationshipDescription = relationship_get_description_src_side ( $relationShip->type );
+         }
+         else
+         {  # root bug is in the dest side, related bug in the src side
+            $destinationBugId = $relationShip->src_bug_id;
+            $relationshipDescription = relationship_get_description_dest_side ( $relationShip->type );
          }
 
-         if ( is_null ( $blocked_relationship_rows ) == false )
+         # get the information from the related bug and prepare the link
+         $destinationBugStatus = bug_get_field ( $destinationBugId, 'status' );
+         if ( ( $bugStatus < CLOSED )
+            && ( $destinationBugStatus < CLOSED )
+            && ( $relationShip->type != BUG_REL_NONE )
+         )
          {
-            foreach ( $blocked_relationship_rows as $blocked_relationship )
+            $isStop = ( $relationShip->type == BUG_DEPENDANT )
+               && ( $bugId == $relationShip->src_bug_id );
+            $isForbidden = $isStop;
+            $isWarning = ( $relationShip->type == BUG_DEPENDANT )
+               && ( $bugId != $relationShip->src_bug_id );
+            if ( ( $isStop ) && ( $bugStatus == $destinationBugStatus ) )
             {
-               $src_bug_id = $blocked_relationship[ 0 ];
-               $src_bug_target_version = bug_get_field ( $src_bug_id, 'target_version' );
-
-               if ( $bug_target_version == $src_bug_target_version )
+               if ( $stopAltText != "" )
                {
-                  array_push ( $bug_blocked_ids, $src_bug_id );
+                  $stopAltText .= ", ";
                }
+               if ( !$stopFlag )
+               {
+                  $stopAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $stopAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $stopFlag = true;
+            }
+            if ( ( $isForbidden ) && ( $bugStatus > $destinationBugStatus ) )
+            {
+               if ( $forbiddenAltText != "" )
+               {
+                  $forbiddenAltText .= ", ";
+               }
+               if ( !$forbiddenFlag )
+               {
+                  $forbiddenAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $forbiddenAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $forbiddenFlag = true;
+            }
+            if ( ( $isWarning ) && ( $bugStatus >= $destinationBugStatus ) )
+            {
+               if ( $warningAltText != "" )
+               {
+                  $warningAltText .= ", ";
+               }
+               if ( !$warningFlag )
+               {
+                  $warningAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $warningAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $warningFlag = true;
             }
          }
-
-         $bug_hash = array (
-            'id' => $bug_id,
-            'blocking_ids' => $bug_blocking_ids,
-            'blocked_ids' => $bug_blocked_ids
-         );
-
-         array_push ( $bug_hash_array, $bug_hash );
       }
 
-      return $bug_hash_array;
+      echo '&nbsp;';
+
+      if ( $useEta )
+      {
+         echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
+      }
+      if ( $forbiddenFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_forbidden.png" alt="' . $forbiddenAltText . '" title="' . $forbiddenAltText . '" /></a>&nbsp;';
+      }
+      if ( $stopFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png" alt="' . $stopAltText . '" title="' . $stopAltText . '" /></a>&nbsp;';
+      }
+      if ( $warningFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png" alt="' . $warningAltText . '" title="' . $warningAltText . '" /></a>&nbsp;';
+      }
+
+      echo '&nbsp;';
    }
 }

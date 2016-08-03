@@ -16,6 +16,6 @@ function processPage ()
    $roadmapDb = new roadmap_db();
    $roadmapDb->dbDeleteEtaThreshold ( $getThresholdId );
 
-   /** redirect to view page */
+   # redirect to view page
    print_successful_redirect ( plugin_page ( 'config_page', true ) );
 }

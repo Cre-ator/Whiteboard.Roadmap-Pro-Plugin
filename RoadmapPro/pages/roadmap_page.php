@@ -16,20 +16,20 @@ if ( isset( $_GET[ 'profile_id' ] ) )
    $defaultProfileColor = $roadmapProfile[ 2 ];
 }
 
-/** ################################################################################################################# */
-/** print page top */
+# #################################################################################################################### #
+# print page top
 html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
 echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>';
 echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
 html_page_top2 ();
 
-/** print whiteboard menu bar */
+# print whiteboard menu bar
 roadmap_html_api::htmlPluginTriggerWhiteboardMenu ();
 
-/** print profile menu bar */
+# print profile menu bar
 roadmap_html_api::printProfileSwitcher ();
 
-/** print page content */
+# print page content
 if ( isset( $_GET[ 'profile_id' ] ) )
 {
    $getProfileId = $_GET[ 'profile_id' ];
@@ -38,9 +38,9 @@ if ( isset( $_GET[ 'profile_id' ] ) )
    echo '</div></div>';
 }
 
-/** print page bottom */
+# print page bottom
 html_page_bottom ();
-/** ################################################################################################################# */
+# #################################################################################################################### #
 
 /**
  * generates and prints page content
@@ -59,7 +59,7 @@ function processTable ( $profileId )
    $projectIds = $roadmap->getProjectIds ();
    $versions = $roadmap->getVersions ();
 
-   /** iterate through projects */
+   # iterate through projects
    foreach ( $projectIds as $projectId )
    {
       $projectSeperator = false;
@@ -67,7 +67,7 @@ function processTable ( $profileId )
       $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
       $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
 
-      /** skip if user has no access to project */
+      # skip if user has no access to project
       if ( $userHasProjectLevel == false )
       {
          continue;
@@ -78,13 +78,13 @@ function processTable ( $profileId )
          $versions = array_reverse ( version_get_all_rows ( $projectId ) );
       }
 
-      /** iterate through versions */
+      # iterate through versions
       $versionCount = count ( $versions );
       for ( $index = 0; $index < $versionCount; $index++ )
       {
          $version = $versions[ $index ];
 
-         /** skip released versions */
+         # skip released versions
          $versionReleased = $version[ 'released' ];
          if ( $versionReleased == 1 )
          {
@@ -98,33 +98,33 @@ function processTable ( $profileId )
          if ( $overallBugAmount > 0 )
          {
             $roadmap = new roadmap( $bugIds, $profileId );
-            /** define and print project title */
+            # define and print project title
             if ( $printedProjectTitle == false )
             {
                roadmap_html_api::htmlPluginProjectTitle ( $profileId, $projectId );
                $printedProjectTitle = true;
             }
-            /** define and print release title */
+            # define and print release title
             $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $projectId, $version );
             roadmap_html_api::printWrapperInHTML ( $releaseTitleString );
-            /** print version description */
+            # print version description
             $versionDescription = $version[ 'description' ];
             roadmap_html_api::printWrapperInHTML ( $versionDescription );
-            /** print version progress bar */
+            # print version progress bar
             roadmap_html_api::printVersionProgress ( $roadmap );
-            /** print bug list */
+            # print bug list
             roadmap_html_api::printBugList ( $roadmap );
-            /** print text progress */
+            # print text progress
             if ( $profileId >= 0 )
             {
                roadmap_html_api::printVersionProgressAsText ( $roadmap );
             }
-            /** print spacer */
+            # print spacer
             roadmap_html_api::htmlPluginSpacer ();
             $projectSeperator = true;
          }
       }
-      /** print separator */
+      # print separator
       if ( $projectSeperator == true )
       {
          roadmap_html_api::htmlPluginSeparator ();

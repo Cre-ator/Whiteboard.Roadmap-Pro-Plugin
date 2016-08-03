@@ -18,22 +18,22 @@ echo form_security_field ( 'plugin_RoadmapPro_config_update' );
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
 
-/** General configuration */
+# General configuration
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_general', 3 );
 echo '</tr>';
-/** Show menu */
+# Show menu
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_show_menu' );
 roadmap_html_api::htmlPluginConfigRadio ( 'show_menu', 2 );
 echo '</tr>';
-/** Show plugin information in footer */
+# Show plugin information in footer
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_show_footer' );
 roadmap_html_api::htmlPluginConfigRadio ( 'show_footer', 2 );
 echo '</tr>';
 
-/** eta management */
+# eta management
 if ( config_get ( 'enable_eta' ) )
 {
    echo '<tr>';
@@ -45,7 +45,7 @@ if ( config_get ( 'enable_eta' ) )
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    echo '</tr>';
-   /** eta management */
+   # eta management
 
    $etaEnumString = config_get ( 'eta_enum_string' );
    $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
@@ -76,7 +76,7 @@ if ( config_get ( 'enable_eta' ) )
    $thresholdCount = count ( $etaThresholdRows );
    if ( $thresholdCount > 0 )
    {
-      /** iterate through thresholds */
+      # iterate through thresholds
       for ( $index = 0; $index < $thresholdCount; $index++ )
       {
          $thresholdRow = $etaThresholdRows[ $index ];
@@ -87,7 +87,7 @@ if ( config_get ( 'enable_eta' ) )
          $thresholdFactor = $thresholdRow[ 4 ];
 
          echo '<tr>';
-         /** threshold from */
+         # threshold from
          echo '<td>';
          echo '<input type="hidden" name="threshold-id[]" value="' . $thresholdId . '" />';
          echo '<input type="text" name="threshold-from[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFrom ) . '" />';
@@ -118,7 +118,6 @@ roadmap_html_api::htmlPluginConfigCloseTable ();
 if ( config_get ( 'enable_eta' ) )
 {
    roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
-   /** todo +/- button */
    echo '<tbody>';
    echo '<tr class="foot-row">';
    echo '<td class="left">';
@@ -131,7 +130,7 @@ if ( config_get ( 'enable_eta' ) )
 }
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
-/** show profiles */
+# show profiles
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
 echo '</tr>';
@@ -147,7 +146,7 @@ $profiles = $roadmapDb->dbGetRoadmapProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {
-   /** iterate through profiles */
+   # iterate through profiles
    for ( $index = 0; $index < $profileCount; $index++ )
    {
       $profile = $profiles[ $index ];
@@ -160,24 +159,24 @@ if ( $profileCount > 0 )
       $profileStatusArray = explode ( ';', $dbProfileStatus );
 
       echo '<tr>';
-      /** profile name */
+      # profile name
       echo '<td>';
       echo '<input type="hidden" name="profile-id[]" value="' . $dbProfileId . '" />';
       echo '<input type="text" name="profile-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbProfileName ) . '" />';
       echo '</td>';
-      /** profile status */
+      # profile status
       echo '<td><select name="profile-status-' . $index . '[]" multiple="multiple">';
       print_enum_string_option_list ( 'status', $profileStatusArray );
       echo '</select></td>';
-      /** profile color */
+      # profile color
       echo '<td><label>';
       echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile-color[]" value="#' . $dbProfileColor . '" />';
       echo '</label></td>';
-      /** profile priority */
+      # profile priority
       echo '<td><input type="text" name="profile-prio[]" size="15" maxlength="3" value="' . $dbProfilePriority . '" /></td>';
-      /** profile effort */
+      # profile effort
       echo '<td><input type="text" name="profile-effort[]" size="15" maxlength="3" value="' . $dbProfileEffort . '" /></td>';
-      /** delete profile button */
+      # delete profile button
       echo '<td>';
       echo '<a class="button" href="' . plugin_page ( 'config_delete_profile' ) .
          '&amp;profile_id=' . $dbProfileId . '">';

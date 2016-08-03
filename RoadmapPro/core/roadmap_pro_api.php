@@ -9,99 +9,6 @@ require_once ( __DIR__ . '/roadmap_db.php' );
 class roadmap_pro_api
 {
    /**
-    * returns an array with bug ids and extened information about relations
-    *
-    * @param $bugIds
-    * @return mixed
-    */
-   public static function calculateBugRelationships ( $bugIds )
-   {
-      $roadmapDb = new roadmap_db();
-
-      $bugCount = count ( $bugIds );
-      $bugHashArray = array ();
-      for ( $index = 0; $index < ( $bugCount ); $index++ )
-      {
-         $bugId = $bugIds[ $index ];
-         $bugTargetVersion = bug_get_field ( $bugId, 'target_version' );
-
-         $bugBlockingIds = array ();
-         $bugBlockedIds = array ();
-
-         $blockingRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, true );
-         $blockedRelationshipRows = $roadmapDb->dbGetBugRelationship ( $bugId, false );
-
-         if ( $blockingRelationshipRows != null )
-         {
-            foreach ( $blockingRelationshipRows as $blockingRelationship )
-            {
-               $destBugId = $blockingRelationship[ 0 ];
-               $destBugTargetVersion = bug_get_field ( $destBugId, 'target_version' );
-
-               if ( $bugTargetVersion == $destBugTargetVersion )
-               {
-                  array_push ( $bugBlockingIds, $destBugId );
-               }
-            }
-         }
-
-         if ( $blockedRelationshipRows != null )
-         {
-            foreach ( $blockedRelationshipRows as $blocked_relationship )
-            {
-               $srcBugId = $blocked_relationship[ 0 ];
-               $srcBugTargetVersion = bug_get_field ( $srcBugId, 'target_version' );
-
-               if ( $bugTargetVersion == $srcBugTargetVersion )
-               {
-                  array_push ( $bugBlockedIds, $srcBugId );
-               }
-            }
-         }
-
-         $bugHash = array (
-            'id' => $bugId,
-            'blocking_ids' => $bugBlockingIds,
-            'blocked_ids' => $bugBlockedIds
-         );
-
-         array_push ( $bugHashArray, $bugHash );
-      }
-
-      return $bugHashArray;
-   }
-
-   /**
-    * generates string for blocked/blocking ids
-    *
-    * @param $bugIds
-    * @param $blocked
-    * @return string
-    */
-   public static function generateBlockIdString ( $bugIds, $blocked )
-   {
-      if ( $blocked == true )
-      {
-         $blockIdString = lang_get ( 'blocks' ) . '&nbsp;';
-      }
-      else
-      {
-         $blockIdString = lang_get ( 'dependant_on' ) . '&nbsp;';
-      }
-      $blockedIdCount = count ( $bugIds );
-      for ( $index = 0; $index < $blockedIdCount; $index++ )
-      {
-         $blockIdString .= bug_format_id ( $bugIds[ $index ] );
-         if ( $index < ( $blockedIdCount - 1 ) )
-         {
-            $blockIdString .= ',&nbsp;';
-         }
-      }
-
-      return $blockIdString;
-   }
-
-   /**
     * returns true, if there is a duplicate entry.
     *
     * @param $array
@@ -213,5 +120,110 @@ class roadmap_pro_api
          . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
       return $releaseTitleString;
+   }
+
+   public static function calcBugSmybols ( $bugId )
+   {
+      $bugStatus = bug_get_field ( $bugId, 'status' );
+      $allRelationships = relationship_get_all ( $bugId, $t_show_project );
+      $allRelationshipsCount = count ( $allRelationships );
+      $stopFlag = false;
+      $forbiddenFlag = false;
+      $warningFlag = false;
+      $bugEta = bug_get_field ( $bugId, 'eta' );
+      $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
+      $stopAltText = "";
+      $forbiddenAltText = "";
+      $warningAltText = "";
+      $href = string_get_bug_view_url ( $bugId ) . '#relationships_open';
+
+      for ( $index = 0; $index < $allRelationshipsCount; $index++ )
+      {
+         $relationShip = $allRelationships [ $index ];
+         if ( $bugId == $relationShip->src_bug_id )
+         {  # root bug is in the src side, related bug in the dest side
+            $destinationBugId = $relationShip->dest_bug_id;
+            $relationshipDescription = relationship_get_description_src_side ( $relationShip->type );
+         }
+         else
+         {  # root bug is in the dest side, related bug in the src side
+            $destinationBugId = $relationShip->src_bug_id;
+            $relationshipDescription = relationship_get_description_dest_side ( $relationShip->type );
+         }
+
+         # get the information from the related bug and prepare the link
+         $destinationBugStatus = bug_get_field ( $destinationBugId, 'status' );
+         if ( ( $bugStatus < CLOSED )
+            && ( $destinationBugStatus < CLOSED )
+            && ( $relationShip->type != BUG_REL_NONE )
+         )
+         {
+            $isStop = ( $relationShip->type == BUG_DEPENDANT )
+               && ( $bugId == $relationShip->src_bug_id );
+            $isForbidden = $isStop;
+            $isWarning = ( $relationShip->type == BUG_DEPENDANT )
+               && ( $bugId != $relationShip->src_bug_id );
+            if ( ( $isStop ) && ( $bugStatus == $destinationBugStatus ) )
+            {
+               if ( $stopAltText != "" )
+               {
+                  $stopAltText .= ", ";
+               }
+               if ( !$stopFlag )
+               {
+                  $stopAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $stopAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $stopFlag = true;
+            }
+            if ( ( $isForbidden ) && ( $bugStatus > $destinationBugStatus ) )
+            {
+               if ( $forbiddenAltText != "" )
+               {
+                  $forbiddenAltText .= ", ";
+               }
+               if ( !$forbiddenFlag )
+               {
+                  $forbiddenAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $forbiddenAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $forbiddenFlag = true;
+            }
+            if ( ( $isWarning ) && ( $bugStatus >= $destinationBugStatus ) )
+            {
+               if ( $warningAltText != "" )
+               {
+                  $warningAltText .= ", ";
+               }
+               if ( !$warningFlag )
+               {
+                  $warningAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
+               }
+               $warningAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
+               $warningFlag = true;
+            }
+         }
+      }
+
+      echo '&nbsp;';
+
+      if ( $useEta )
+      {
+         echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
+      }
+      if ( $forbiddenFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_forbidden.png" alt="' . $forbiddenAltText . '" title="' . $forbiddenAltText . '" /></a>&nbsp;';
+      }
+      if ( $stopFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png" alt="' . $stopAltText . '" title="' . $stopAltText . '" /></a>&nbsp;';
+      }
+      if ( $warningFlag )
+      {
+         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png" alt="' . $warningAltText . '" title="' . $warningAltText . '" /></a>&nbsp;';
+      }
+
+      echo '&nbsp;';
    }
 }

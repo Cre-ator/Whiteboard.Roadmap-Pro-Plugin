@@ -89,9 +89,7 @@ class roadmap_html_api
       $roadmapDb = new roadmap_db();
 
       $useEta = $roadmap->getEtaIsSet ();
-      $bugIds = $roadmap->getBugIds ();
       $profileHashMap = $roadmap->getProfileHashArray ();
-      $progressPercent = $roadmap->getSclaedProgressPercent ();
       $fullEta = $roadmap->getFullEta ();
       $doneEta = 0;
       echo '<div class="progress9001">';
@@ -100,32 +98,32 @@ class roadmap_html_api
          $profileHashCount = count ( $profileHashMap );
          for ( $index = 0; $index < $profileHashCount; $index++ )
          {
-            /** extract profile data */
+            # extract profile data
             $profileHash = explode ( ';', $profileHashMap[ $index ] );
             $hashProfileId = $profileHash[ 0 ];
             $hashProgress = $profileHash[ 1 ];
 
-            /** get profile color */
+            # get profile color
             $dbProfileRow = $roadmapDb->dbGetRoadmapProfile ( $hashProfileId );
             $profileColor = '#' . $dbProfileRow[ 2 ];
 
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
 
-            /** first bar */
+            # first bar
             if ( $index == 0 )
             {
                echo '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                echo '</div><!--';
             }
-            /** n - 2 (first, last) following */
+            # n - 2 (first, last) following
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
                echo '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                echo '</div>';
             }
-            /** last bar */
+            # last bar
             else
             {
                echo '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
@@ -147,8 +145,8 @@ class roadmap_html_api
       }
       else
       {
-         $bugCount = count ( $bugIds );
-         echo '&nbsp;(' . round ( $progressPercent, 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         $bugCount = count ( $roadmap->getBugIds () );
+         echo '&nbsp;(' . round ( $roadmap->getSclaedProgressPercent (), 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';
@@ -190,7 +188,7 @@ class roadmap_html_api
 
       echo '<div class="table_center">' . PHP_EOL;
       echo '<div class="tr">' . PHP_EOL;
-      /** print roadmap_profile-links */
+      # print roadmap_profile-links
       foreach ( $roadmapProfiles as $roadmapProfile )
       {
          $profileId = $roadmapProfile[ 0 ];
@@ -200,7 +198,7 @@ class roadmap_html_api
          self::printLinkStringWithGetParameters ( string_display ( $profileName ), $profileId );
          echo '</div>' . PHP_EOL;
       }
-      /** show whole progress, when there is more then one different profile */
+      # show whole progress, when there is more then one different profile
       if ( count ( $roadmapProfiles ) > 1 )
       {
          echo '<div class="td">';
@@ -219,7 +217,7 @@ class roadmap_html_api
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
-      /** check specific profile id is given */
+      # check specific profile id is given
       if ( $profileId != null )
       {
          echo $profileId;
@@ -228,12 +226,12 @@ class roadmap_html_api
       {
          echo '-1';
       }
-      /** check version id is get parameter */
+      # check version id is get parameter
       if ( $getVersionId != null )
       {
          echo '&amp;version_id=' . $getVersionId;
       }
-      /** check project id is get parameter */
+      # check project id is get parameter
       if ( $getProjectId != null )
       {
          echo '&amp;project_id=' . $getProjectId;
@@ -263,8 +261,8 @@ class roadmap_html_api
          {
             $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
             $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
-            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp' . $calculatedDoneEta[ 1 ] .
-               '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp' . $calculatedFullEta[ 1 ];
+            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
+               '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString );
          }
          else
@@ -283,57 +281,44 @@ class roadmap_html_api
    public static function printBugList ( roadmap $roadmap )
    {
       $bugIds = $roadmap->getBugIds ();
-
-      $bugIdsDetailed = roadmap_pro_api::calculateBugRelationships ( $bugIds );
-      foreach ( $bugIdsDetailed as $bug )
+      foreach ( $bugIds as $bugId )
       {
-         $bugId = $bug[ 'id' ];
-         $userId = bug_get_field ( $bugId, 'handler_id' );
-         $bugEta = bug_get_field ( $bugId, 'eta' );
-         $bugBlockingIds = $bug[ 'blocking_ids' ];
-         $bugBlockedIds = $bug[ 'blocked_ids' ];
-         $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
-
+         $bug = bug_get ( $bugId );
+         $userId = $bug->handler_id;
+         $bugIsDone = $roadmap->getIssueIsDone ( $bugId );
          echo '<div class="tr">';
-         /** line through, if bug is done */
-         if ( $roadmap->getIssueIsDone ( $bugId ) )
-         {
-            echo '<div class="td done">';
-         }
-         else
-         {
-            echo '<div class="td">';
-         }
+         # line through, if bug is done
+         self::htmlPluginBugCol ( $bugIsDone );
+         # bug id
          echo string_get_bug_view_link ( $bugId ) . '&nbsp;';
-         /** symbol when eta is set */
-         if ( $useEta )
-         {
-            echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
-         }
-         /** symbol when bug is blocking */
-         if ( empty ( $bugBlockedIds ) == false )
-         {
-            $blockedIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockedIds, true );
-            echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png' . '" alt="' . $blockedIdString .
-               '" title="' . $blockedIdString . '" />&nbsp;';
-         }
-         /** symbol when bug is blocked by */
-         if ( empty ( $bugBlockingIds ) == false )
-         {
-            $blockingIdString = roadmap_pro_api::generateBlockIdString ( $bugBlockingIds, false );
-            echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png' . '" alt="' . $blockingIdString .
-               '" title="' . $blockingIdString . '" />&nbsp;';
-         }
-         echo string_display ( bug_get_field ( $bugId, 'summary' ) );
+         # bug category
+         echo string_display_line ( category_full_name ( $bug->category_id ) );
+         # bug symbols
+         roadmap_pro_api::calcBugSmybols ( $bugId );
+         # bug summary
+         echo string_display_line ( $bug->summary );
+         # bug assigned user
          if ( $userId > 0 )
          {
             echo '&nbsp;(<a href="' . config_get ( 'path' ) . '/view_user_page.php?id=' . $userId . '">' .
                user_get_name ( $userId ) . '</a>' . ')';
          }
+         # bug status
+         echo '&nbsp;-&nbsp;' . string_display_line ( get_enum_element ( 'status', $bug->status ) ) . '.';
+         echo '</div>' . PHP_EOL;
+         echo '</div>' . PHP_EOL;
+      }
+   }
 
-         echo '&nbsp;-&nbsp;' . string_display_line ( get_enum_element ( 'status', bug_get_field ( $bugId, 'status' ) ) ) . '.';
-         echo '</div>' . PHP_EOL;
-         echo '</div>' . PHP_EOL;
+   public static function htmlPluginBugCol ( $bugIsDone )
+   {
+      if ( $bugIsDone )
+      {
+         echo '<div class="td done">';
+      }
+      else
+      {
+         echo '<div class="td">';
       }
    }
 

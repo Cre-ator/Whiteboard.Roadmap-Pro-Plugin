@@ -52,7 +52,7 @@ function processEta ()
 
    if ( is_null ( $postEtaThresholdFrom ) == false )
    {
-      /** process existing thresholds */
+      # process existing thresholds
       $thresholdIdCount = count ( $postEtaThresholdIds );
       for ( $index = 0; $index < $thresholdIdCount; $index++ )
       {
@@ -68,7 +68,7 @@ function processEta ()
          }
       }
 
-      /** process new thresholds */
+      # process new thresholds
       $overallThresholdCount = count ( $postEtaThresholdFrom );
       $newThresholdIndex = 0;
       for ( $newIndex = $thresholdIdCount; $newIndex < $overallThresholdCount; $newIndex++ )
@@ -99,11 +99,11 @@ function processProfiles ()
    {
       if ( roadmap_pro_api::checkArrayForDuplicates ( $postProfileNames ) == true )
       {
-         /** error message */
+         # error message
       }
       else
       {
-         /** process existing profiles */
+         # process existing profiles
          $profileIdCount = count ( $postProfileIds );
          for ( $index = 0; $index < $profileIdCount; $index++ )
          {
@@ -121,7 +121,7 @@ function processProfiles ()
             }
          }
 
-         /** process new profiles */
+         # process new profiles
          $overallProfileCount = count ( $postProfileNames );
          $newStatusIndex = 0;
          for ( $newIndex = $profileIdCount; $newIndex < $overallProfileCount; $newIndex++ )

@@ -21,6 +21,10 @@ if ( isset( $_GET[ 'profile_id' ] ) )
 html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
 echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>';
 echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
+echo '<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>';
+echo '<script type="text/javascript">';
+echo 'backToTop();';
+echo '</script>';
 html_page_top2 ();
 
 # print whiteboard menu bar

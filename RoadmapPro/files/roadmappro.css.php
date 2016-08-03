@@ -211,3 +211,13 @@ a.version {
 a.directory:hover {
    text-decoration: underline;
 }
+
+.back-to-top {
+   position: fixed;
+   right: 20px;
+   bottom: 20px;
+   text-indent: -9999px;
+   height: 46px;
+   width: 46px;
+   background: url("sprite.png") no-repeat -11px -474px;
+}

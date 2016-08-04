@@ -69,7 +69,6 @@ function processTable ( $profileId )
    # iterate through projects
    foreach ( $projectIds as $projectId )
    {
-      $projectSeperator = false;
       $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
       $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
 
@@ -138,13 +137,7 @@ function processTable ( $profileId )
             }
             # print spacer
             roadmap_html_api::htmlPluginSpacer ();
-            $projectSeperator = true;
          }
-      }
-      # print separator
-      if ( $projectSeperator == true )
-      {
-         roadmap_html_api::htmlPluginSeparator ();
       }
    }
 }

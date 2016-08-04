@@ -199,7 +199,6 @@ class roadmap_html_api
       echo '<div class="table" id="directory">';
       echo '<span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_directory' ) . '</span>';
       echo '</div>';
-      self::htmlPluginSeparator ();
       self::htmlPluginSpacer ();
    }
 
@@ -350,6 +349,8 @@ class roadmap_html_api
       $profileName = string_display ( $profile[ 1 ] );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
+      echo '<div class="tr">';
+      echo '<div class="td">';
       echo '<span class="pagetitle" id="p' . $projectId . '">';
       if ( $profileId == -1 )
       {
@@ -360,16 +361,13 @@ class roadmap_html_api
          echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, $profileName );
       }
       echo '</span>';
+      echo '</div>';
+      echo '</div>';
    }
 
    public static function htmlPluginSpacer ()
    {
-      echo '<div class="spacer"></div>';
-   }
-
-   public static function htmlPluginSeparator ()
-   {
-      echo '<hr class="project-separator" />';
+      echo '<div class="tr"><div class="td"><div class="spacer"></div></div></div>';
    }
 
    public static function htmlPluginTriggerWhiteboardMenu ()

@@ -127,7 +127,7 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     var tddiv = document.createElement("div");
     tddiv.className = 'td';
     tddiv.id = projectName;
-    tddiv.innerHTML = '<a class="directory project" href="#p' + projectId + '">' + projectName + '</a>';
+    tddiv.innerHTML = '<div class="tr"><div class="td"><a class="directory project" href="#p' + projectId + '">' + projectName + '</a></div></div>';
 
     trdiv.appendChild(tddiv);
 }
@@ -158,6 +158,5 @@ function backToTop() {
                 return false;
             });
         });
-
     });
 }

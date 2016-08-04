@@ -195,6 +195,10 @@ div.table_center {
    border-collapse: collapse;
 }
 
+div.table #directory {
+   float: left;
+}
+
 div.tr {
    display: table-row;
 }

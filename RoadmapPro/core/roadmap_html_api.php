@@ -66,22 +66,28 @@ class roadmap_html_api
 
    private static function htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress )
    {
+      $pageProgress = '';
       if ( $useEta == true )
       {
          $calculatedEta = roadmap_pro_api::calculateEtaUnit ( $tempEta );
-         echo $calculatedEta[ 0 ] . '&nbsp;' . $calculatedEta[ 1 ];
+         $pageProgress .= $calculatedEta[ 0 ] . '&nbsp;' . $calculatedEta[ 1 ];
       }
       else
       {
-         echo round ( $hashProgress, 1 ) . '%';
+         $pageProgress .= round ( $hashProgress, 1 ) . '%';
       }
+
+      return $pageProgress;
    }
 
-   private static function printSingleProgressbar ( $progress, $progressString )
+   private static function printSingleProgressbar ( $progress, $progressString, $versionId )
    {
       echo '<div class="progress9001">';
-      echo '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
+      $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
+      echo $progressHtmlString;
       echo '</div>';
+
+      self::htmlPluginAddDirectoryProgressBar ( $versionId, $progressHtmlString );
    }
 
    private static function printScaledProgressbar ( roadmap $roadmap )
@@ -96,6 +102,7 @@ class roadmap_html_api
       if ( empty( $profileHashMap ) == false )
       {
          $profileHashCount = count ( $profileHashMap );
+         $sumProgressHtmlString = '';
          for ( $index = 0; $index < $profileHashCount; $index++ )
          {
             # extract profile data
@@ -109,30 +116,36 @@ class roadmap_html_api
 
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
 
+            $progressHtmlString = '';
+
             # first bar
             if ( $index == 0 )
             {
-               echo '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
-               echo '</div><!--';
+               $progressHtmlString .= '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= '</div><!--';
             }
             # n - 2 (first, last) following
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
-               echo '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
-               echo '</div>';
+               $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= '</div>';
             }
             # last bar
             else
             {
-               echo '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
-               echo '</div><!--';
+               $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= '</div><!--';
             }
+            echo $progressHtmlString;
 
+            $sumProgressHtmlString .= $progressHtmlString;
             $doneEta += $tempEta;
          }
+         $versionId = $roadmap->getVersionId ();
+         self::htmlPluginAddDirectoryProgressBar ( $versionId, $sumProgressHtmlString );
       }
 
       echo '</div>';
@@ -265,6 +278,7 @@ class roadmap_html_api
          $useEta = $roadmap->getEtaIsSet ();
          $doneEta = $roadmap->getDoneEta ();
          $fullEta = $roadmap->getFullEta ();
+         $versionId = $roadmap->getVersionId ();
          $progressPercent = $roadmap->getSingleProgressPercent ();
          if ( $useEta && config_get ( 'enable_eta' ) )
          {
@@ -272,14 +286,14 @@ class roadmap_html_api
             $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
             $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
                '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-            self::printSingleProgressbar ( $progressPercent, $progressString );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
          }
          else
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
             $progressString = $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
-            self::printSingleProgressbar ( $progressPercent, $progressString );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
          }
       }
 
@@ -336,7 +350,7 @@ class roadmap_html_api
       $profileName = string_display ( $profile[ 1 ] );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
-      echo '<span class="pagetitle" id="' . $projectId . $projectName . '">';
+      echo '<span class="pagetitle" id="p' . $projectId . '">';
       if ( $profileId == -1 )
       {
          echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
@@ -369,10 +383,10 @@ class roadmap_html_api
       }
    }
 
-   public static function htmlPluginAddDirectoryVersionEntry ( $projectName, $versionName )
+   public static function htmlPluginAddDirectoryVersionEntry ( $projectName, $versionId, $versionName )
    {
       echo '<script type="text/javascript">';
-      echo 'addVersionEntryToDirectory (\'' . $projectName . '\',\'' . $versionName . '\')';
+      echo 'addVersionEntryToDirectory (\'' . $projectName . '\',\'' . $versionId . '\',\'' . $versionName . '\')';
       echo '</script>';
    }
 
@@ -381,6 +395,13 @@ class roadmap_html_api
       $projectName = project_get_name ( $projectId );
       echo '<script type="text/javascript">';
       echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\')';
+      echo '</script>';
+   }
+
+   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $htmlString )
+   {
+      echo '<script type="text/javascript">';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $htmlString . '\')';
       echo '</script>';
    }
 }

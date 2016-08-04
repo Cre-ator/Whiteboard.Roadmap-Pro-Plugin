@@ -110,7 +110,7 @@ class roadmap_pro_api
       $projectName = string_display ( project_get_name ( $projectId ) );
 
       $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' )
-         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="' . $versionName . '">'
+         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $versionId . '">'
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
          . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' )
          . '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'

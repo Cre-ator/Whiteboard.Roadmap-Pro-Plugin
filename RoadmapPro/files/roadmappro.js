@@ -84,16 +84,35 @@ function delRow(initialRowCount, tableId) {
     }
 }
 
-function addVersionEntryToDirectory(projectName, versionName) {
+function addProgressBarToDirectory(versionId, progressHtmlString) {
+    var trdiv = document.getElementById('d' + versionId);
+
+    var trbardiv = document.createElement("div");
+    trbardiv.className = 'tr';
+    trdiv.parentNode.appendChild(trbardiv);
+
+    var tddiv = document.createElement("div");
+    tddiv.className = 'td';
+    trbardiv.appendChild(tddiv);
+
+    var p9001div = document.createElement("div");
+    p9001div.className = 'progress9002';
+    p9001div.innerHTML = progressHtmlString;
+
+    tddiv.appendChild(p9001div);
+}
+
+function addVersionEntryToDirectory(projectName, versionId, versionName) {
     var table = document.getElementById(projectName);
 
     var trdiv = document.createElement("div");
     trdiv.className = 'tr';
+    trdiv.id = 'd' + versionId;
     table.appendChild(trdiv);
 
     var tddiv = document.createElement("div");
     tddiv.className = 'td';
-    tddiv.innerHTML = '<a class="directory version" href="#' + versionName + '">' + versionName + '</a>';
+    tddiv.innerHTML = '<a class="directory version" href="#v' + versionId + '">' + versionName + '</a>';
 
     trdiv.appendChild(tddiv);
 }
@@ -108,7 +127,7 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     var tddiv = document.createElement("div");
     tddiv.className = 'td';
     tddiv.id = projectName;
-    tddiv.innerHTML = '<a class="directory project" href="#' + projectId + '' + projectName + '">' + projectName + '</a>';
+    tddiv.innerHTML = '<a class="directory project" href="#p' + projectId + '">' + projectName + '</a>';
 
     trdiv.appendChild(tddiv);
 }

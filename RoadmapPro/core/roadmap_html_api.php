@@ -124,15 +124,13 @@ class roadmap_html_api
                $progressHtmlString .= '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div><!--';
-            }
-            # n - 2 (first, last) following
+            } # n - 2 (first, last) following
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
                $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div>';
-            }
-            # last bar
+            } # last bar
             else
             {
                $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
@@ -210,14 +208,17 @@ class roadmap_html_api
       echo '<div class="table_center">' . PHP_EOL;
       echo '<div class="tr">' . PHP_EOL;
       # print roadmap_profile-links
-      foreach ( $roadmapProfiles as $roadmapProfile )
+      if ( count ( $roadmapProfiles ) > 0 )
       {
-         $profileId = $roadmapProfile[ 0 ];
-         $profileName = $roadmapProfile[ 1 ];
+         foreach ( $roadmapProfiles as $roadmapProfile )
+         {
+            $profileId = $roadmapProfile[ 0 ];
+            $profileName = $roadmapProfile[ 1 ];
 
-         echo '<div class="td">';
-         self::printLinkStringWithGetParameters ( string_display ( $profileName ), $profileId );
-         echo '</div>' . PHP_EOL;
+            echo '<div class="td">';
+            self::printLinkStringWithGetParameters ( string_display ( $profileName ), $profileId );
+            echo '</div>' . PHP_EOL;
+         }
       }
       # show whole progress, when there is more then one different profile
       if ( count ( $roadmapProfiles ) > 1 )

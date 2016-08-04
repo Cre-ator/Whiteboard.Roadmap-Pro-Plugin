@@ -69,7 +69,6 @@ function processTable ( $profileId )
    # iterate through projects
    foreach ( $projectIds as $projectId )
    {
-      $projectSeperator = false;
       $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
       $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
 
@@ -85,10 +84,12 @@ function processTable ( $profileId )
       }
 
       # iterate through versions
+      $projectTitlePrinted = false;
       $versionCount = count ( $versions );
       for ( $index = 0; $index < $versionCount; $index++ )
       {
          $version = $versions[ $index ];
+         $versionId = $version[ 'id' ];
 
          # skip released versions
          $versionReleased = $version[ 'released' ];
@@ -104,16 +105,18 @@ function processTable ( $profileId )
          if ( $overallBugAmount > 0 )
          {
             $roadmap = new roadmap( $bugIds, $profileId );
+            $roadmap->setVersionId ( $versionId );
             # define and print project title
-            if ( $index == 0 )
+            if ( !$projectTitlePrinted )
             {
                # print project title
                roadmap_html_api::htmlPluginProjectTitle ( $profileId, $projectId );
                # add project title to directory
                roadmap_html_api::htmlPluginAddDirectoryProjectEntry ( $projectId );
+               $projectTitlePrinted = true;
             }
             # add version to directory
-            roadmap_html_api::htmlPluginAddDirectoryVersionEntry ( project_get_name ( $projectId ), $versionName );
+            roadmap_html_api::htmlPluginAddDirectoryVersionEntry ( project_get_name ( $projectId ), $versionId, $versionName );
             # define and print release title
             $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $projectId, $version );
             roadmap_html_api::printWrapperInHTML ( $releaseTitleString );
@@ -134,13 +137,7 @@ function processTable ( $profileId )
             }
             # print spacer
             roadmap_html_api::htmlPluginSpacer ();
-            $projectSeperator = true;
          }
-      }
-      # print separator
-      if ( $projectSeperator == true )
-      {
-         roadmap_html_api::htmlPluginSeparator ();
       }
    }
 }

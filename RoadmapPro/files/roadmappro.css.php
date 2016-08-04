@@ -37,6 +37,20 @@ hr.version-separator {
    float: left;
 }
 
+.progress9002 {
+   position: relative;
+   background: #fff;
+   width: 400px;
+   height: 20px;
+   border: 1px solid #d7d7d7;
+   -moz-border-radius: 6px;
+   -webkit-border-radius: 6px;
+   border-radius: 6px;
+   padding: 0 0 0 0;
+   float: left;
+   margin-bottom: 5px;
+}
+
 .progress9001 .bar {
    padding: 3px;
    display: inline-block;
@@ -45,7 +59,23 @@ hr.version-separator {
    color: #111;
 }
 
+.progress9002 .bar {
+   padding: 3px;
+   display: inline-block;
+   font-weight: normal;
+   font-size: smaller;
+   height: 100%;
+   color: #111;
+}
+
 .progress9001 .single {
+   text-align: center;
+   background: <?php echo $background ?>;
+   border-radius: 4px;
+   float: left;
+}
+
+.progress9002 .single {
    text-align: center;
    background: <?php echo $background ?>;
    border-radius: 4px;
@@ -59,12 +89,31 @@ hr.version-separator {
    float: left;
 }
 
+.progress9002 .left {
+   text-align: left;
+   border-top-left-radius: 4px;
+   border-bottom-left-radius: 4px;
+   float: left;
+}
+
 .progress9001 .middle {
    text-align: left;
    float: left;
 }
 
+.progress9002 .middle {
+   text-align: left;
+   float: left;
+}
+
 .progress9001 .right {
+   text-align: left;
+   border-top-right-radius: 4px;
+   border-bottom-right-radius: 4px;
+   float: left;
+}
+
+.progress9002 .right {
    text-align: left;
    border-top-right-radius: 4px;
    border-bottom-right-radius: 4px;
@@ -146,6 +195,10 @@ div.table_center {
    border-collapse: collapse;
 }
 
+div.table #directory {
+   float: left;
+}
+
 div.tr {
    display: table-row;
 }
@@ -153,7 +206,6 @@ div.tr {
 div.td {
    display: table-cell;
    border: none;
-   padding: 5px;
    float: left;
 }
 

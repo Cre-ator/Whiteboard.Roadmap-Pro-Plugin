@@ -8,6 +8,7 @@
  */
 class roadmap
 {
+   private $versionId;
    private $bugIds;
    private $profileId;
    private $doneEta;
@@ -96,6 +97,16 @@ class roadmap
    private function resetDoneBugIds ()
    {
       $this->doneBugIds = array ();
+   }
+
+   public function setVersionId ( $versionId )
+   {
+      $this->versionId = $versionId;
+   }
+
+   public function getVersionId ()
+   {
+      return $this->versionId;
    }
 
    /**

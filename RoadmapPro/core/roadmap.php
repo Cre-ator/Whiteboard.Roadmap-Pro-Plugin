@@ -221,7 +221,7 @@ class roadmap
       $this->issueIsDone = false;
 
       $bugStatus = bug_get_field ( $bugId, 'status' );
-      $roadmapProfile = $roadmapDb->dbGetRoadmapProfile ( $this->profileId );
+      $roadmapProfile = $roadmapDb->dbGetProfile ( $this->profileId );
       $dbRaodmapStatus = $roadmapProfile[ 3 ];
       $roadmapStatusArray = explode ( ';', $dbRaodmapStatus );
 
@@ -279,7 +279,7 @@ class roadmap
       $roadmapDb = new roadmap_db();
 
       # variables
-      $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
+      $roadmapProfiles = $roadmapDb->dbGetProfiles ();
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
       $profileCount = count ( $roadmapProfiles );

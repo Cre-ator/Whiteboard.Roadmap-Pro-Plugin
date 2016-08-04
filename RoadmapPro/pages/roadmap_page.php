@@ -12,7 +12,7 @@ $defaultProfileColor = 'FFFFFF';
 if ( isset( $_GET[ 'profile_id' ] ) )
 {
    $getProfileId = $_GET[ 'profile_id' ];
-   $roadmapProfile = $roadmapDb->dbGetRoadmapProfile ( $getProfileId );
+   $roadmapProfile = $roadmapDb->dbGetProfile ( $getProfileId );
    $defaultProfileColor = $roadmapProfile[ 2 ];
 }
 

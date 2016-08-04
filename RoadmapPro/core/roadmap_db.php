@@ -25,7 +25,7 @@ class roadmap_db
       $this->dbPath = 'localhost';
       $this->dbUser = 'root';
       $this->dbPass = '';
-      $this->dbName = 'mantis1219';
+      $this->dbName = 'mantisbt1219';
 
       $this->mysqli = new mysqli( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
    }
@@ -115,7 +115,7 @@ class roadmap_db
     *
     * @return array|null
     */
-   public function dbGetRoadmapProfiles ()
+   public function dbGetProfiles ()
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -144,7 +144,7 @@ class roadmap_db
     * @param $profileId
     * @return array|null
     */
-   public function dbGetRoadmapProfile ( $profileId )
+   public function dbGetProfile ( $profileId )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -438,7 +438,7 @@ class roadmap_db
       $sumProfileEffort = 0;
       if ( 0 != $result->num_rows )
       {
-         $sumProfileEffort = $result->fetch_row ()[0];
+         $sumProfileEffort = $result->fetch_row ()[ 0 ];
       }
       $this->mysqli->close ();
 

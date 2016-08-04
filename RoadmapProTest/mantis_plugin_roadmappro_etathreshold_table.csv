@@ -1,0 +1,4 @@
+id,eta_thr_from,eta_thr_to,eta_thr_unit,eta_thr_factor
+2,0,8,Stunden,1
+5,8,40,Tage,8
+6,40,9999,Wochen,40

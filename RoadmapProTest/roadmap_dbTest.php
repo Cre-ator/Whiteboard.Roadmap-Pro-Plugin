@@ -5,105 +5,123 @@ require_once ( __DIR__ . '/../RoadmapPro/core/roadmap_db.php' );
 
 /**
  * Created by PhpStorm.
+ *
  * User: stefan.schwarz
  * Date: 14.07.2016
  * Time: 15:19
+ *
+ * IMPORTANT: #1 Add the following lines to your mantis config file first:
+ *
+ *                $g_eta_enum_string = '10:none,20:< 0,5 day,30:< 1 day,40:< 2-3 days,50:< 5 days';
+ *                $g_status_enum_string = '10:new,20:feedback,30:acknowledged,50:assigned,80:resolved,85:confirmed,90:closed';
+ *
+ *
+ *            #2 Then import the data sheets in the folder RoadmapProTest to your database!
+ *               (Make sure, that there is no data in roadmappro plugin tables!)
+ *
+ *                mantis_plugin_roadmappro_eta_table.csv
+ *                mantis_plugin_roadmappro_etathreshold_table.cs
+ *                mantis_plugin_roadmappro_profile_table.cs
  */
 class roadmap_dbTest extends PHPUnit_Framework_TestCase
 {
-   public function testGetBugIdsByProjectAndVersion ()
+   # profile table
+   public function testDbGetProfiles ()
    {
-      $roadmap_db = new roadmap_db();
-      /** valid variables */
-      $project_id = 23;
-      $version_name = 'Specification Management 1.1.x';
-      $bug_ids = [ 0 => 30, 1 => 31 ];
+      $roadmapDb = new roadmap_db();
+      $prf1 = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'FFCD85', 3 => '30;50;80;90', 4 => 1, 5 => 20 ];
+      $prf2 = [ 0 => 2, 1 => 'Verifikation fertig', 2 => 'FFF494', 3 => '85;90', 4 => 3, 5 => 30 ];
+      $prf3 = [ 0 => 3, 1 => 'Bearbeitung fertig', 2 => 'D2F5B0', 3 => '80;90', 4 => 2, 5 => 50 ];
+      # sorted by [4] -> priority parameter
+      $validArray = [ 0 => $prf1, 1 => $prf3, 2 => $prf2 ];
 
-      /** invalid variables */
-      $invalid_version_name = 'specification management 1.1.';
-      $invalid_bug_ids = [ 0 => 30, 1 => 32 ];
-
-      /** valid */
-      $this->assertInternalType ( 'array', $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
-      $this->assertEquals ( $bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
-      /** invalid */
-      $this->assertNotEquals ( $invalid_bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $version_name ) );
-      $this->assertNotEquals ( $bug_ids, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, $invalid_version_name ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( $project_id, '' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, $version_name ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 250, '' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, '' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 'hallo', '' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 0, 0 ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( '', 0 ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetBugIdsByProjectAndVersion ( 'hallo', 0 ) );
+      $this->assertEquals ( $validArray, $roadmapDb->dbGetProfiles () );
    }
 
-   public function testGetRoadmapProfiles ()
+   public function testDbGetProfile ()
    {
-      $roadmap_db = new roadmap_db();
-      $profile_a = [ 0 => 3, 1 => 'Analyse fertig', 2 => 'FFC67A', 3 => '30;40;50;80;90', 4 => 2 ];
-      $profile_b = [ 0 => 4, 1 => 'Bearbeitung fertig', 2 => 'BAFF61', 3 => '80;90', 4 => 3 ];
-      $profile_c = [ 0 => 4, 1 => 'Bearbeitung fertig', 2 => 'BAFF61', 3 => '70;90', 4 => 3 ];
-      $result_valid = [ 0 => $profile_a, 1 => $profile_b ];
-      $result_invalid = [ 0 => $profile_a, 1 => $profile_c ];
+      $roadmapDb = new roadmap_db();
+      $profileId = 1;
+      $prf1 = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'FFCD85', 3 => '30;50;80;90', 4 => 1, 5 => 20 ];
+      $prf2 = [ 0 => 2, 1 => 'Verifikation fertig', 2 => 'FFF494', 3 => '85;90', 4 => 3, 5 => 30 ];
+      $prf3 = [ 0 => 3, 1 => 'Bearbeitung fertig', 2 => 'D2F5B0', 3 => '80;90', 4 => 2, 5 => 50 ];
 
-      /** valid */
-      $this->assertInternalType ( 'array', $roadmap_db->dbGetRoadmapProfiles () );
-      $this->assertEquals ( $result_valid, $roadmap_db->dbGetRoadmapProfiles () );
-      /** invalid */
-      $this->assertNotEquals ( $result_invalid, $roadmap_db->dbGetRoadmapProfiles () );
+      $this->assertEquals ( $prf1, $roadmapDb->dbGetProfile ( $profileId ) );
+      $this->assertNotEquals ( $prf2, $roadmapDb->dbGetProfile ( $profileId ) );
+      $this->assertNotEquals ( $prf3, $roadmapDb->dbGetProfile ( $profileId ) );
    }
 
-   public function testGetRoadmapProfile ()
+   public function testDbUpdateProfile ()
    {
-      $roadmap_db = new roadmap_db();
-      $profile_id = 3;
-      $result_valid = [ 0 => 3, 1 => 'Analyse fertig', 2 => 'FFC67A', 3 => '30;40;50;80;90', 4 => 2 ];
-      $result_invalid_a = [ 0 => 2, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 2 ];
-      $result_invalid_b = [ 0 => 1, 1 => 'Analüse fertig', 2 => 'E5FF63', 3 => '30;40;50;80;90', 4 => 2 ];
-      $result_invalid_c = [ 0 => 1, 1 => 'Analyse fertig', 2 => '1E5FF63', 3 => '30;40;50;80;90', 4 => 2 ];
-      $result_invalid_d = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 2 ];
-      $result_invalid_e = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'E5FF63', 3 => '300;40;50;80;90', 4 => 3 ];
+      $roadmapDb = new roadmap_db();
+      $profileId = 1;
 
-      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
-      /** valid */
-      $this->assertInternalType ( 'array', $db_result );
-      $this->assertEquals ( $result_valid, $db_result );
-      /** invalid */
-      $this->assertNotEquals ( $result_invalid_a, $db_result );
-      $this->assertNotEquals ( $result_invalid_b, $db_result );
-      $this->assertNotEquals ( $result_invalid_c, $db_result );
-      $this->assertNotEquals ( $result_invalid_d, $db_result );
-      $this->assertNotEquals ( $result_invalid_e, $db_result );
-      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( '1 AND profile_color=\'E5FF63\'' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( '' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( 'hallo' ) );
-      $this->assertEquals ( null, $roadmap_db->dbGetRoadmapProfile ( 9999 ) );
+      $startName = 'Analyse fertig';
+      $startColor = 'FFCD85';
+      $startStatus = '30;50;80;90';
+      $startPrio = 1;
+      $startEffort = 20;
+
+      $targetName = 'test';
+      $targetColor = 'FFFAAA';
+      $targetStatus = '30;50';
+      $targetPrio = 9;
+      $targetEffort = 100;
+
+      $startPrf = [ 0 => 1, 1 => $startName, 2 => $startColor, 3 => $startStatus, 4 => $startPrio, 5 => $startEffort ];
+      $targetPrf = [ 0 => 1, 1 => $targetName, 2 => $targetColor, 3 => $targetStatus, 4 => $targetPrio, 5 => $targetEffort ];
+
+      $roadmapDb->dbUpdateProfile ( $profileId, $targetName, $targetColor, $targetStatus, $targetPrio, $targetEffort );
+      $updatedPrf = $roadmapDb->dbGetProfile ( $profileId );
+      $this->assertEquals ( $targetPrf, $updatedPrf );
+      $roadmapDb->dbUpdateProfile ( $profileId, $startName, $startColor, $startStatus, $startPrio, $startEffort );
+      $updatedPrf = $roadmapDb->dbGetProfile ( $profileId );
+      $this->assertEquals ( $startPrf, $updatedPrf );
    }
 
-   public function testInsertDeleteProfile ()
+   public function testDbInsertProfile ()
    {
-      $roadmap_db = new roadmap_db();
-      /** variables */
-      $profile_name = 'Testprofil';
-      $profile_color = '000000';
-      $profile_status = '10;20;50';
-      $profile_priority = 10;
+      $roadmapDb = new roadmap_db();
 
-      $profile_id = $roadmap_db->dbInsertProfile ( $profile_name, $profile_color, $profile_status, $profile_priority );
-      $profile = [ 0 => $profile_id, 1 => 'Testprofil', 2 => '000000', 3 => '10;20;50', 4 => 10 ];
+      $targetName = 'test';
+      $targetColor = 'FFFAAA';
+      $targetStatus = '30;50';
+      $targetPrio = 9;
+      $targetEffort = 100;
 
-      /** get profile from tested function @testGetRoadmapProfile */
-      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
-      /** valid */
-      $this->assertEquals ( $profile, $db_result );
 
-      /** delete profile */
-      $roadmap_db->dbDeleteProfile ( $profile_id );
-      /** get profile from tested function @testGetRoadmapProfile */
-      $db_result = $roadmap_db->dbGetRoadmapProfile ( $profile_id );
-      /** valid */
-      $this->assertEquals ( null, $db_result );
+      $prfIdAfterInsert = $roadmapDb->dbInsertProfile ( $targetName, $targetColor, $targetStatus, $targetPrio, $targetEffort );
+      $targetPrf = [ 0 => $prfIdAfterInsert, 1 => $targetName, 2 => $targetColor, 3 => $targetStatus, 4 => $targetPrio, 5 => $targetEffort ];
+
+      $prfAfterInsert = $roadmapDb->dbGetProfile ( $prfIdAfterInsert );
+      $this->assertEquals ( $targetPrf, $prfAfterInsert );
+   }
+
+   public function testDbDeleteProfile ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $roadmaps = $roadmapDb->dbGetProfiles ();
+      $roadmapCount = count ( $roadmaps );
+      $lastRoadmapId = $roadmaps[ ( $roadmapCount - 1 ) ][ 0 ];
+      $roadmapDb->dbDeleteProfile ( $lastRoadmapId );
+
+      $prf1 = [ 0 => 1, 1 => 'Analyse fertig', 2 => 'FFCD85', 3 => '30;50;80;90', 4 => 1, 5 => 20 ];
+      $prf2 = [ 0 => 2, 1 => 'Verifikation fertig', 2 => 'FFF494', 3 => '85;90', 4 => 3, 5 => 30 ];
+      $prf3 = [ 0 => 3, 1 => 'Bearbeitung fertig', 2 => 'D2F5B0', 3 => '80;90', 4 => 2, 5 => 50 ];
+      # sorted by [4] -> priority parameter
+      $validArray = [ 0 => $prf1, 1 => $prf3, 2 => $prf2 ];
+
+      $this->assertEquals ( $validArray, $roadmapDb->dbGetProfiles () );
+   }
+
+   public function TestDbGetSumProfileEffort ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $desiredEffort = 100;
+      $actualEffort = $roadmapDb->dbGetSumProfileEffort ();
+
+      $this->assertEquals ( $desiredEffort, $actualEffort );
    }
 }

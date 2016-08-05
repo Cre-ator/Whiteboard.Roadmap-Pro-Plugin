@@ -205,42 +205,153 @@ class roadmap_html_api
    public static function printProfileSwitcher ()
    {
       $roadmapDb = new roadmap_db();
-      $roadmapProfiles = $roadmapDb->dbGetProfiles ();
+      $groups = $roadmapDb->dbGetGroups ();
+      $profiles = $roadmapDb->dbGetProfiles ();
+
+      $groupCount = count ( $groups );
+      $profileCount = count ( $profiles );
+
+      echo '<div class="table_center">' . PHP_EOL;
+      if ( $groupCount > 0 )
+      {
+         echo '<div class="tr">' . PHP_EOL;
+         foreach ( $groups as $group )
+         {
+            $groupId = $group[ 0 ];
+            $groupName = $group[ 1 ];
+
+            echo '<div class="td">';
+            self::htmlLinkGroupSwitcher ( $groupName, $groupId );
+            echo '</div>' . PHP_EOL;
+         }
+         echo '</div>' . PHP_EOL;
+      }
+      else
+      {
+         echo '<div class="tr">' . PHP_EOL;
+         # print roadmap_profile-links
+         if ( $profileCount > 0 )
+         {
+            foreach ( $profiles as $roadmapProfile )
+            {
+               $profileId = $roadmapProfile[ 0 ];
+               $profileName = $roadmapProfile[ 1 ];
+
+               echo '<div class="td">';
+               self::htmlLinkProfileSwitcher ( string_display ( $profileName ), $profileId );
+               echo '</div>' . PHP_EOL;
+            }
+         }
+         # show whole progress, when there is more then one different profile
+         if ( $profileCount > 1 )
+         {
+            echo '<div class="td">';
+            self::htmlLinkProfileSwitcher ( plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+            echo '</div>' . PHP_EOL;
+         }
+         echo '</div>' . PHP_EOL;
+      }
+      echo '</div>' . PHP_EOL;
+   }
+
+   public static function htmlGroupProfileSwitcher ( $groupId )
+   {
+      $roadmapDb = new roadmap_db();
+      $group = $roadmapDb->dbGetGroup ( $groupId );
+      $groupProfileIds = explode ( ';', $group[ 2 ] );
+      $groupProfileIdCount = count ( $groupProfileIds );
 
       echo '<div class="table_center">' . PHP_EOL;
       echo '<div class="tr">' . PHP_EOL;
-      # print roadmap_profile-links
-      if ( count ( $roadmapProfiles ) > 0 )
+      if ( $groupProfileIdCount > 0 )
       {
-         foreach ( $roadmapProfiles as $roadmapProfile )
+         foreach ( $groupProfileIds as $groupProfileId )
          {
-            $profileId = $roadmapProfile[ 0 ];
-            $profileName = $roadmapProfile[ 1 ];
-
+            $profile = $roadmapDb->dbGetProfile ( $groupProfileId );
+            $profileName = $profile[ 1 ];
             echo '<div class="td">';
-            self::printLinkStringWithGetParameters ( string_display ( $profileName ), $profileId );
+            self::htmlLinkGroupProfileSwitcher ( string_display ( $profileName ), $groupId, $groupProfileId );
             echo '</div>' . PHP_EOL;
          }
       }
       # show whole progress, when there is more then one different profile
-      if ( count ( $roadmapProfiles ) > 1 )
+      if ( $groupProfileIdCount > 1 )
       {
          echo '<div class="td">';
-         self::printLinkStringWithGetParameters ( plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+         self::htmlLinkGroupProfileSwitcher ( plugin_lang_get ( 'roadmap_page_whole_progress' ), $groupId );
          echo '</div>' . PHP_EOL;
       }
-
       echo '</div>' . PHP_EOL;
       echo '</div>' . PHP_EOL;
    }
 
-   private static function printLinkStringWithGetParameters ( $linkDescription, $profileId = null )
+   private static function htmlLinkGroupSwitcher ( $groupName, $groupId )
+   {
+      $getVersionId = $_GET[ 'version_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $currentProjectId = helper_get_current_project ();
+
+      echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=';
+      # check specific profile id is given
+      if ( $groupId != null )
+      {
+         echo $groupId;
+      }
+      # check version id is get parameter
+      if ( $getVersionId != null )
+      {
+         echo '&amp;version_id=' . $getVersionId;
+      }
+      # check project id is get parameter
+      if ( $getProjectId != null )
+      {
+         echo '&amp;project_id=' . $getProjectId;
+      }
+      echo '&amp;sproject_id=' . $currentProjectId;
+      echo '">';
+      echo $groupName;
+      echo '</a> ]';
+   }
+
+   private static function htmlLinkProfileSwitcher ( $linkDescription, $profileId = null )
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
+      # check specific profile id is given
+      if ( $profileId != null )
+      {
+         echo $profileId;
+      }
+      else
+      {
+         echo '-1';
+      }
+      # check version id is get parameter
+      if ( $getVersionId != null )
+      {
+         echo '&amp;version_id=' . $getVersionId;
+      }
+      # check project id is get parameter
+      if ( $getProjectId != null )
+      {
+         echo '&amp;project_id=' . $getProjectId;
+      }
+      echo '&amp;sproject_id=' . $currentProjectId;
+      echo '">';
+      echo $linkDescription;
+      echo '</a> ]';
+   }
+
+   private static function htmlLinkGroupProfileSwitcher ( $linkDescription, $groupId, $profileId = null )
+   {
+      $getVersionId = $_GET[ 'version_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $currentProjectId = helper_get_current_project ();
+
+      echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=' . $groupId . '&amp;profile_id=';
       # check specific profile id is given
       if ( $profileId != null )
       {

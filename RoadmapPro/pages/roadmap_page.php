@@ -21,7 +21,7 @@ if ( isset( $_GET[ 'profile_id' ] ) )
 html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
 echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>';
 echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
-echo '<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>';
+echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
 echo '<script type="text/javascript">';
 echo 'backToTop();';
 echo '</script>';
@@ -32,6 +32,13 @@ roadmap_html_api::htmlPluginTriggerWhiteboardMenu ();
 
 # print profile menu bar
 roadmap_html_api::printProfileSwitcher ();
+
+# print group->profile menu bar
+if ( isset( $_GET[ 'group_id' ] ) )
+{
+   $groupId = $_GET[ 'group_id' ];
+   roadmap_html_api::htmlGroupProfileSwitcher ( $groupId );
+}
 
 # print page content
 if ( isset( $_GET[ 'profile_id' ] ) )
@@ -57,6 +64,8 @@ function processTable ( $profileId )
 
    $getVersionId = $_GET[ 'version_id' ];
    $getProjectId = $_GET[ 'project_id' ];
+   $getGroupId = $_GET[ 'group_id' ];
+
    $roadmap = new roadmap_data( $getVersionId, $getProjectId );
    $roadmap->calcProjectVersionContent ();
 
@@ -104,7 +113,7 @@ function processTable ( $profileId )
 
          if ( $overallBugAmount > 0 )
          {
-            $roadmap = new roadmap( $bugIds, $profileId );
+            $roadmap = new roadmap( $bugIds, $profileId, $getGroupId );
             $roadmap->setVersionId ( $versionId );
             # define and print project title
             if ( !$projectTitlePrinted )

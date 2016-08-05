@@ -276,4 +276,12 @@ class roadmap_pro_api
 
       return $profileEnumIdArray;
    }
+
+   public static function getGroupProfileIds ( $groupId )
+   {
+      $roadmapDb = new roadmap_db();
+      $group = $roadmapDb->dbGetGroup ( $groupId );
+
+      return explode ( ';', $group[ 2 ] );
+   }
 }

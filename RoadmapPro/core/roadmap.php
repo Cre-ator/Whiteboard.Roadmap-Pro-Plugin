@@ -11,6 +11,7 @@ class roadmap
    private $versionId;
    private $bugIds;
    private $profileId;
+   private $groupId;
    private $doneEta;
    private $progressPercent;
    private $profileHashArray;
@@ -22,10 +23,11 @@ class roadmap
    private $doneBugIds;
    private $issueIsDone;
 
-   function __construct ( $bugIds, $profileId )
+   function __construct ( $bugIds, $profileId, $groupId )
    {
       $this->bugIds = $bugIds;
       $this->profileId = $profileId;
+      $this->groupId = $groupId;
       $this->doneBugIds = array ();
       $this->doingBugIds = array ();
       $this->profileHashArray = array ();
@@ -279,7 +281,19 @@ class roadmap
       $roadmapDb = new roadmap_db();
 
       # variables
-      $roadmapProfiles = $roadmapDb->dbGetProfiles ();
+      if ( $this->groupId == null )
+      {
+         $roadmapProfiles = $roadmapDb->dbGetProfiles ();
+      }
+      else
+      {
+         $roadmapProfiles = array ();
+         $roadmapProfileIds = roadmap_pro_api::getGroupProfileIds ( $this->groupId );
+         foreach ( $roadmapProfileIds as $roadmapProfileId )
+         {
+            array_push ( $roadmapProfiles, $roadmapDb->dbGetProfile ( $roadmapProfileId ) );
+         }
+      }
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
       $profileCount = count ( $roadmapProfiles );

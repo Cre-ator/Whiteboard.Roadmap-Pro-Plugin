@@ -37,7 +37,7 @@ class roadmap_db
     * @param $versionName
     * @return array|null
     */
-   public function dbGetBugIdsByProjectAndVersion ( $projectId, $versionName )
+   public function dbGetBugIdsByProjectAndTargetVersion ( $projectId, $versionName )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
@@ -187,6 +187,29 @@ class roadmap_db
    }
 
    /**
+    * returns the sum of all profile efforts
+    *
+    * @return int
+    */
+   public function dbGetSumProfileEffort ()
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+      $query = /** @lang sql */
+         "SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table";
+
+      $result = $this->mysqli->query ( $query );
+
+      $sumProfileEffort = 0;
+      if ( 0 != $result->num_rows )
+      {
+         $sumProfileEffort = $result->fetch_row ()[ 0 ];
+      }
+      $this->mysqli->close ();
+
+      return $sumProfileEffort;
+   }
+
+   /**
     * Reset all plugin-related data
     *
     * - config entries
@@ -223,49 +246,6 @@ class roadmap_db
    }
 
    /**
-    * get the relationship rows for two given bug ids
-    *
-    * @param $bugId
-    * @param $blocking
-    * @return array|null
-    */
-   public function dbGetBugRelationship ( $bugId, $blocking )
-   {
-      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-
-      /** get blocking bug ids */
-      if ( $blocking == true )
-      {
-         $query = /** @lang sql */
-            "SELECT destination_bug_id FROM mantis_bug_relationship_table
-            WHERE source_bug_id = " . $bugId . "
-            AND relationship_type = 2";
-      }
-      /** get blocked bug ids */
-      else
-      {
-         $query = /** @lang sql */
-            "SELECT source_bug_id FROM mantis_bug_relationship_table
-            WHERE destination_bug_id = " . $bugId . "
-            AND relationship_type = 2";
-      }
-
-      $result = $this->mysqli->query ( $query );
-
-      $relationships = null;
-      if ( 0 != $result->num_rows )
-      {
-         while ( $row = $result->fetch_row () )
-         {
-            $relationships[] = $row;
-         }
-      }
-      $this->mysqli->close ();
-
-      return $relationships;
-   }
-
-   /**
     * insert a new eta-key-value-pair
     *
     * @param $key
@@ -296,23 +276,25 @@ class roadmap_db
     * @param $key
     * @param $value
     */
-   public function dbUpdateEtaKeyValue ( $key, $value )
+   public function dbUpdateEtaUserValue ( $key, $value )
    {
-
-      if ( $this->dbCheckEtaKeyIsSet ( $key ) )
+      if ( is_numeric ( $key ) )
       {
-         $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-         $query = /** @lang sql */
-            "UPDATE mantis_plugin_RoadmapPro_eta_table
+         if ( $this->dbCheckEtaKeyIsSet ( $key ) )
+         {
+            $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+            $query = /** @lang sql */
+               "UPDATE mantis_plugin_RoadmapPro_eta_table
             SET eta_user_value='" . $value . "'
             WHERE eta_config_value = '" . $key . "'";
 
-         $this->mysqli->query ( $query );
-         $this->mysqli->close ();
-      }
-      else
-      {
-         $this->dbInsertEtaKeyValue ( $key, $value );
+            $this->mysqli->query ( $query );
+            $this->mysqli->close ();
+         }
+         else
+         {
+            $this->dbInsertEtaKeyValue ( $key, $value );
+         }
       }
    }
 
@@ -345,6 +327,11 @@ class roadmap_db
 
    public function dbGetEtaRowByKey ( $key )
    {
+      if ( !is_numeric ( $key ) )
+      {
+         return null;
+      }
+
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
       $query = /** @lang sql */
@@ -361,36 +348,6 @@ class roadmap_db
       $this->mysqli->close ();
 
       return $etaRow;
-   }
-
-   public function dbInsertEtaThresholdValue ( $from, $to, $unit, $factor )
-   {
-      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-
-      $query = /** @lang sql */
-         "INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
-            SELECT null,'" . $from . "','" . $to . "','" . $unit . "','" . $factor . "'
-            FROM DUAL WHERE NOT EXISTS (
-            SELECT 1 FROM mantis_plugin_RoadmapPro_etathreshold_table
-            WHERE eta_thr_unit = '" . $unit . "')";
-
-      $this->mysqli->query ( $query );
-      $etaId = $this->mysqli->insert_id;
-      $this->mysqli->close ();
-
-      return $etaId;
-   }
-
-   public function dbUpdateEtaThresholdValue ( $id, $from, $to, $unit, $factor )
-   {
-      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-      $query = /** @lang sql */
-         "UPDATE mantis_plugin_RoadmapPro_etathreshold_table
-               SET eta_thr_from='" . $from . "',eta_thr_to='" . $to . "',eta_thr_unit='" . $unit . "',eta_thr_factor='" . $factor . "'
-               WHERE id = '" . $id . "'";
-
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
    }
 
    public function dbGetEtaThresholds ()
@@ -414,34 +371,57 @@ class roadmap_db
       return $etaThresholdRows;
    }
 
+   public function dbInsertEtaThresholdValue ( $from, $to, $unit, $factor )
+   {
+      if ( is_numeric ( $from ) && is_numeric ( $to ) && is_numeric ( $factor ) )
+      {
+         $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+         $query = /** @lang sql */
+            "INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
+            SELECT null,'" . $from . "','" . $to . "','" . $unit . "','" . $factor . "'
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_etathreshold_table
+            WHERE eta_thr_unit = '" . $unit . "')";
+
+         $this->mysqli->query ( $query );
+         $etaId = $this->mysqli->insert_id;
+         $this->mysqli->close ();
+
+         return $etaId;
+      }
+
+      return null;
+   }
+
+   public function dbUpdateEtaThresholdValue ( $id, $from, $to, $unit, $factor )
+   {
+      if ( is_numeric ( $id ) && is_numeric ( $from ) && is_numeric ( $to ) && is_numeric ( $factor ) )
+      {
+         $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+         $query = /** @lang sql */
+            "UPDATE mantis_plugin_RoadmapPro_etathreshold_table
+               SET eta_thr_from='" . $from . "',eta_thr_to='" . $to . "',eta_thr_unit='" . $unit . "',eta_thr_factor='" . $factor . "'
+               WHERE id = '" . $id . "'";
+
+         $this->mysqli->query ( $query );
+         $this->mysqli->close ();
+      }
+   }
+
    public function dbDeleteEtaThreshold ( $id )
    {
       $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
 
-      $query = /** @lang sql */
-         "DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table
+      if ( is_numeric ( $id ) )
+      {
+         $query = /** @lang sql */
+            "DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table
             WHERE id = " . $id;
 
-      $this->mysqli->query ( $query );
-
-      $this->mysqli->close ();
-   }
-
-   public function dbGetSumProfileEffort ()
-   {
-      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
-      $query = /** @lang sql */
-         "SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table";
-
-      $result = $this->mysqli->query ( $query );
-
-      $sumProfileEffort = 0;
-      if ( 0 != $result->num_rows )
-      {
-         $sumProfileEffort = $result->fetch_row ()[ 0 ];
+         $this->mysqli->query ( $query );
       }
-      $this->mysqli->close ();
 
-      return $sumProfileEffort;
+      $this->mysqli->close ();
    }
 }

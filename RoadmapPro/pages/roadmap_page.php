@@ -99,7 +99,7 @@ function processTable ( $profileId )
          }
 
          $versionName = $version[ 'version' ];
-         $bugIds = $roadmapDb->dbGetBugIdsByProjectAndVersion ( $projectId, $versionName );
+         $bugIds = $roadmapDb->dbGetBugIdsByProjectAndTargetVersion ( $projectId, $versionName );
          $overallBugAmount = count ( $bugIds );
 
          if ( $overallBugAmount > 0 )

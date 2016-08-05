@@ -1,6 +1,5 @@
 <?php
 require_once ( __DIR__ . '/../../vendor/autoload.php' );
-require_once ( __DIR__ . '/../RoadmapPro/core/roadmap_pro_api.php' );
 require_once ( __DIR__ . '/../RoadmapPro/core/roadmap_db.php' );
 
 /**
@@ -123,5 +122,130 @@ class roadmap_dbTest extends PHPUnit_Framework_TestCase
       $actualEffort = $roadmapDb->dbGetSumProfileEffort ();
 
       $this->assertEquals ( $desiredEffort, $actualEffort );
+   }
+
+   # eta table
+   public function testDbGetEtaRowByKey ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaConfigValue = 10;
+      $desiredEtaRow = [ 0 => 1, 1 => 10, 2 => 0 ];
+
+      $actualEtaRow = $roadmapDb->dbGetEtaRowByKey ( $etaConfigValue );
+
+      $this->assertEquals ( $desiredEtaRow, $actualEtaRow );
+   }
+
+   public function testDbUpdateEtaUserValue ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaConfigValue = 10;
+      $startEtaRow = [ 0 => 1, 1 => 10, 2 => 0 ];
+      $desiredEtaRow = [ 0 => 1, 1 => 10, 2 => 200 ];
+
+      $roadmapDb->dbUpdateEtaUserValue ( $etaConfigValue, 200 );
+      $actualEtaRow = $roadmapDb->dbGetEtaRowByKey ( $etaConfigValue );
+
+      $this->assertEquals ( $desiredEtaRow, $actualEtaRow );
+
+      $roadmapDb->dbUpdateEtaUserValue ( $etaConfigValue, 0 );
+      $actualEtaRow = $roadmapDb->dbGetEtaRowByKey ( $etaConfigValue );
+
+      $this->assertEquals ( $startEtaRow, $actualEtaRow );
+   }
+
+   #eta threshold
+   public function testDbGetEtaThresholds ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaThr1 = [ 0 => 2, 1 => 0, 2 => 8, 3 => 'Stunden', 4 => 1 ];
+      $etaThr2 = [ 0 => 5, 1 => 8, 2 => 40, 3 => 'Tage', 4 => 8 ];
+      $etaThr3 = [ 0 => 6, 1 => 40, 2 => 9999, 3 => 'Wochen', 4 => 40 ];
+
+      $etaThrBundle = [ 0 => $etaThr1, 1 => $etaThr2, 2 => $etaThr3 ];
+
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+
+      $this->assertEquals ( $etaThrBundle, $actualEtaThrBundle );
+   }
+
+   public function testDbInsertEtaThresholdValue ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaThr1 = [ 0 => 2, 1 => 0, 2 => 8, 3 => 'Stunden', 4 => 1 ];
+      $etaThr2 = [ 0 => 5, 1 => 8, 2 => 40, 3 => 'Tage', 4 => 8 ];
+      $etaThr3 = [ 0 => 6, 1 => 40, 2 => 9999, 3 => 'Wochen', 4 => 40 ];
+
+      # valid input data
+      $latestEtaThrId = $roadmapDb->dbInsertEtaThresholdValue ( 10000, 10001, 'Jahre', 8760 );
+
+      $etaThr4 = [ 0 => $latestEtaThrId, 1 => 10000, 2 => 10001, 3 => 'Jahre', 4 => 8760 ];
+      $desiredEtaThrBundle = [ 0 => $etaThr1, 1 => $etaThr2, 2 => $etaThr3, 3 => $etaThr4 ];
+
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+      $this->assertEquals ( $desiredEtaThrBundle, $actualEtaThrBundle );
+
+      # invalid input data
+      $latestEtaThrId = $roadmapDb->dbInsertEtaThresholdValue ( '', '', 123, '' );
+      $this->assertEquals ( null, $latestEtaThrId );
+   }
+
+   public function testDbUpdateEtaThresholdValue ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaThr1 = [ 0 => 2, 1 => 0, 2 => 8, 3 => 'Stunden', 4 => 1 ];
+      $etaThr2 = [ 0 => 5, 1 => 8, 2 => 40, 3 => 'Tage', 4 => 8 ];
+      $etaThr3 = [ 0 => 6, 1 => 40, 2 => 9999, 3 => 'Wochen', 4 => 40 ];
+
+      $etaThresholds = $roadmapDb->dbGetEtaThresholds ();
+      $etaThresholdCount = count ( $etaThresholds );
+      $latestEtaThrId = $etaThresholds[ ( $etaThresholdCount - 1 ) ][ 0 ];
+
+      # valid input data
+      $roadmapDb->dbUpdateEtaThresholdValue ( $latestEtaThrId, 10001, 10000, 'Jahrzehnte', 87600 );
+
+      $etaThr4 = [ 0 => $latestEtaThrId, 1 => 10001, 2 => 10000, 3 => 'Jahrzehnte', 4 => 87600 ];
+      $desiredEtaThrBundle = [ 0 => $etaThr1, 1 => $etaThr2, 2 => $etaThr3, 3 => $etaThr4 ];
+
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+
+      $this->assertEquals ( $desiredEtaThrBundle, $actualEtaThrBundle );
+
+      # invalid input data
+      $roadmapDb->dbUpdateEtaThresholdValue ( $latestEtaThrId, '', '', 123, '' );
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+      $this->assertEquals ( $desiredEtaThrBundle, $actualEtaThrBundle );
+   }
+
+   public function testDbDeleteEtaThreshold ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $etaThr1 = [ 0 => 2, 1 => 0, 2 => 8, 3 => 'Stunden', 4 => 1 ];
+      $etaThr2 = [ 0 => 5, 1 => 8, 2 => 40, 3 => 'Tage', 4 => 8 ];
+      $etaThr3 = [ 0 => 6, 1 => 40, 2 => 9999, 3 => 'Wochen', 4 => 40 ];
+
+      $etaThresholds = $roadmapDb->dbGetEtaThresholds ();
+      $etaThresholdCount = count ( $etaThresholds );
+      $latestEtaThrId = $etaThresholds[ ( $etaThresholdCount - 1 ) ][ 0 ];
+
+      # valid data input
+      $roadmapDb->dbDeleteEtaThreshold ( $latestEtaThrId );
+
+      $desiredEtaThrBundle = [ 0 => $etaThr1, 1 => $etaThr2, 2 => $etaThr3 ];
+
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+
+      $this->assertEquals ( $desiredEtaThrBundle, $actualEtaThrBundle );
+
+      # invalid input data
+      $roadmapDb->dbDeleteEtaThreshold ( 'abc' );
+      $actualEtaThrBundle = $roadmapDb->dbGetEtaThresholds ();
+      $this->assertEquals ( $desiredEtaThrBundle, $actualEtaThrBundle );
    }
 }

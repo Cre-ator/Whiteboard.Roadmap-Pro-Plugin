@@ -111,7 +111,7 @@ class roadmap_html_api
             $hashProgress = $profileHash[ 1 ];
 
             # get profile color
-            $dbProfileRow = $roadmapDb->dbGetRoadmapProfile ( $hashProfileId );
+            $dbProfileRow = $roadmapDb->dbGetProfile ( $hashProfileId );
             $profileColor = '#' . $dbProfileRow[ 2 ];
 
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
@@ -124,13 +124,15 @@ class roadmap_html_api
                $progressHtmlString .= '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div><!--';
-            } # n - 2 (first, last) following
+            }
+            # n - 2 (first, last) following
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
                $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div>';
-            } # last bar
+            }
+            # last bar
             else
             {
                $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
@@ -203,7 +205,7 @@ class roadmap_html_api
    public static function printProfileSwitcher ()
    {
       $roadmapDb = new roadmap_db();
-      $roadmapProfiles = $roadmapDb->dbGetRoadmapProfiles ();
+      $roadmapProfiles = $roadmapDb->dbGetProfiles ();
 
       echo '<div class="table_center">' . PHP_EOL;
       echo '<div class="tr">' . PHP_EOL;
@@ -346,7 +348,7 @@ class roadmap_html_api
    public static function htmlPluginProjectTitle ( $profileId, $projectId )
    {
       $roadmapDb = new roadmap_db();
-      $profile = $roadmapDb->dbGetRoadmapProfile ( $profileId );
+      $profile = $roadmapDb->dbGetProfile ( $profileId );
       $profileName = string_display ( $profile[ 1 ] );
       $projectName = string_display ( project_get_name ( $projectId ) );
 

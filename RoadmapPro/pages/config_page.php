@@ -142,7 +142,7 @@ roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_p
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
 echo '</tr>';
-$profiles = $roadmapDb->dbGetRoadmapProfiles ();
+$profiles = $roadmapDb->dbGetProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {

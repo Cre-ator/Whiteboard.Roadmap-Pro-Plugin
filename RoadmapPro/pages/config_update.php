@@ -47,7 +47,7 @@ function processEta ()
       $key = $etaEnumValues[ $index ];
       $value = $postEtaValue[ $index ];
 
-      $roadmapDb->dbUpdateEtaKeyValue ( $key, $value );
+      $roadmapDb->dbUpdateEtaUserValue ( $key, $value );
    }
 
    if ( is_null ( $postEtaThresholdFrom ) == false )

@@ -33,10 +33,14 @@ class roadmap_pro_api
       $limit = count ( $statusValues );
       for ( $index = 0; $index < $limit; $index++ )
       {
-         $profileStatus .= $statusValues[ $index ];
-         if ( $index < ( $limit - 1 ) )
+         $statusValue = $statusValues[ $index ];
+         if ( is_numeric ( $statusValue ) )
          {
-            $profileStatus .= ';';
+            $profileStatus .= $statusValue;
+            if ( $index < ( $limit - 1 ) )
+            {
+               $profileStatus .= ';';
+            }
          }
       }
 

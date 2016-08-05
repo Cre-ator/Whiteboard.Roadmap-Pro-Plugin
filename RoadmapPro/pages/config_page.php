@@ -129,8 +129,99 @@ if ( config_get ( 'enable_eta' ) )
    roadmap_html_api::htmlPluginConfigCloseTable ();
 }
 
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
+# profile groups
+/** TODO */
+roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profilegroups' );
+echo '<tr>';
+roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
+echo '</tr>';
+echo '<tr>';
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_prfgr_profiles' );
+roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+echo '</tr>';
+
+# iterate through groups
+$groups = $roadmapDb->dbGetGroups ();
+$groupCount = count ( $groups );
+if ( $groupCount > 0 )
+{
+   for ( $index = 0; $index < $groupCount; $index++ )
+   {
+      $group = $groups[ $index ];
+      $dbGroupId = $group[ 0 ];
+      $dbGroudName = $group[ 1 ];
+      $dbGroupProfiles = $group[ 2 ];
+
+      $groupProfileEnumNames = array ();
+      $profileEnumIds = roadmap_pro_api::getProfileEnumIds ();
+      $profileEnumNames = roadmap_pro_api::getProfileEnumNames ();
+      $profileEnumCount = count ( $profileEnumIds );
+      $groupProfileArray = explode ( ';', $dbGroupProfiles );
+      foreach ( $groupProfileArray as $profileId )
+      {
+         $profile = $roadmapDb->dbGetProfile ( $profileId );
+         $profileName = $profile[ 1 ];
+
+         array_push ( $groupProfileEnumNames, $profileName );
+      }
+
+//      var_dump ( $groupPofileEnumNames );
+//      var_dump ( $profileEnumNames );
+
+
+      echo '<tr>';
+      # group name
+      echo '<td>';
+      echo '<input type="hidden" name="group-id[]" value="' . $dbGroupId . '" />';
+      echo '<input type="text" name="group-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbGroudName ) . '" />';
+      echo '</td>';
+      # group profiles
+      echo '<td><select name="group-profile-' . $index . '[]" multiple="multiple">';
+      for ( $pindex = 0; $pindex < $profileEnumCount; $pindex++ )
+      {
+         $profileId = $profileEnumIds[ $pindex ];
+         $profileName = $profileEnumNames[ $pindex ];
+         echo '<option value="' . $profileId . '"';
+         check_selected ( $groupProfileEnumNames, $profileName );
+         echo '>' . $profileName . '</option>';
+      }
+      echo '</select></td>';
+
+      # delete group button
+      echo '<td>';
+      echo '<a class="button" href="' . plugin_page ( 'config_delete_group' ) .
+         '&amp;group_id=' . $dbGroupId . '">';
+      echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
+      echo '</a>';
+      echo '</td>';
+
+      echo '</tr>';
+   }
+}
+
+roadmap_html_api::htmlPluginConfigCloseTable ();
+
+roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+echo '<tbody>';
+echo '<tr class="foot-row">';
+$profileEnumIds = roadmap_pro_api::getProfileEnumIds ();
+$profileEnumNames = roadmap_pro_api::getProfileEnumNames ();
+
+$jsProfileEnumIdArray = json_encode ( $profileEnumIds );
+$jsProfileEnumNameArray = json_encode ( $profileEnumNames );
+echo '<script type="text/javascript">var profileIds =' . $jsProfileEnumIdArray . ';var profileNames =' . $jsProfileEnumNameArray . ';</script>';
+echo '<td class="left">';
+echo '<input type="button" value="+" onclick="addGroupRow(profileIds,profileNames)" />&nbsp;';
+echo '<input type="button" value="-" onclick="delRow(' . $groupCount . ', \'profilegroups\')" />&nbsp;';
+echo '</td>';
+
+echo '</tr>';
+echo '</tbody>';
+roadmap_html_api::htmlPluginConfigCloseTable ();
+
 # show profiles
+roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
 echo '</tr>';
@@ -142,11 +233,12 @@ roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_p
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
 roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
 echo '</tr>';
+
+# iterate through profiles
 $profiles = $roadmapDb->dbGetProfiles ();
 $profileCount = count ( $profiles );
 if ( $profileCount > 0 )
 {
-   # iterate through profiles
    for ( $index = 0; $index < $profileCount; $index++ )
    {
       $profile = $profiles[ $index ];
@@ -199,9 +291,9 @@ foreach ( $statusEnumValues as $statusEnumValue )
 {
    array_push ( $statusEnumStrings, get_enum_element ( 'status', $statusEnumValue ) );
 }
-$jsStatusEnumValueArray = json_encode ( $statusEnumValues );
-$jsStatusEnumStringArray = json_encode ( $statusEnumStrings );
-echo '<script type="text/javascript">var statusValues =' . $jsStatusEnumValueArray . ';var statusStrings =' . $jsStatusEnumStringArray . ';</script>';
+$jsProfileEnumIdArray = json_encode ( $statusEnumValues );
+$jsProfileEnumNameArray = json_encode ( $statusEnumStrings );
+echo '<script type="text/javascript">var statusValues =' . $jsProfileEnumIdArray . ';var statusStrings =' . $jsProfileEnumNameArray . ';</script>';
 echo '<td class="left">';
 echo '<input type="button" value="+" onclick="addProfileRow(statusValues,statusStrings)" />&nbsp;';
 echo '<input type="button" value="-" onclick="delRow(' . $profileCount . ', \'profiles\')" />&nbsp;';

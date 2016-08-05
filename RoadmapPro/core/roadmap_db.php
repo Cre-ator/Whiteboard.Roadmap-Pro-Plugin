@@ -59,6 +59,110 @@ class roadmap_db
       return $bugIds;
    }
 
+   # ++++++++++++++++++++++++++++ groups +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+   /**
+    * get alle roadmap groups
+    *
+    * @return array|null
+    */
+   public function dbGetGroups ()
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      $query = /** @lang sql */
+         "SELECT * FROM mantis_plugin_RoadmapPro_profilegroup_table";
+
+      $result = $this->mysqli->query ( $query );
+
+      $groups = null;
+      if ( 0 != $result->num_rows )
+      {
+         while ( $row = $result->fetch_row () )
+         {
+            $groups[] = $row;
+         }
+      }
+
+      $this->mysqli->close ();
+
+      return $groups;
+   }
+
+   public function dbGetGroup ( $groupId )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      $group = null;
+      if ( is_numeric ( $groupId ) )
+      {
+         $query = /** @lang sql */
+            "SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profilegroup_table
+            WHERE id = " . $groupId;
+
+         $result = $this->mysqli->query ( $query );
+
+         $group = mysqli_fetch_row ( $result );
+      }
+
+      $this->mysqli->close ();
+
+      return $group;
+   }
+
+   public function dbInsertGroup ( $groupName, $groupProfiles )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      $query = /** @lang sql */
+         "INSERT INTO mantis_plugin_RoadmapPro_profilegroup_table ( id, group_name, group_profiles )
+            SELECT null,'" . $groupName . "','" . $groupProfiles . "'
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_profilegroup_table
+            WHERE group_name = '" . $groupName . "')";
+
+      $this->mysqli->query ( $query );
+      $groupId = $this->mysqli->insert_id;
+      $this->mysqli->close ();
+
+      return $groupId;
+   }
+
+   public function dbUpdateGroup ( $groupId, $groupName, $groupProfiles )
+   {
+      if ( is_numeric ( $groupId ) )
+      {
+         $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+         $query = /** @lang sql */
+            "UPDATE mantis_plugin_RoadmapPro_profilegroup_table
+               SET group_name = '" . $groupName . "', group_profiles= '" . $groupProfiles . "'
+               WHERE id=" . $groupId;
+
+         $this->mysqli->query ( $query );
+         $this->mysqli->close ();
+      }
+   }
+
+   public function dbDeleteGroup ( $groupId )
+   {
+      $this->mysqli->connect ( $this->dbPath, $this->dbUser, $this->dbPass, $this->dbName );
+
+      if ( is_numeric ( $groupId ) )
+      {
+         $query = /** @lang sql */
+            "DELETE FROM mantis_plugin_RoadmapPro_profilegroup_table
+            WHERE id = " . $groupId;
+
+         $this->mysqli->query ( $query );
+      }
+
+      $this->mysqli->close ();
+   }
+
+   # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+   # ++++++++++++++++++++++++++++ profiles +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    /**
     * inserts a new roadmap profile if there isnt a dupicate by name
     *
@@ -203,6 +307,7 @@ class roadmap_db
 
       return $sumProfileEffort;
    }
+   # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
    /**
     * Reset all plugin-related data

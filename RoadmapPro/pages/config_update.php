@@ -23,6 +23,7 @@ if ( $optionChange == true )
       processEta ();
    }
    processProfiles ();
+   processGroups ();
 
    form_security_purge ( 'plugin_RoadmapPro_config_update' );
    print_successful_redirect ( plugin_page ( 'config_page', true ) );
@@ -107,17 +108,17 @@ function processProfiles ()
          $profileIdCount = count ( $postProfileIds );
          for ( $index = 0; $index < $profileIdCount; $index++ )
          {
-            $thresholdUnit = $postProfileNames[ $index ];
-            if ( strlen ( $thresholdUnit ) > 0 )
+            $profileName = $postProfileNames[ $index ];
+            if ( strlen ( $profileName ) > 0 )
             {
                $postProfileStatus = $_POST[ 'profile-status-' . $index ];
-               $profileStatus = roadmap_pro_api::generateDbStatusValueString ( $postProfileStatus );
-               $thresholdId = $postProfileIds[ $index ];
-               $thresholdFrom = $postProfileColor[ $index ];
-               $thresholdTo = $postProfilePriority[ $index ];
+               $profileStatus = roadmap_pro_api::generateDbValueString ( $postProfileStatus );
+               $profileId = $postProfileIds[ $index ];
+               $profileColor = $postProfileColor[ $index ];
+               $profilePriority = $postProfilePriority[ $index ];
                $profileEffort = $postProfileEffort[ $index ];
 
-               $roadmapDb->dbUpdateProfile ( $thresholdId, $thresholdUnit, $thresholdFrom, $profileStatus, $thresholdTo, $profileEffort );
+               $roadmapDb->dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort );
             }
          }
 
@@ -130,7 +131,7 @@ function processProfiles ()
             if ( strlen ( $newProfileName ) > 0 )
             {
                $postNewProfileStatus = $_POST[ 'new-status-' . $newStatusIndex ];
-               $newProfileStatus = roadmap_pro_api::generateDbStatusValueString ( $postNewProfileStatus );
+               $newProfileStatus = roadmap_pro_api::generateDbValueString ( $postNewProfileStatus );
                $newProfileColor = $postProfileColor[ $newIndex ];
                $newProfilePriority = $postProfilePriority[ $newIndex ];
                $newProfileEffort = $postProfileEffort[ $newIndex ];
@@ -139,6 +140,55 @@ function processProfiles ()
             }
 
             $newStatusIndex++;
+         }
+      }
+   }
+}
+
+function processGroups ()
+{
+   global $roadmapDb;
+
+   $postGroupIds = $_POST[ 'group-id' ];
+   $postGroupNames = $_POST[ 'group-name' ];
+
+   if ( is_null ( $postGroupNames ) == false )
+   {
+      if ( roadmap_pro_api::checkArrayForDuplicates ( $postGroupNames ) == true )
+      {
+         # error message
+      }
+      else
+      {
+         # process existing groups
+         $groupIdCount = count ( $postGroupIds );
+         for ( $index = 0; $index < $groupIdCount; $index++ )
+         {
+            $groupName = $postGroupNames[ $index ];
+            if ( strlen ( $groupName ) > 0 )
+            {
+               $postGroupProfiles = $_POST[ 'group-profile-' . $index ];
+               $dbGroupProfiles = roadmap_pro_api::generateDbValueString ( $postGroupProfiles );
+               $groupId = $postGroupIds[ $index ];
+
+               $roadmapDb->dbUpdateGroup ( $groupId, $groupName, $dbGroupProfiles );
+            }
+         }
+
+         # process new groups
+         $overallGroupCount = count ( $postGroupNames );
+         $newGroupProfileIndex = 0;
+         for ( $newIndex = $groupIdCount; $newIndex < $overallGroupCount; $newIndex++ )
+         {
+            $newGroupName = $postGroupNames[ $newIndex ];
+            if ( strlen ( $newGroupName ) > 0 )
+            {
+               $postNewGroupProfiles = $_POST[ 'new-group-profile-' . $newGroupProfileIndex ];
+               $newDbGroupProfiles = roadmap_pro_api::generateDbValueString ( $postNewGroupProfiles );
+               $roadmapDb->dbInsertGroup ( $newGroupName, $newDbGroupProfiles );
+            }
+
+            $newGroupProfileIndex++;
          }
       }
    }

@@ -1,4 +1,5 @@
 var newProfileCounter = 0;
+var newGroupCounter = 0;
 var newThresholdCounter = 0;
 
 function addProfileRow(statusValues, statusStrings) {
@@ -23,16 +24,16 @@ function addProfileRow(statusValues, statusStrings) {
 
     /** name */
     td1.innerHTML = '<input type="text" name="profile-name[]" size="15" maxlength="128" value="">';
-    /** released */
+    /** status */
     td2.innerHTML = '<select name="new-status-' + newProfileCounter + '[]" multiple="multiple">' + optionstring + '</select>';
     newProfileCounter++;
-    /** obsolete */
+    /** color */
     td3.innerHTML = '<label><input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile-color[]" value=""/></label>';
-    /** date */
+    /** priority */
     td4.innerHTML = '<input type="text" name="profile-prio[]" size="15" maxlength="3" value="">';
-    /** description */
+    /** effort */
     td5.innerHTML = '<input type="text" name="profile-effort[]" size="15" maxlength="3" value="">';
-    /** document type */
+    /** action */
     td6.innerHTML = '';
 
     tr.appendChild(td1);
@@ -45,6 +46,36 @@ function addProfileRow(statusValues, statusStrings) {
     var evt = document.createEvent('Event');
     evt.initEvent('load', false, false);
     window.dispatchEvent(evt);
+}
+
+function addGroupRow(profileIds, profileNames) {
+    var tableId = "profilegroups";
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName("tr").length;
+    var tr = table.insertRow(rows);
+    var td1 = document.createElement("td");
+    var td2 = document.createElement("td");
+    var td3 = document.createElement("td");
+
+    var optionstring = '';
+    for (var i = 0; i < profileIds.length; i++) {
+        var value = profileIds[i];
+        var string = profileNames[i];
+
+        optionstring += '<option value="' + value + '">' + string + '</option>'
+    }
+
+    /** name */
+    td1.innerHTML = '<input type="text" name="group-name[]" size="15" maxlength="128" value="">';
+    /** profile */
+    td2.innerHTML = '<select name="new-group-profile-' + newGroupCounter + '[]" multiple="multiple">' + optionstring + '</select>';
+    newGroupCounter++;
+    /** action */
+    td3.innerHTML = '';
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
 }
 
 function addThresholdRow() {

@@ -27,6 +27,9 @@ $s_plugin_RoadmapPro_config_page_add_profile = 'Profil hinzufügen';
 $s_plugin_RoadmapPro_config_page_profile_list = 'Angelegte Profile';
 $s_plugin_RoadmapPro_config_page_delete_profile = 'Entfernen';
 
+$s_plugin_RoadmapPro_config_page_prfgr_management = 'Profil-Gruppenverwaltung';
+$s_plugin_RoadmapPro_config_page_prfgr_profiles = 'beinhaltet Profile';
+
 $s_plugin_RoadmapPro_config_page_eta_management = 'Verwaltung Aufwand';
 $s_plugin_RoadmapPro_config_page_prio_decription = 'Die Priorität repräsentiert den Zeitpunkt im Workflow';
 $s_plugin_RoadmapPro_config_page_prio_decription = 'Die Priorität repräsentiert den Zeitpunkt im Workflow';

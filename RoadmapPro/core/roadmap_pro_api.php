@@ -27,7 +27,7 @@ class roadmap_pro_api
     * @param $statusValues
     * @return string
     */
-   public static function generateDbStatusValueString ( $statusValues )
+   public static function generateDbValueString ( $statusValues )
    {
       $profileStatus = '';
       $limit = count ( $statusValues );
@@ -231,5 +231,49 @@ class roadmap_pro_api
       }
 
       echo '&nbsp;';
+   }
+
+   public static function getProfileEnumNames ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $profileEnumNameArray = array ();
+
+      $profiles = $roadmapDb->dbGetProfiles ();
+      $profileCount = count ( $profiles );
+      if ( $profileCount > 0 )
+      {
+         for ( $index = 0; $index < $profileCount; $index++ )
+         {
+            $profile = $profiles[ $index ];
+            $profileName = $profile[ 1 ];
+
+            array_push ( $profileEnumNameArray, $profileName );
+         }
+      }
+
+      return $profileEnumNameArray;
+   }
+
+   public static function getProfileEnumIds ()
+   {
+      $roadmapDb = new roadmap_db();
+
+      $profileEnumIdArray = array ();
+
+      $profiles = $roadmapDb->dbGetProfiles ();
+      $profileCount = count ( $profiles );
+      if ( $profileCount > 0 )
+      {
+         for ( $index = 0; $index < $profileCount; $index++ )
+         {
+            $profile = $profiles[ $index ];
+            $profileId = $profile[ 0 ];
+
+            array_push ( $profileEnumIdArray, $profileId );
+         }
+      }
+
+      return $profileEnumIdArray;
    }
 }

@@ -1,6 +1,9 @@
 <?php
-require_once ( __DIR__ . '/roadmap_db.php' );
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProfileManager.php' );
+require_once ( __DIR__ . '/rProfile.php' );
+require_once ( __DIR__ . '/rGroupManager.php' );
+require_once ( __DIR__ . '/rGroup.php' );
 
 class roadmap_html_api
 {
@@ -92,8 +95,6 @@ class roadmap_html_api
 
    private static function printScaledProgressbar ( roadmap $roadmap )
    {
-      $roadmapDb = new roadmap_db();
-
       $useEta = $roadmap->getEtaIsSet ();
       $profileHashMap = $roadmap->getProfileHashArray ();
       $fullEta = $roadmap->getFullEta ();
@@ -111,8 +112,8 @@ class roadmap_html_api
             $hashProgress = $profileHash[ 1 ];
 
             # get profile color
-            $dbProfileRow = $roadmapDb->dbGetProfile ( $hashProfileId );
-            $profileColor = '#' . $dbProfileRow[ 2 ];
+            $profile = new rProfile( $hashProfileId );
+            $profileColor = '#' . $profile->getProfileColor ();
 
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
 
@@ -204,21 +205,20 @@ class roadmap_html_api
 
    public static function printProfileSwitcher ()
    {
-      $roadmapDb = new roadmap_db();
-      $groups = $roadmapDb->dbGetGroups ();
-      $profiles = $roadmapDb->dbGetProfiles ();
+      $groupIds = rGroupManager::getRGroupIds ();
+      $groupCount = count ( $groupIds );
 
-      $groupCount = count ( $groups );
-      $profileCount = count ( $profiles );
+      $profileIds = rProfileManager::getRProfileIds ();
+      $profileCount = count ( $profileIds );
 
       echo '<div class="table_center">' . PHP_EOL;
       if ( $groupCount > 0 )
       {
          echo '<div class="tr">' . PHP_EOL;
-         foreach ( $groups as $group )
+         foreach ( $groupIds as $groupId )
          {
-            $groupId = $group[ 0 ];
-            $groupName = $group[ 1 ];
+            $group = new rGroup( $groupId );
+            $groupName = $group->getGroupName ();
 
             echo '<div class="td">';
             self::htmlLinkGroupSwitcher ( $groupName, $groupId );
@@ -232,10 +232,10 @@ class roadmap_html_api
          # print roadmap_profile-links
          if ( $profileCount > 0 )
          {
-            foreach ( $profiles as $roadmapProfile )
+            foreach ( $profileIds as $profileId )
             {
-               $profileId = $roadmapProfile[ 0 ];
-               $profileName = $roadmapProfile[ 1 ];
+               $profile = new rProfile( $profileId );
+               $profileName = $profile->getProfileName ();
 
                echo '<div class="td">';
                self::htmlLinkProfileSwitcher ( string_display ( $profileName ), $profileId );
@@ -256,9 +256,8 @@ class roadmap_html_api
 
    public static function htmlGroupProfileSwitcher ( $groupId )
    {
-      $roadmapDb = new roadmap_db();
-      $group = $roadmapDb->dbGetGroup ( $groupId );
-      $groupProfileIds = explode ( ';', $group[ 2 ] );
+      $group = new rGroup( $groupId );
+      $groupProfileIds = explode ( ';', $group->getGroupProfiles() );
       $groupProfileIdCount = count ( $groupProfileIds );
 
       echo '<div class="table_center">' . PHP_EOL;
@@ -267,8 +266,8 @@ class roadmap_html_api
       {
          foreach ( $groupProfileIds as $groupProfileId )
          {
-            $profile = $roadmapDb->dbGetProfile ( $groupProfileId );
-            $profileName = $profile[ 1 ];
+            $profile = new rProfile( $groupProfileId );
+            $profileName = $profile->getProfileName ();
             echo '<div class="td">';
             self::htmlLinkGroupProfileSwitcher ( string_display ( $profileName ), $groupId, $groupProfileId );
             echo '</div>' . PHP_EOL;
@@ -458,9 +457,8 @@ class roadmap_html_api
 
    public static function htmlPluginProjectTitle ( $profileId, $projectId )
    {
-      $roadmapDb = new roadmap_db();
-      $profile = $roadmapDb->dbGetProfile ( $profileId );
-      $profileName = string_display ( $profile[ 1 ] );
+      $profile = new rProfile( $profileId );
+      $profileName = string_display ( $profile->getProfileName () );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
       echo '<div class="tr">';

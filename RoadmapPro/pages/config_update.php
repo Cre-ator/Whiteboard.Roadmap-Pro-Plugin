@@ -1,11 +1,13 @@
 <?php
-
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
-require_once ( __DIR__ . '/../core/roadmap_db.php' );
+require_once ( __DIR__ . '/../core/rProfileManager.php' );
+require_once ( __DIR__ . '/../core/rProfile.php' );
+require_once ( __DIR__ . '/../core/rGroupManager.php' );
+require_once ( __DIR__ . '/../core/rGroup.php' );
+require_once ( __DIR__ . '/../core/rEta.php' );
 
 auth_reauthenticate ();
 
-$roadmapDb = new roadmap_db();
 $optionChange = gpc_get_bool ( 'config_change', false );
 $optionReset = gpc_get_bool ( 'config_reset', false );
 
@@ -31,8 +33,6 @@ if ( $optionChange == true )
 
 function processEta ()
 {
-   global $roadmapDb;
-
    $postEtaThresholdIds = $_POST[ 'threshold-id' ];
    $postEtaThresholdFrom = $_POST[ 'threshold-from' ];
    $postEtaThresholdTo = $_POST[ 'threshold-to' ];
@@ -45,13 +45,25 @@ function processEta ()
 
    for ( $index = 0; $index < count ( $etaEnumValues ); $index++ )
    {
-      $key = $etaEnumValues[ $index ];
-      $value = $postEtaValue[ $index ];
-
-      $roadmapDb->dbUpdateEtaUserValue ( $key, $value );
+      $etaConfig = $etaEnumValues[ $index ];
+      $etaUser = $postEtaValue[ $index ];
+      $eta = new rEta( $etaConfig );
+      $etaIsSet = $eta->getEtaIsSet ();
+      if ( $etaIsSet )
+      {
+         $eta->setEtaConfig ( $etaConfig );
+         $eta->setEtaUser ( $etaUser );
+         $eta->triggerUpdateInDb ();
+      }
+      else
+      {
+         $eta->setEtaConfig ( $etaConfig );
+         $eta->setEtaUser ( $etaUser );
+         $eta->triggerInsertIntoDb ();
+      }
    }
 
-   if ( is_null ( $postEtaThresholdFrom ) == false )
+   if ( $postEtaThresholdFrom != null )
    {
       # process existing thresholds
       $thresholdIdCount = count ( $postEtaThresholdIds );
@@ -61,11 +73,12 @@ function processEta ()
          if ( strlen ( $thresholdUnit ) > 0 )
          {
             $thresholdId = $postEtaThresholdIds[ $index ];
-            $thresholdFrom = $postEtaThresholdFrom[ $index ];
-            $thresholdTo = $postEtaThresholdTo[ $index ];
-            $thresholdFactor = $postEtaThresholdFactor[ $index ];
-
-            $roadmapDb->dbUpdateEtaThresholdValue ( $thresholdId, $thresholdFrom, $thresholdTo, $thresholdUnit, $thresholdFactor );
+            $threshold = new rThreshold( $thresholdId );
+            $threshold->setThresholdFrom ( $postEtaThresholdFrom[ $index ] );
+            $threshold->setThresholdTo ( $postEtaThresholdTo[ $index ] );
+            $threshold->setThresholdUnit ( $thresholdUnit );
+            $threshold->setThresholdFactor ( $postEtaThresholdFactor[ $index ] );
+            $threshold->triggerUpdateInDb ();
          }
       }
 
@@ -74,13 +87,13 @@ function processEta ()
       $newThresholdIndex = 0;
       for ( $newIndex = $thresholdIdCount; $newIndex < $overallThresholdCount; $newIndex++ )
       {
+         $newThreshold = new rThreshold();
+         $newThreshold->setThresholdFrom ( $postEtaThresholdFrom[ $newIndex ] );
+         $newThreshold->setThresholdTo ( $postEtaThresholdTo[ $newIndex ] );
          $newThresholdUnit = $_POST[ 'new-threshold-unit-' . $newThresholdIndex ];
-         $newThresholdFrom = $postEtaThresholdFrom[ $newIndex ];
-         $newThresholdTo = $postEtaThresholdTo[ $newIndex ];
-         $thresholdFactor = $postEtaThresholdFactor[ $newIndex ];
-
-         $roadmapDb->dbInsertEtaThresholdValue ( $newThresholdFrom, $newThresholdTo, $newThresholdUnit, $thresholdFactor );
-
+         $newThreshold->setThresholdUnit ( $newThresholdUnit );
+         $newThreshold->setThresholdFactor ( $postEtaThresholdFactor[ $newIndex ] );
+         $newThreshold->triggerInsertIntoDb ();
          $newThresholdIndex++;
       }
    }
@@ -88,15 +101,13 @@ function processEta ()
 
 function processProfiles ()
 {
-   global $roadmapDb;
-
    $postProfileIds = $_POST[ 'profile-id' ];
    $postProfileNames = $_POST[ 'profile-name' ];
    $postProfileColor = $_POST[ 'profile-color' ];
    $postProfilePriority = $_POST[ 'profile-prio' ];
    $postProfileEffort = $_POST[ 'profile-effort' ];
 
-   if ( is_null ( $postProfileNames ) == false )
+   if ( $postProfileNames != null )
    {
       if ( roadmap_pro_api::checkArrayForDuplicates ( $postProfileNames ) == true )
       {
@@ -111,14 +122,15 @@ function processProfiles ()
             $profileName = $postProfileNames[ $index ];
             if ( strlen ( $profileName ) > 0 )
             {
-               $postProfileStatus = $_POST[ 'profile-status-' . $index ];
-               $profileStatus = roadmap_pro_api::generateDbValueString ( $postProfileStatus );
                $profileId = $postProfileIds[ $index ];
-               $profileColor = $postProfileColor[ $index ];
-               $profilePriority = $postProfilePriority[ $index ];
-               $profileEffort = $postProfileEffort[ $index ];
-
-               $roadmapDb->dbUpdateProfile ( $profileId, $profileName, $profileColor, $profileStatus, $profilePriority, $profileEffort );
+               $profile = new rProfile( $profileId );
+               $profile->setProfileName ( $profileName );
+               $postProfileStatus = $_POST[ 'profile-status-' . $index ];
+               $profile->setProfileStatus ( roadmap_pro_api::generateDbValueString ( $postProfileStatus ) );
+               $profile->setProfileColor ( $postProfileColor[ $index ] );
+               $profile->setProfilePriority ( $postProfilePriority[ $index ] );
+               $profile->setProfileEffort ( $postProfileEffort[ $index ] );
+               $profile->triggerUpdateInDb ();
             }
          }
 
@@ -130,13 +142,14 @@ function processProfiles ()
             $newProfileName = $postProfileNames[ $newIndex ];
             if ( strlen ( $newProfileName ) > 0 )
             {
+               $newProfile = new rProfile();
+               $newProfile->setProfileName ( $newProfileName );
                $postNewProfileStatus = $_POST[ 'new-status-' . $newStatusIndex ];
-               $newProfileStatus = roadmap_pro_api::generateDbValueString ( $postNewProfileStatus );
-               $newProfileColor = $postProfileColor[ $newIndex ];
-               $newProfilePriority = $postProfilePriority[ $newIndex ];
-               $newProfileEffort = $postProfileEffort[ $newIndex ];
-
-               $roadmapDb->dbInsertProfile ( $newProfileName, $newProfileColor, $newProfileStatus, $newProfilePriority, $newProfileEffort );
+               $newProfile->setProfileStatus ( roadmap_pro_api::generateDbValueString ( $postNewProfileStatus ) );
+               $newProfile->setProfileColor ( $postProfileColor[ $newIndex ] );
+               $newProfile->setProfilePriority ( $postProfilePriority[ $newIndex ] );
+               $newProfile->setProfileEffort ( $postProfileEffort[ $newIndex ] );
+               $newProfile->triggerInsertIntoDb ();
             }
 
             $newStatusIndex++;
@@ -147,12 +160,10 @@ function processProfiles ()
 
 function processGroups ()
 {
-   global $roadmapDb;
-
    $postGroupIds = $_POST[ 'group-id' ];
    $postGroupNames = $_POST[ 'group-name' ];
 
-   if ( is_null ( $postGroupNames ) == false )
+   if ( $postGroupNames != null )
    {
       if ( roadmap_pro_api::checkArrayForDuplicates ( $postGroupNames ) == true )
       {
@@ -167,11 +178,12 @@ function processGroups ()
             $groupName = $postGroupNames[ $index ];
             if ( strlen ( $groupName ) > 0 )
             {
-               $postGroupProfiles = $_POST[ 'group-profile-' . $index ];
-               $dbGroupProfiles = roadmap_pro_api::generateDbValueString ( $postGroupProfiles );
                $groupId = $postGroupIds[ $index ];
-
-               $roadmapDb->dbUpdateGroup ( $groupId, $groupName, $dbGroupProfiles );
+               $group = new rGroup( $groupId );
+               $group->setGroupName ( $groupName );
+               $postGroupProfiles = $_POST[ 'group-profile-' . $index ];
+               $group->setGroupProfiles ( roadmap_pro_api::generateDbValueString ( $postGroupProfiles ) );
+               $group->triggerUpdateInDb ();
             }
          }
 
@@ -183,9 +195,11 @@ function processGroups ()
             $newGroupName = $postGroupNames[ $newIndex ];
             if ( strlen ( $newGroupName ) > 0 )
             {
+               $newGroup = new rGroup();
+               $newGroup->setGroupName ( $newGroupName );
                $postNewGroupProfiles = $_POST[ 'new-group-profile-' . $newGroupProfileIndex ];
-               $newDbGroupProfiles = roadmap_pro_api::generateDbValueString ( $postNewGroupProfiles );
-               $roadmapDb->dbInsertGroup ( $newGroupName, $newDbGroupProfiles );
+               $newGroup->setGroupProfiles ( roadmap_pro_api::generateDbValueString ( $postNewGroupProfiles ) );
+               $newGroup->triggerInsertIntoDb ();
             }
 
             $newGroupProfileIndex++;

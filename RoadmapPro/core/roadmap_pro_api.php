@@ -1,7 +1,10 @@
 <?php
-require_once ( __DIR__ . '/roadmap_db.php' );
 require_once ( __DIR__ . '/roadmap_html_api.php' );
 require_once ( __DIR__ . '/roadmap.php' );
+require_once ( __DIR__ . '/rProfileManager.php' );
+require_once ( __DIR__ . '/rProfile.php' );
+require_once ( __DIR__ . '/rThresholdManager.php' );
+require_once ( __DIR__ . '/rThreshold.php' );
 
 /**
  * Class version_management_api
@@ -10,6 +13,19 @@ require_once ( __DIR__ . '/roadmap.php' );
  */
 class roadmap_pro_api
 {
+   public static function initializeDbConnection ()
+   {
+      $dbPath = config_get ( 'hostname' );
+      $dbUser = config_get ( 'db_username' );
+      $dbPass = config_get ( 'db_password' );
+      $dbName = config_get ( 'database_name' );
+
+      $mysqli = new mysqli( $dbPath, $dbUser, $dbPass, $dbName );
+      $mysqli->connect ( $dbPath, $dbUser, $dbPass, $dbName );
+
+      return $mysqli;
+   }
+
    /**
     * returns true, if there is a duplicate entry.
     *
@@ -55,14 +71,12 @@ class roadmap_pro_api
     */
    public static function calculateEtaUnit ( $eta )
    {
-      $roadmapDb = new roadmap_db();
-
       $backupString = array ();
       $backupString[ 0 ] = $eta;
       $backupString[ 1 ] = plugin_lang_get ( 'config_page_eta_unit' );
       $etaString = array ();
-      $thresholds = $roadmapDb->dbGetEtaThresholds ();
-      $thresholdCount = count ( $thresholds );
+      $thresholdIds = rThresholdManager::getRThresholdIds ();
+      $thresholdCount = count ( $thresholdIds );
       if ( $thresholdCount < 1 )
       {
          $etaString = $backupString;
@@ -71,14 +85,15 @@ class roadmap_pro_api
       {
          for ( $index = 0; $index < $thresholdCount; $index++ )
          {
-            $thresholdRow = $thresholds[ $index ];
-            $thresholdFrom = $thresholdRow[ 1 ];
-            $thresholdTo = $thresholdRow[ 2 ];
+            $thresholdId = $thresholdIds[ $index ];
+            $threshold = new rThreshold( $thresholdId );
+            $thresholdFrom = $threshold->getThresholdFrom ();
+            $thresholdTo = $threshold->getThresholdTo ();
 
             if ( ( $eta > $thresholdFrom ) && ( $eta < $thresholdTo ) )
             {
-               $thresholdUnit = $thresholdRow[ 3 ];
-               $thresholdFactor = $thresholdRow[ 4 ];
+               $thresholdUnit = $threshold->getThresholdUnit ();
+               $thresholdFactor = $threshold->getThresholdFactor ();
 
                $newEta = round ( ( $eta / $thresholdFactor ), 2 );
                $etaString[ 0 ] = $newEta;
@@ -235,19 +250,16 @@ class roadmap_pro_api
 
    public static function getProfileEnumNames ()
    {
-      $roadmapDb = new roadmap_db();
-
       $profileEnumNameArray = array ();
-
-      $profiles = $roadmapDb->dbGetProfiles ();
-      $profileCount = count ( $profiles );
+      $profileIds = rProfileManager::getRProfileIds ();
+      $profileCount = count ( $profileIds );
       if ( $profileCount > 0 )
       {
          for ( $index = 0; $index < $profileCount; $index++ )
          {
-            $profile = $profiles[ $index ];
-            $profileName = $profile[ 1 ];
-
+            $profileId = $profileIds[ $index ];
+            $profile = new rProfile( $profileId );
+            $profileName = $profile->getProfileName ();
             array_push ( $profileEnumNameArray, $profileName );
          }
       }
@@ -257,19 +269,14 @@ class roadmap_pro_api
 
    public static function getProfileEnumIds ()
    {
-      $roadmapDb = new roadmap_db();
-
       $profileEnumIdArray = array ();
-
-      $profiles = $roadmapDb->dbGetProfiles ();
-      $profileCount = count ( $profiles );
+      $profileIds = rProfileManager::getRProfileIds ();
+      $profileCount = count ( $profileIds );
       if ( $profileCount > 0 )
       {
          for ( $index = 0; $index < $profileCount; $index++ )
          {
-            $profile = $profiles[ $index ];
-            $profileId = $profile[ 0 ];
-
+            $profileId = $profileIds[ $index ];
             array_push ( $profileEnumIdArray, $profileId );
          }
       }
@@ -277,11 +284,74 @@ class roadmap_pro_api
       return $profileEnumIdArray;
    }
 
-   public static function getGroupProfileIds ( $groupId )
+   /**
+    * returns all assigned bug ids to a given target version
+    *
+    * @param $projectId
+    * @param $versionName
+    * @return array|null
+    */
+   public static function dbGetBugIdsByProjectAndTargetVersion ( $projectId, $versionName )
    {
-      $roadmapDb = new roadmap_db();
-      $group = $roadmapDb->dbGetGroup ( $groupId );
+      $mysqli = self::initializeDbConnection ();
 
-      return explode ( ';', $group[ 2 ] );
+      $bugIds = null;
+      if ( is_numeric ( $projectId ) )
+      {
+         $query = /** @lang sql */
+            "SELECT id FROM mantis_bug_table
+            WHERE target_version = '" . $versionName . "'
+            AND project_id = " . $projectId;
+
+         $result = $mysqli->query ( $query );
+
+         if ( 0 != $result->num_rows )
+         {
+            while ( $row = $result->fetch_row () )
+            {
+               $bugIds[] = $row[ 0 ];
+            }
+         }
+      }
+      $mysqli->close ();
+
+      return $bugIds;
+   }
+
+
+   /**
+    * Reset all plugin-related data
+    *
+    * - config entries
+    * - database entities
+    */
+   public static function dbResetPlugin ()
+   {
+      $mysqli = self::initializeDbConnection ();
+
+      $query = /** @lang sql */
+         "DROP TABLE mantis_plugin_RoadmapPro_profile_table";
+
+      $mysqli->query ( $query );
+
+      $query = /** @lang sql */
+         "DROP TABLE mantis_plugin_RoadmapPro_eta_table";
+
+      $mysqli->query ( $query );
+
+      $query = /** @lang sql */
+         "DROP TABLE mantis_plugin_RoadmapPro_unit_table";
+
+      $mysqli->query ( $query );
+
+      $query = /** @lang sql */
+         "DELETE FROM mantis_config_table
+            WHERE config_id LIKE 'plugin_RoadmapPro%'";
+
+      $mysqli->query ( $query );
+
+      $mysqli->close ();
+
+      print_successful_redirect ( 'manage_plugin_page.php' );
    }
 }

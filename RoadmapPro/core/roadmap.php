@@ -1,4 +1,7 @@
 <?php
+require_once ( __DIR__ . '/rProfileManager.php' );
+require_once ( __DIR__ . '/rProfile.php' );
+require_once ( __DIR__ . '/rEta.php' );
 
 /**
  * Created by PhpStorm.
@@ -136,7 +139,6 @@ class roadmap
     */
    private function calcFullEta ()
    {
-      $roadmapDb = new roadmap_db();
       $this->fullEta = 0;
       foreach ( $this->bugIds as $bugId )
       {
@@ -149,8 +151,8 @@ class roadmap
          {
             if ( $enumValue == $bugEtaValue )
             {
-               $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
-               $this->fullEta += $etaRow[ 2 ];
+               $eta = new rEta( $enumValue );
+               $this->fullEta += $eta->getEtaUser ();
             }
          }
       }
@@ -164,7 +166,6 @@ class roadmap
     */
    private function calcSingleEta ( $bugId )
    {
-      $roadmapDb = new roadmap_db();
       $bugEtaValue = bug_get_field ( $bugId, 'eta' );
 
       $etaEnumString = config_get ( 'eta_enum_string' );
@@ -174,8 +175,8 @@ class roadmap
       {
          if ( $enumValue == $bugEtaValue )
          {
-            $etaRow = $roadmapDb->dbGetEtaRowByKey ( $enumValue );
-            $this->singleEta = $etaRow[ 2 ];
+            $eta = new rEta( $enumValue );
+            $this->singleEta = $eta->getEtaUser ();
          }
       }
    }
@@ -219,12 +220,11 @@ class roadmap
     */
    private function checkIssueIsDoneById ( $bugId )
    {
-      $roadmapDb = new roadmap_db();
       $this->issueIsDone = false;
 
       $bugStatus = bug_get_field ( $bugId, 'status' );
-      $roadmapProfile = $roadmapDb->dbGetProfile ( $this->profileId );
-      $dbRaodmapStatus = $roadmapProfile[ 3 ];
+      $roadmapProfile = new rProfile( $this->profileId );
+      $dbRaodmapStatus = $roadmapProfile->getProfileStatus ();
       $roadmapStatusArray = explode ( ';', $dbRaodmapStatus );
 
       foreach ( $roadmapStatusArray as $roadmapStatus )
@@ -277,37 +277,36 @@ class roadmap
 
    private function calcScaledData ()
    {
-      # object initialization
-      $roadmapDb = new roadmap_db();
-
       # variables
       if ( $this->groupId == null )
       {
-         $roadmapProfiles = $roadmapDb->dbGetProfiles ();
+         $roadmapProfileIds = rProfileManager::getRProfileIds ();
       }
       else
       {
-         $roadmapProfiles = array ();
-         $roadmapProfileIds = roadmap_pro_api::getGroupProfileIds ( $this->groupId );
-         foreach ( $roadmapProfileIds as $roadmapProfileId )
+         $roadmapProfileIds = array ();
+         $group = new rGroup( $this->groupId );
+         $groupProfileIds = explode ( ';', $group->getGroupProfiles () );
+         foreach ( $groupProfileIds as $groupProfileId )
          {
-            array_push ( $roadmapProfiles, $roadmapDb->dbGetProfile ( $roadmapProfileId ) );
+            array_push ( $roadmapProfileIds, $groupProfileId );
          }
       }
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
-      $profileCount = count ( $roadmapProfiles );
-      $sumProfileEffort = $roadmapDb->dbGetSumProfileEffort ();
+      $profileCount = count ( $roadmapProfileIds );
+      $sumProfileEffort = rProfileManager::getSumRProfileEffort ();
 
       $wholeProgress = 0;
       # iterate through profiles
       for ( $index = 0; $index < $profileCount; $index++ )
       {
-         $roadmapProfile = $roadmapProfiles[ $index ];
-         $tProfileId = $roadmapProfile[ 0 ];
+         $roadmapProfileId = $roadmapProfileIds[ $index ];
+         $roadmapProfile = new rProfile( $roadmapProfileId );
+         $tProfileId = $roadmapProfile->getProfileId ();
          $this->setProfileId ( $tProfileId );
          # effort factor
-         $tProfileEffort = $roadmapProfile[ 5 ];
+         $tProfileEffort = $roadmapProfile->getProfileEffort ();
          # uniform distribution when no effort is set
          if ( $sumProfileEffort == 0 )
          {

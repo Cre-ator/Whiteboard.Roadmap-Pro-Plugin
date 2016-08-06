@@ -1,6 +1,12 @@
 <?php
-
 require_once ( __DIR__ . '/../core/roadmap_html_api.php' );
+require_once ( __DIR__ . '/../core/rProfileManager.php' );
+require_once ( __DIR__ . '/../core/rProfile.php' );
+require_once ( __DIR__ . '/../core/rGroupManager.php' );
+require_once ( __DIR__ . '/../core/rGroup.php' );
+require_once ( __DIR__ . '/../core/rThresholdManager.php' );
+require_once ( __DIR__ . '/../core/rThreshold.php' );
+require_once ( __DIR__ . '/../core/rEta.php' );
 
 auth_reauthenticate ();
 
@@ -10,7 +16,6 @@ html_page_top2 ();
 print_manage_menu ();
 echo '<script type="text/javascript" src="plugins/RoadmapPro/files/jscolor/jscolor.js"></script>';
 echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
-$roadmapDb = new roadmap_db();
 
 echo '<br/>';
 echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
@@ -34,6 +39,7 @@ roadmap_html_api::htmlPluginConfigRadio ( 'show_footer', 2 );
 echo '</tr>';
 
 # eta management
+$thresholdCount = 0;
 if ( config_get ( 'enable_eta' ) )
 {
    echo '<tr>';
@@ -52,15 +58,17 @@ if ( config_get ( 'enable_eta' ) )
    $rowCount = count ( $etaEnumValues );
    foreach ( $etaEnumValues as $etaEnumValue )
    {
+      $eta = new rEta( $etaEnumValue );
       echo '<tr>';
       echo '<td>' . string_display_line ( get_enum_element ( 'eta', $etaEnumValue ) ) . '</td>';
-      echo '<td><input type="text" name="eta_value[]" value="' . $roadmapDb->dbGetEtaRowByKey ( $etaEnumValue )[ 2 ] . '"/></td>';
+      echo '<td><input type="text" name="eta_value[]" value="' . $eta->getEtaUser () . '"/></td>';
       echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
    }
 
    roadmap_html_api::htmlPluginConfigCloseTable ();
 
+   # thresholds
    roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'thresholds' );
    echo '<tr>';
    roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_eta_threshold_management', 6 );
@@ -72,19 +80,19 @@ if ( config_get ( 'enable_eta' ) )
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_factor' );
    roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
    echo '</tr>';
-   $etaThresholdRows = $roadmapDb->dbGetEtaThresholds ();
-   $thresholdCount = count ( $etaThresholdRows );
+   $thresholdIds = rThresholdManager::getRThresholdIds ();
+   $thresholdCount = count ( $thresholdIds );
    if ( $thresholdCount > 0 )
    {
       # iterate through thresholds
       for ( $index = 0; $index < $thresholdCount; $index++ )
       {
-         $thresholdRow = $etaThresholdRows[ $index ];
-         $thresholdId = $thresholdRow[ 0 ];
-         $thresholdFrom = $thresholdRow[ 1 ];
-         $thresholdTo = $thresholdRow[ 2 ];
-         $thresholdUnit = $thresholdRow[ 3 ];
-         $thresholdFactor = $thresholdRow[ 4 ];
+         $thresholdId = $thresholdIds[ $index ];
+         $threshold = new rThreshold( $thresholdId );
+         $thresholdFrom = $threshold->getThresholdFrom ();
+         $thresholdTo = $threshold->getThresholdTo ();
+         $thresholdUnit = $threshold->getThresholdUnit ();
+         $thresholdFactor = $threshold->getThresholdFactor ();
 
          echo '<tr>';
          # threshold from
@@ -103,7 +111,7 @@ if ( config_get ( 'enable_eta' ) )
          echo '</td>';
 
          echo '<td>';
-         echo '<a class="button" href="' . plugin_page ( 'config_delete_threshold' ) .
+         echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .
             '&amp;threshold_id=' . $thresholdId . '">';
          echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
          echo '</a>';
@@ -130,7 +138,6 @@ if ( config_get ( 'enable_eta' ) )
 }
 
 # profile groups
-/** TODO */
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profilegroups' );
 echo '<tr>';
 roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
@@ -142,16 +149,16 @@ roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_a
 echo '</tr>';
 
 # iterate through groups
-$groups = $roadmapDb->dbGetGroups ();
-$groupCount = count ( $groups );
+$groupIds = rGroupManager::getRGroupIds ();
+$groupCount = count ( $groupIds );
 if ( $groupCount > 0 )
 {
    for ( $index = 0; $index < $groupCount; $index++ )
    {
-      $group = $groups[ $index ];
-      $dbGroupId = $group[ 0 ];
-      $dbGroudName = $group[ 1 ];
-      $dbGroupProfiles = $group[ 2 ];
+      $groupId = $groupIds[ $index ];
+      $group = new rGroup( $groupId );
+      $dbGroudName = $group->getGroupName ();
+      $dbGroupProfiles = $group->getGroupProfiles ();
 
       $groupProfileEnumNames = array ();
       $profileEnumIds = roadmap_pro_api::getProfileEnumIds ();
@@ -160,20 +167,16 @@ if ( $groupCount > 0 )
       $groupProfileArray = explode ( ';', $dbGroupProfiles );
       foreach ( $groupProfileArray as $profileId )
       {
-         $profile = $roadmapDb->dbGetProfile ( $profileId );
-         $profileName = $profile[ 1 ];
+         $profile = new rProfile( $profileId );
+         $profileName = $profile->getProfileName ();
 
          array_push ( $groupProfileEnumNames, $profileName );
       }
 
-//      var_dump ( $groupPofileEnumNames );
-//      var_dump ( $profileEnumNames );
-
-
       echo '<tr>';
       # group name
       echo '<td>';
-      echo '<input type="hidden" name="group-id[]" value="' . $dbGroupId . '" />';
+      echo '<input type="hidden" name="group-id[]" value="' . $groupId . '" />';
       echo '<input type="text" name="group-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbGroudName ) . '" />';
       echo '</td>';
       # group profiles
@@ -190,8 +193,8 @@ if ( $groupCount > 0 )
 
       # delete group button
       echo '<td>';
-      echo '<a class="button" href="' . plugin_page ( 'config_delete_group' ) .
-         '&amp;group_id=' . $dbGroupId . '">';
+      echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .
+         '&amp;group_id=' . $groupId . '">';
       echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
       echo '</a>';
       echo '</td>';
@@ -235,25 +238,25 @@ roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_a
 echo '</tr>';
 
 # iterate through profiles
-$profiles = $roadmapDb->dbGetProfiles ();
-$profileCount = count ( $profiles );
+$profileIds = rProfileManager::getRProfileIds ();
+$profileCount = count ( $profileIds );
 if ( $profileCount > 0 )
 {
    for ( $index = 0; $index < $profileCount; $index++ )
    {
-      $profile = $profiles[ $index ];
-      $dbProfileId = $profile[ 0 ];
-      $dbProfileName = $profile[ 1 ];
-      $dbProfileColor = $profile[ 2 ];
-      $dbProfileStatus = $profile[ 3 ];
-      $dbProfilePriority = $profile[ 4 ];
-      $dbProfileEffort = $profile[ 5 ];
+      $profileId = $profileIds[ $index ];
+      $profile = new rProfile( $profileId );
+      $dbProfileName = $profile->getProfileName ();
+      $dbProfileColor = $profile->getProfileColor ();
+      $dbProfileStatus = $profile->getProfileStatus ();
+      $dbProfilePriority = $profile->getProfilePriority ();
+      $dbProfileEffort = $profile->getProfileEffort ();
       $profileStatusArray = explode ( ';', $dbProfileStatus );
 
       echo '<tr>';
       # profile name
       echo '<td>';
-      echo '<input type="hidden" name="profile-id[]" value="' . $dbProfileId . '" />';
+      echo '<input type="hidden" name="profile-id[]" value="' . $profileId . '" />';
       echo '<input type="text" name="profile-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbProfileName ) . '" />';
       echo '</td>';
       # profile status
@@ -270,8 +273,8 @@ if ( $profileCount > 0 )
       echo '<td><input type="text" name="profile-effort[]" size="15" maxlength="3" value="' . $dbProfileEffort . '" /></td>';
       # delete profile button
       echo '<td>';
-      echo '<a class="button" href="' . plugin_page ( 'config_delete_profile' ) .
-         '&amp;profile_id=' . $dbProfileId . '">';
+      echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .
+         '&amp;profile_id=' . $profileId . '">';
       echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
       echo '</a>';
       echo '</td>';

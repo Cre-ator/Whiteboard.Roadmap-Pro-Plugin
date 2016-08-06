@@ -2,24 +2,23 @@
 
 require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
 require_once ( __DIR__ . '/../core/roadmap_html_api.php' );
-require_once ( __DIR__ . '/../core/roadmap_db.php' );
-require_once ( __DIR__ . '/../core/roadmap_data.php' );
+require_once ( __DIR__ . '/../core/roadmapManager.php' );
 require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
 require_once ( __DIR__ . '/../core/roadmap.php' );
+require_once ( __DIR__ . '/../core/rProfile.php' );
 
-$roadmapDb = new roadmap_db();
-$defaultProfileColor = 'FFFFFF';
+$profileColor = 'FFFFFF';
 if ( isset( $_GET[ 'profile_id' ] ) )
 {
    $getProfileId = $_GET[ 'profile_id' ];
-   $roadmapProfile = $roadmapDb->dbGetProfile ( $getProfileId );
-   $defaultProfileColor = $roadmapProfile[ 2 ];
+   $profile = new rProfile( $getProfileId );
+   $profileColor = $profile->getProfileColor ();
 }
 
 # #################################################################################################################### #
 # print page top
 html_page_top1 ( plugin_lang_get ( 'menu_title' ) );
-echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $defaultProfileColor . '"/>';
+echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $profileColor . '"/>';
 echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
 echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
 echo '<script type="text/javascript">';
@@ -60,13 +59,11 @@ html_page_bottom ();
  */
 function processTable ( $profileId )
 {
-   global $roadmapDb;
-
    $getVersionId = $_GET[ 'version_id' ];
    $getProjectId = $_GET[ 'project_id' ];
    $getGroupId = $_GET[ 'group_id' ];
 
-   $roadmap = new roadmap_data( $getVersionId, $getProjectId );
+   $roadmap = new roadmapManager( $getVersionId, $getProjectId );
    $roadmap->calcProjectVersionContent ();
 
    $projectIds = $roadmap->getProjectIds ();
@@ -108,7 +105,7 @@ function processTable ( $profileId )
          }
 
          $versionName = $version[ 'version' ];
-         $bugIds = $roadmapDb->dbGetBugIdsByProjectAndTargetVersion ( $projectId, $versionName );
+         $bugIds = roadmap_pro_api::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $versionName );
          $overallBugAmount = count ( $bugIds );
 
          if ( $overallBugAmount > 0 )

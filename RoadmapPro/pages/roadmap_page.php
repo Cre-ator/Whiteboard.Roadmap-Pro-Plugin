@@ -124,7 +124,7 @@ function processTable ( $profileId )
             # add version to directory
             roadmap_html_api::htmlPluginAddDirectoryVersionEntry ( project_get_name ( $projectId ), $versionId, $versionName );
             # define and print release title
-            $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $projectId, $version );
+            $releaseTitleString = roadmap_pro_api::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
             roadmap_html_api::printWrapperInHTML ( $releaseTitleString );
             # print version description
             $versionDescription = $version[ 'description' ];

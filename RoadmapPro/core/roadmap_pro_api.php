@@ -116,23 +116,34 @@ class roadmap_pro_api
     * returns the generated title string
     *
     * @param $profileId
+    * @param $getGroupId
     * @param $projectId
     * @param $version
     * @return string
     */
-   public static function getReleasedTitleString ( $profileId, $projectId, $version )
+   public static function getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version )
    {
+      var_dump ( $getGroupId );
       $versionId = $version[ 'id' ];
       $versionName = $version[ 'version' ];
       $versionDate = $version[ 'date_order' ];
       $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
-      $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' )
-         . '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $versionId . '">'
+      $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' );
+      if ( $getGroupId != null )
+      {
+         $releaseTitleString .= '&amp;group_id=' . $getGroupId;
+      }
+      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $versionId . '">'
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
-         . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' )
-         . '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
+         . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' );
+
+      if ( $getGroupId != null )
+      {
+         $releaseTitleString .= '&amp;group_id=' . $getGroupId;
+      }
+      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
          . string_display_line ( $versionName ) . '</a>'
          . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;'
          . $versionReleaseDate . ')&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'

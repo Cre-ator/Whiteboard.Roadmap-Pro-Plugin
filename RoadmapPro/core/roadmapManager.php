@@ -33,23 +33,23 @@ class roadmapManager
       # no specific project or version
       if ( ( $this->getProjectId == null ) && ( $this->getVersionId == null ) )
       {
-         $this->prepareProjectIds ();
+         $this->automaticDataCollector ();
       }
 
       # specific project selected
       if ( $this->getProjectId != null )
       {
-         array_push ( $this->projectIds, $this->getProjectId );
+         $this->projectDataCollector ();
       }
 
       # specific version selected
       if ( $this->getVersionId != null )
       {
-         $this->prepareVersionBasedData ();
+         $this->projectVersionDataCollector ();
       }
    }
 
-   private function prepareProjectIds ()
+   private function automaticDataCollector ()
    {
       $currentProjectId = helper_get_current_project ();
       $subProjectIds = project_hierarchy_get_all_subprojects ( $currentProjectId );
@@ -65,7 +65,7 @@ class roadmapManager
       }
    }
 
-   private function prepareVersionBasedData ()
+   private function projectVersionDataCollector ()
    {
       $version = array ();
       $version[ 'id' ] = $this->getVersionId;
@@ -78,5 +78,10 @@ class roadmapManager
 
       $versionRelatedProjectId = version_get_field ( $this->getVersionId, 'project_id' );
       array_push ( $this->projectIds, $versionRelatedProjectId );
+   }
+
+   private function projectDataCollector ()
+   {
+      array_push ( $this->projectIds, $this->getProjectId );
    }
 }

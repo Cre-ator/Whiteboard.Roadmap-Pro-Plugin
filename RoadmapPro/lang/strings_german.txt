@@ -1,5 +1,4 @@
 <?php
-
 $s_plugin_RoadmapPro_menu_title = 'Roadmap Pro';
 
 $s_plugin_RoadmapPro_config_page_title = 'Einstellung Roadmap Pro';
@@ -31,7 +30,6 @@ $s_plugin_RoadmapPro_config_page_prfgr_management = 'Profil-Gruppenverwaltung';
 $s_plugin_RoadmapPro_config_page_prfgr_profiles = 'beinhaltet Profile';
 
 $s_plugin_RoadmapPro_config_page_eta_management = 'Verwaltung Aufwand';
-$s_plugin_RoadmapPro_config_page_prio_decription = 'Die Priorität repräsentiert den Zeitpunkt im Workflow';
 $s_plugin_RoadmapPro_config_page_prio_decription = 'Die Priorität repräsentiert den Zeitpunkt im Workflow';
 
 $s_plugin_RoadmapPro_config_reset_ensure_title = 'Plugin-Einstellungen zurücksetzen';

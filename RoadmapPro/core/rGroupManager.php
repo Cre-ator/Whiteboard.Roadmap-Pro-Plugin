@@ -4,6 +4,8 @@ require_once ( __DIR__ . '/rGroup.php' );
 
 /**
  * the group manager gets data from multiple group profiles
+ *
+ * @author Stefan Schwarz
  */
 class rGroupManager
 {

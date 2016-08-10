@@ -4,6 +4,8 @@ require_once ( __DIR__ . '/rProfile.php' );
 
 /**
  * the profile manager gets data from multiple roadmap profiles
+ *
+ * @author Stefan Schwarz
  */
 class rProfileManager
 {

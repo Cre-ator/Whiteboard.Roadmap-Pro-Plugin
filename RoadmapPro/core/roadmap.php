@@ -4,28 +4,71 @@ require_once ( __DIR__ . '/rProfile.php' );
 require_once ( __DIR__ . '/rEta.php' );
 
 /**
- * Created by PhpStorm.
- * User: stefan.schwarz
- * Date: 02.08.2016
- * Time: 00:13
+ * roadmap class that represents a roadmap
+ *
+ * @author Stefan Schwarz
  */
 class roadmap
 {
+   /**
+    * @var integer
+    */
    private $versionId;
+   /**
+    * @var array
+    */
    private $bugIds;
+   /**
+    * @var integer
+    */
    private $profileId;
+   /**
+    * @var integer
+    */
    private $groupId;
+   /**
+    * @var integer
+    */
    private $doneEta;
+   /**
+    * @var float
+    */
    private $progressPercent;
+   /**
+    * @var array
+    */
    private $profileHashArray;
-
+   /**
+    * @var boolean
+    */
    private $etaIsSet;
+   /**
+    * @var integer
+    */
    private $singleEta;
+   /**
+    * @var integer
+    */
    private $fullEta;
+   /**
+    * @var array
+    */
    private $doingBugIds;
+   /**
+    * @var array
+    */
    private $doneBugIds;
+   /**
+    * @var boolean
+    */
    private $issueIsDone;
 
+   /**
+    * roadmap constructor.
+    * @param $bugIds
+    * @param $profileId
+    * @param $groupId
+    */
    function __construct ( $bugIds, $profileId, $groupId )
    {
       $this->bugIds = $bugIds;
@@ -36,88 +79,147 @@ class roadmap
       $this->profileHashArray = array ();
    }
 
+   /**
+    * @return bool
+    */
    public function getEtaIsSet ()
    {
       $this->checkEtaIsSet ();
       return $this->etaIsSet;
    }
 
+   /**
+    * @param $bugId
+    * @return int
+    */
    public function getSingleEta ( $bugId )
    {
       $this->calcSingleEta ( $bugId );
       return $this->singleEta;
    }
 
+   /**
+    * @return int
+    */
    public function getFullEta ()
    {
       $this->calcFullEta ();
       return $this->fullEta;
    }
 
+   /**
+    * @return array
+    */
    public function getDoneBugIds ()
    {
       $this->calcDoneBugIds ();
       return $this->doneBugIds;
    }
 
+   /**
+    * @return array
+    */
    public function getDoingBugIds ()
    {
       $this->calcDoingBugIds ();
       return $this->doingBugIds;
    }
 
+   /**
+    * @return int
+    */
    public function getDoneEta ()
    {
       $this->calcDoneEta ();
       return $this->doneEta;
    }
 
+   /**
+    * @return float
+    */
    public function getSingleProgressPercent ()
    {
       $this->calcSingleProgressPercent ();
       return $this->progressPercent;
    }
 
+   /**
+    * @param $bugId
+    * @return bool
+    */
    public function getIssueIsDone ( $bugId )
    {
       $this->checkIssueIsDoneById ( $bugId );
       return $this->issueIsDone;
    }
 
+   /**
+    * @return int
+    */
    public function getProfileId ()
    {
       return $this->profileId;
    }
 
+   /**
+    * @return array
+    */
    public function getBugIds ()
    {
       return $this->bugIds;
    }
 
+   /**
+    * @param $profileId
+    */
    public function setProfileId ( $profileId )
    {
       $this->profileId = $profileId;
    }
 
+   /**
+    * new initialization of done bug ids
+    */
    private function resetDoneBugIds ()
    {
       $this->doneBugIds = array ();
    }
 
+   /**
+    * @param $versionId
+    */
    public function setVersionId ( $versionId )
    {
       $this->versionId = $versionId;
    }
 
+   /**
+    * @return int
+    */
    public function getVersionId ()
    {
       return $this->versionId;
    }
 
    /**
+    * @return array
+    */
+   public function getProfileHashArray ()
+   {
+      $this->calcScaledData ();
+      return $this->profileHashArray;
+   }
+
+   /**
+    * calc the percentage of done progress for a roadmap group
+    */
+   public function getGroupProgressPercent ()
+   {
+      return $this->progressPercent;
+   }
+
+   /**
     * returns true if every item of bug id array has set eta value
-    *
-    * @return bool
     */
    private function checkEtaIsSet ()
    {
@@ -134,8 +236,6 @@ class roadmap
 
    /**
     * returns the eta value of a bunch of bugs
-    *
-    * @return float|int
     */
    private function calcFullEta ()
    {
@@ -162,7 +262,6 @@ class roadmap
     * returns the eta value of a single bug
     *
     * @param $bugId
-    * @return float|int
     */
    private function calcSingleEta ( $bugId )
    {
@@ -182,9 +281,7 @@ class roadmap
    }
 
    /**
-    * returns the ids of done bugs in a bunch of bugs
-    *
-    * @return array
+    * get the done bug ids and save them in the done bug id array
     */
    private function calcDoneBugIds ()
    {
@@ -199,6 +296,9 @@ class roadmap
       }
    }
 
+   /**
+    * get the doing bug ids and save them in the doing bug id array
+    */
    private function calcDoingBugIds ()
    {
       foreach ( $this->bugIds as $bugId )
@@ -213,10 +313,9 @@ class roadmap
    }
 
    /**
-    * returns true if the issue is done like it is defined in the profile preference
+    * check if specified bug is done
     *
     * @param $bugId
-    * @return bool
     */
    private function checkIssueIsDoneById ( $bugId )
    {
@@ -236,6 +335,9 @@ class roadmap
       }
    }
 
+   /**
+    * calculate the sum of eta for all done bugs
+    */
    private function calcDoneEta ()
    {
       $this->doneEta = 0;
@@ -249,6 +351,9 @@ class roadmap
       }
    }
 
+   /**
+    * calc the percentage of done progress for a single roadmap
+    */
    private function calcSingleProgressPercent ()
    {
       $this->doneEta = 0;
@@ -275,6 +380,9 @@ class roadmap
       }
    }
 
+   /**
+    * calc the roadmap data for a roadmap group
+    */
    private function calcScaledData ()
    {
       # variables
@@ -347,16 +455,5 @@ class roadmap
       }
 
       $this->progressPercent = $wholeProgress;
-   }
-
-   public function getProfileHashArray ()
-   {
-      $this->calcScaledData ();
-      return $this->profileHashArray;
-   }
-
-   public function getSclaedProgressPercent ()
-   {
-      return $this->progressPercent;
    }
 }

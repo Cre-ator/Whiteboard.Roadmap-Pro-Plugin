@@ -3,6 +3,8 @@ require_once ( __DIR__ . '/roadmap_pro_api.php' );
 
 /**
  * profile class that represents a roadmap profile
+ *
+ * @author Stefan Schwarz
  */
 class rProfile
 {

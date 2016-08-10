@@ -1,7 +1,22 @@
+/**
+ * @type {number}
+ */
 var newProfileCounter = 0;
+/**
+ * @type {number}
+ */
 var newGroupCounter = 0;
+/**
+ * @type {number}
+ */
 var newThresholdCounter = 0;
 
+/**
+ * adds an empty profile row to the config page
+ *
+ * @param statusValues
+ * @param statusStrings
+ */
 function addProfileRow(statusValues, statusStrings) {
     var tableId = "profiles";
     var table = document.getElementById(tableId);
@@ -48,6 +63,12 @@ function addProfileRow(statusValues, statusStrings) {
     window.dispatchEvent(evt);
 }
 
+/**
+ * adds an empty group row to the config page
+ *
+ * @param profileIds
+ * @param profileNames
+ */
 function addGroupRow(profileIds, profileNames) {
     var tableId = "profilegroups";
     var table = document.getElementById(tableId);
@@ -78,6 +99,9 @@ function addGroupRow(profileIds, profileNames) {
     tr.appendChild(td3);
 }
 
+/**
+ * adds an empty threshold row to the config page
+ */
 function addThresholdRow() {
     var tableId = "thresholds";
     var table = document.getElementById(tableId);
@@ -106,6 +130,12 @@ function addThresholdRow() {
     tr.appendChild(td5);
 }
 
+/**
+ * deletes a row from the given table
+ *
+ * @param initialRowCount
+ * @param tableId
+ */
 function delRow(initialRowCount, tableId) {
     var table = document.getElementById(tableId);
     var rows = table.getElementsByTagName("tr").length;
@@ -115,6 +145,12 @@ function delRow(initialRowCount, tableId) {
     }
 }
 
+/**
+ * adds a progress bar to the directory
+ *
+ * @param versionId
+ * @param progressHtmlString
+ */
 function addProgressBarToDirectory(versionId, progressHtmlString) {
     var trdiv = document.getElementById('d' + versionId);
 
@@ -133,6 +169,13 @@ function addProgressBarToDirectory(versionId, progressHtmlString) {
     tddiv.appendChild(p9001div);
 }
 
+/**
+ * adds a version entry to the directory
+ *
+ * @param projectName
+ * @param versionId
+ * @param versionName
+ */
 function addVersionEntryToDirectory(projectName, versionId, versionName) {
     var table = document.getElementById(projectName);
 
@@ -148,6 +191,13 @@ function addVersionEntryToDirectory(projectName, versionId, versionName) {
     trdiv.appendChild(tddiv);
 }
 
+/**
+ * adds a project entry to the directory
+ *
+ * @param tableId
+ * @param projectId
+ * @param projectName
+ */
 function addProjectEntryToDirectory(tableId, projectId, projectName) {
     var table = document.getElementById(tableId);
 
@@ -163,6 +213,9 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     trdiv.appendChild(tddiv);
 }
 
+/**
+ * displays a back-to-top-button in the lower right corner of the page
+ */
 function backToTop() {
     $(document).ready(function () {
         // Der Button wird mit JavaScript erzeugt und vor dem Ende des body eingebunden.

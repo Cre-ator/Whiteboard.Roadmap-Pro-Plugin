@@ -3,6 +3,8 @@ require_once ( __DIR__ . '/roadmap_pro_api.php' );
 
 /**
  * group class that represents a group
+ *
+ * @author Stefan Schwarz
  */
 class rGroup
 {

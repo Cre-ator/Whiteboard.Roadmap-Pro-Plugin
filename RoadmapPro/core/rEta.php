@@ -3,6 +3,8 @@ require_once ( __DIR__ . '/roadmap_pro_api.php' );
 
 /**
  * eta class that represents an eta element
+ *
+ * @author Stefan Schwarz
  */
 class rEta
 {

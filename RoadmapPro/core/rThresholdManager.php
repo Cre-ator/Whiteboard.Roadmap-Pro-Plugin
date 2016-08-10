@@ -4,6 +4,8 @@ require_once ( __DIR__ . '/rThreshold.php' );
 
 /**
  * the threshold manager gets data from multiple eta thresholds
+ *
+ * @author Stefan Schwarz
  */
 class rThresholdManager
 {

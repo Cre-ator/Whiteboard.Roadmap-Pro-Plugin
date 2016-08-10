@@ -3,6 +3,8 @@ require_once ( __DIR__ . '/roadmap_pro_api.php' );
 
 /**
  * threshold class that represents an eta threshold
+ *
+ * @author Stefan Schwarz
  */
 class rThreshold
 {

@@ -65,8 +65,7 @@ if ( config_get ( 'enable_eta' ) )
       echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
    }
-
-   roadmap_html_api::htmlPluginConfigCloseTable ();
+   echo '</table>';
 
    # thresholds
    roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'thresholds' );
@@ -121,7 +120,7 @@ if ( config_get ( 'enable_eta' ) )
       }
    }
 }
-roadmap_html_api::htmlPluginConfigCloseTable ();
+echo '</table>';
 
 if ( config_get ( 'enable_eta' ) )
 {
@@ -134,7 +133,7 @@ if ( config_get ( 'enable_eta' ) )
    echo '</td>';
    echo '</tr>';
    echo '</tbody>';
-   roadmap_html_api::htmlPluginConfigCloseTable ();
+   echo '</table>';
 }
 
 # profile groups
@@ -202,8 +201,7 @@ if ( $groupCount > 0 )
       echo '</tr>';
    }
 }
-
-roadmap_html_api::htmlPluginConfigCloseTable ();
+echo '</table>';
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
 echo '<tbody>';
@@ -221,7 +219,7 @@ echo '</td>';
 
 echo '</tr>';
 echo '</tbody>';
-roadmap_html_api::htmlPluginConfigCloseTable ();
+echo '</table>';
 
 # show profiles
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
@@ -282,7 +280,7 @@ if ( $profileCount > 0 )
       echo '</tr>';
    }
 }
-roadmap_html_api::htmlPluginConfigCloseTable ();
+echo '</table>';
 
 roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
 echo '<tbody>';
@@ -308,7 +306,7 @@ echo '<input type="submit" name="config_reset" class="button" value="' . lang_ge
 echo '</td>';
 echo '</tr>';
 echo '</tbody>';
-roadmap_html_api::htmlPluginConfigCloseTable ();
+echo '</table>';
 
 echo '</form>';
 html_page_bottom1 ();

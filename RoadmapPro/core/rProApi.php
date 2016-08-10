@@ -26,10 +26,15 @@ class rProApi
     */
    public static function initializeDbConnection ()
    {
-      $dbPath = config_get ( 'hostname' );
-      $dbUser = config_get ( 'db_username' );
-      $dbPass = config_get ( 'db_password' );
-      $dbName = config_get ( 'database_name' );
+//      $dbPath = config_get ( 'hostname' );
+//      $dbUser = config_get ( 'db_username' );
+//      $dbPass = config_get ( 'db_password' );
+//      $dbName = config_get ( 'database_name' );
+
+      $dbPath = 'localhost';
+      $dbUser = 'root';
+      $dbPass = '';
+      $dbName = 'mantisbt1219';
 
       $mysqli = new mysqli( $dbPath, $dbUser, $dbPass, $dbName );
       $mysqli->connect ( $dbPath, $dbUser, $dbPass, $dbName );

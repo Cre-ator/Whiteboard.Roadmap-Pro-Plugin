@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 require_once ( __DIR__ . '/rProfile.php' );
 
 /**
@@ -16,7 +16,7 @@ class rProfileManager
     */
    public static function getRProfileIds ()
    {
-      $mysqli = roadmap_pro_api::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT id FROM mantis_plugin_RoadmapPro_profile_table ORDER BY profile_prio ASC';
@@ -62,7 +62,7 @@ class rProfileManager
     */
    public static function getSumRProfileEffort ()
    {
-      $mysqli = roadmap_pro_api::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table';

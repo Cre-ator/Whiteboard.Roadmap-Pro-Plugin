@@ -18,11 +18,11 @@ class roadmapManager
    /**
     * @var integer
     */
-   private $getVersionId;
+   private $versionId;
    /**
     * @var integer
     */
-   private $getProjectId;
+   private $projectId;
 
    /**
     * roadmapManager constructor.
@@ -33,8 +33,18 @@ class roadmapManager
    {
       $this->projectIds = array ();
       $this->versions = array ();
-      $this->getVersionId = $getVersionId;
-      $this->getProjectId = $getProjectId;
+      $this->versionId = $getVersionId;
+      $this->projectId = $getProjectId;
+
+      $this->calcProjectVersionContent ();
+   }
+
+   /**
+    * roadmapManager destructor.
+    */
+   function __destruct ()
+   {
+      // TODO: Implement __destruct() method.
    }
 
    /**
@@ -58,22 +68,22 @@ class roadmapManager
     *
     * @author Stefan Schwarz
     */
-   public function calcProjectVersionContent ()
+   private function calcProjectVersionContent ()
    {
       # no specific project or version
-      if ( ( $this->getProjectId == null ) && ( $this->getVersionId == null ) )
+      if ( ( $this->projectId == null ) && ( $this->versionId == null ) )
       {
          $this->automaticDataCollector ();
       }
 
       # specific project selected
-      if ( $this->getProjectId != null )
+      if ( $this->projectId != null )
       {
          $this->projectDataCollector ();
       }
 
       # specific version selected
-      if ( $this->getVersionId != null )
+      if ( $this->versionId != null )
       {
          $this->projectVersionDataCollector ();
       }
@@ -108,15 +118,15 @@ class roadmapManager
    private function projectVersionDataCollector ()
    {
       $version = array ();
-      $version[ 'id' ] = $this->getVersionId;
-      $version[ 'version' ] = version_get_field ( $this->getVersionId, 'version' );
-      $version[ 'date_order' ] = version_get_field ( $this->getVersionId, 'date_order' );
-      $version[ 'released' ] = version_get_field ( $this->getVersionId, 'released' );
-      $version[ 'description' ] = version_get_field ( $this->getVersionId, 'description' );
+      $version[ 'id' ] = $this->versionId;
+      $version[ 'version' ] = version_get_field ( $this->versionId, 'version' );
+      $version[ 'date_order' ] = version_get_field ( $this->versionId, 'date_order' );
+      $version[ 'released' ] = version_get_field ( $this->versionId, 'released' );
+      $version[ 'description' ] = version_get_field ( $this->versionId, 'description' );
 
       array_push ( $this->versions, $version );
 
-      $versionRelatedProjectId = version_get_field ( $this->getVersionId, 'project_id' );
+      $versionRelatedProjectId = version_get_field ( $this->versionId, 'project_id' );
       array_push ( $this->projectIds, $versionRelatedProjectId );
    }
 
@@ -127,6 +137,6 @@ class roadmapManager
     */
    private function projectDataCollector ()
    {
-      array_push ( $this->projectIds, $this->getProjectId );
+      array_push ( $this->projectIds, $this->projectId );
    }
 }

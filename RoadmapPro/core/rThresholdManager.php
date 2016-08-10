@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 require_once ( __DIR__ . '/rThreshold.php' );
 
 /**
@@ -16,7 +16,7 @@ class rThresholdManager
     */
    public static function getRThresholdIds ()
    {
-      $mysqli = roadmap_pro_api::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT id FROM mantis_plugin_roadmappro_etathreshold_table';

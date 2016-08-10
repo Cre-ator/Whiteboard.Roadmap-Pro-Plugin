@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_html_api.php' );
+require_once ( __DIR__ . '/rHtmlApi.php' );
 require_once ( __DIR__ . '/roadmapManager.php' );
 require_once ( __DIR__ . '/roadmap.php' );
 require_once ( __DIR__ . '/rGroupManager.php' );
@@ -17,7 +17,7 @@ require_once ( __DIR__ . '/rEta.php' );
  *
  * @author Stefan Schwarz
  */
-class roadmap_pro_api
+class rProApi
 {
    /**
     * get database connection infos and connect to the database
@@ -43,7 +43,7 @@ class roadmap_pro_api
     * @param $array
     * @return bool
     */
-   public static function checkArrayForDuplicates ( $array )
+   private static function checkArrayForDuplicates ( $array )
    {
       return count ( $array ) !== count ( array_unique ( $array ) );
    }
@@ -54,7 +54,7 @@ class roadmap_pro_api
     * @param $statusValues
     * @return string
     */
-   public static function generateDbValueString ( $statusValues )
+   private static function generateDbValueString ( $statusValues )
    {
       $profileStatus = '';
       $limit = count ( $statusValues );
@@ -500,7 +500,7 @@ class roadmap_pro_api
 
       if ( $postProfileNames != null )
       {
-         if ( roadmap_pro_api::checkArrayForDuplicates ( $postProfileNames ) == true )
+         if ( self::checkArrayForDuplicates ( $postProfileNames ) == true )
          {
             # error message
          }
@@ -517,7 +517,7 @@ class roadmap_pro_api
                   $profile = new rProfile( $profileId );
                   $profile->setProfileName ( $profileName );
                   $postProfileStatus = $_POST[ 'profile-status-' . $index ];
-                  $profile->setProfileStatus ( roadmap_pro_api::generateDbValueString ( $postProfileStatus ) );
+                  $profile->setProfileStatus ( self::generateDbValueString ( $postProfileStatus ) );
                   $profile->setProfileColor ( $postProfileColor[ $index ] );
                   $profile->setProfilePriority ( $postProfilePriority[ $index ] );
                   $profile->setProfileEffort ( $postProfileEffort[ $index ] );
@@ -536,7 +536,7 @@ class roadmap_pro_api
                   $newProfile = new rProfile();
                   $newProfile->setProfileName ( $newProfileName );
                   $postNewProfileStatus = $_POST[ 'new-status-' . $newStatusIndex ];
-                  $newProfile->setProfileStatus ( roadmap_pro_api::generateDbValueString ( $postNewProfileStatus ) );
+                  $newProfile->setProfileStatus ( self::generateDbValueString ( $postNewProfileStatus ) );
                   $newProfile->setProfileColor ( $postProfileColor[ $newIndex ] );
                   $newProfile->setProfilePriority ( $postProfilePriority[ $newIndex ] );
                   $newProfile->setProfileEffort ( $postProfileEffort[ $newIndex ] );
@@ -559,7 +559,7 @@ class roadmap_pro_api
 
       if ( $postGroupNames != null )
       {
-         if ( roadmap_pro_api::checkArrayForDuplicates ( $postGroupNames ) == true )
+         if ( self::checkArrayForDuplicates ( $postGroupNames ) == true )
          {
             # error message
          }
@@ -576,7 +576,7 @@ class roadmap_pro_api
                   $group = new rGroup( $groupId );
                   $group->setGroupName ( $groupName );
                   $postGroupProfiles = $_POST[ 'group-profile-' . $index ];
-                  $group->setGroupProfiles ( roadmap_pro_api::generateDbValueString ( $postGroupProfiles ) );
+                  $group->setGroupProfiles ( self::generateDbValueString ( $postGroupProfiles ) );
                   $group->triggerUpdateInDb ();
                }
             }
@@ -592,7 +592,7 @@ class roadmap_pro_api
                   $newGroup = new rGroup();
                   $newGroup->setGroupName ( $newGroupName );
                   $postNewGroupProfiles = $_POST[ 'new-group-profile-' . $newGroupProfileIndex ];
-                  $newGroup->setGroupProfiles ( roadmap_pro_api::generateDbValueString ( $postNewGroupProfiles ) );
+                  $newGroup->setGroupProfiles ( self::generateDbValueString ( $postNewGroupProfiles ) );
                   $newGroup->triggerInsertIntoDb ();
                }
 

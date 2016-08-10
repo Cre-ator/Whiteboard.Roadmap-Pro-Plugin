@@ -1,5 +1,6 @@
 <?php
-require_once ( __DIR__ . '/../core/roadmap_html_api.php' );
+require_once ( __DIR__ . '/../core/rHtmlApi.php' );
+require_once ( __DIR__ . '/../core/rProApi.php' );
 require_once ( __DIR__ . '/../core/rProfileManager.php' );
 require_once ( __DIR__ . '/../core/rProfile.php' );
 require_once ( __DIR__ . '/../core/rGroupManager.php' );
@@ -21,21 +22,21 @@ echo '<br/>';
 echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
 echo form_security_field ( 'plugin_RoadmapPro_config_update' );
 
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+rHtmlApi::htmlPluginConfigOpenTable ();
 
 # General configuration
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_general', 3 );
+rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_general', 3 );
 echo '</tr>';
 # Show menu
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_show_menu' );
-roadmap_html_api::htmlPluginConfigRadio ( 'show_menu', 2 );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_show_menu' );
+rHtmlApi::htmlPluginConfigRadio ( 'show_menu', 2 );
 echo '</tr>';
 # Show plugin information in footer
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_show_footer' );
-roadmap_html_api::htmlPluginConfigRadio ( 'show_footer', 2 );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_show_footer' );
+rHtmlApi::htmlPluginConfigRadio ( 'show_footer', 2 );
 echo '</tr>';
 
 # eta management
@@ -43,13 +44,13 @@ $thresholdCount = 0;
 if ( config_get ( 'enable_eta' ) )
 {
    echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_eta_management', 3 );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_eta_management', 3 );
    echo '</tr>';
 
    echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_name' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_name' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    echo '</tr>';
    # eta management
 
@@ -68,16 +69,16 @@ if ( config_get ( 'enable_eta' ) )
    echo '</table>';
 
    # thresholds
-   roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'thresholds' );
+   rHtmlApi::htmlPluginConfigOpenTable ( 'thresholds' );
    echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_eta_threshold_management', 6 );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_eta_threshold_management', 6 );
    echo '</tr>';
    echo '<tr>';
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_from' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_to' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_factor' );
-   roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_from' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_to' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_factor' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
    echo '</tr>';
    $thresholdIds = rThresholdManager::getRThresholdIds ();
    $thresholdCount = count ( $thresholdIds );
@@ -124,7 +125,7 @@ echo '</table>';
 
 if ( config_get ( 'enable_eta' ) )
 {
-   roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+   rHtmlApi::htmlPluginConfigOpenTable ();
    echo '<tbody>';
    echo '<tr class="foot-row">';
    echo '<td class="left">';
@@ -137,14 +138,14 @@ if ( config_get ( 'enable_eta' ) )
 }
 
 # profile groups
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profilegroups' );
+rHtmlApi::htmlPluginConfigOpenTable ( 'profilegroups' );
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
+rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
 echo '</tr>';
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_prfgr_profiles' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_prfgr_profiles' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
 echo '</tr>';
 
 # iterate through groups
@@ -160,8 +161,8 @@ if ( $groupCount > 0 )
       $dbGroupProfiles = $group->getGroupProfiles ();
 
       $groupProfileEnumNames = array ();
-      $profileEnumIds = roadmap_pro_api::getProfileEnumIds ();
-      $profileEnumNames = roadmap_pro_api::getProfileEnumNames ();
+      $profileEnumIds = rProApi::getProfileEnumIds ();
+      $profileEnumNames = rProApi::getProfileEnumNames ();
       $profileEnumCount = count ( $profileEnumIds );
       $groupProfileArray = explode ( ';', $dbGroupProfiles );
       foreach ( $groupProfileArray as $profileId )
@@ -203,11 +204,11 @@ if ( $groupCount > 0 )
 }
 echo '</table>';
 
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+rHtmlApi::htmlPluginConfigOpenTable ();
 echo '<tbody>';
 echo '<tr class="foot-row">';
-$profileEnumIds = roadmap_pro_api::getProfileEnumIds ();
-$profileEnumNames = roadmap_pro_api::getProfileEnumNames ();
+$profileEnumIds = rProApi::getProfileEnumIds ();
+$profileEnumNames = rProApi::getProfileEnumNames ();
 
 $jsProfileEnumIdArray = json_encode ( $profileEnumIds );
 $jsProfileEnumNameArray = json_encode ( $profileEnumNames );
@@ -222,17 +223,17 @@ echo '</tbody>';
 echo '</table>';
 
 # show profiles
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table', 'profiles' );
+rHtmlApi::htmlPluginConfigOpenTable ( 'profiles' );
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
+rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_profile_management', 6 );
 echo '</tr>';
 echo '<tr>';
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_status' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_color' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_prio' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
-roadmap_html_api::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_status' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_color' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_prio' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_effort' );
+rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
 echo '</tr>';
 
 # iterate through profiles
@@ -282,7 +283,7 @@ if ( $profileCount > 0 )
 }
 echo '</table>';
 
-roadmap_html_api::htmlPluginConfigOpenTable ( 'config-table' );
+rHtmlApi::htmlPluginConfigOpenTable ();
 echo '<tbody>';
 echo '<tr class="foot-row">';
 $statusEnumConfig = config_get ( 'status_enum_string' );

@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 
 /**
  * threshold class that represents an eta threshold
@@ -177,7 +177,7 @@ class rThreshold
     */
    private function dbInitThresholdById ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT * FROM mantis_plugin_roadmappro_etathreshold_table WHERE id=' . $this->thresholdId;
@@ -197,7 +197,7 @@ class rThreshold
     */
    private function dbInsertThreshold ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
@@ -216,7 +216,7 @@ class rThreshold
     */
    private function dbUpdateThreshold ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_etathreshold_table
@@ -232,7 +232,7 @@ class rThreshold
     */
    private function dbDeleteThreshold ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table WHERE id=' . $this->thresholdId;

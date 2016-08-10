@@ -68,12 +68,14 @@ class roadmap
     * @param $bugIds
     * @param $profileId
     * @param $groupId
+    * @param $versionId
     */
-   function __construct ( $bugIds, $profileId, $groupId )
+   function __construct ( $bugIds, $profileId, $groupId, $versionId )
    {
       $this->bugIds = $bugIds;
       $this->profileId = $profileId;
       $this->groupId = $groupId;
+      $this->versionId = $versionId;
       $this->doneBugIds = array ();
       $this->doingBugIds = array ();
       $this->profileHashArray = array ();

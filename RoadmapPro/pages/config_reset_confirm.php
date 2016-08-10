@@ -1,10 +1,10 @@
 <?php
 
-require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/rProApi.php' );
 
 if ( isset( $_POST[ 'con_reset' ] ) )
 {
-   roadmap_pro_api::dbResetPlugin ();
+   rProApi::dbResetPlugin ();
 }
 else
 {

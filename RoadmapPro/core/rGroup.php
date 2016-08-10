@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 
 /**
  * group class that represents a group
@@ -127,7 +127,7 @@ class rGroup
     */
    private function dbInitGroupById ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profilegroup_table WHERE id=' . $this->groupId;
@@ -145,7 +145,7 @@ class rGroup
     */
    private function dbInsertGroup ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_profilegroup_table ( id, group_name, group_profiles )
@@ -164,7 +164,7 @@ class rGroup
     */
    private function dbUpdateGroup ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_profilegroup_table
@@ -180,7 +180,7 @@ class rGroup
     */
    private function dbDeleteGroup ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_profilegroup_table WHERE id=' . $this->groupId;

@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 
 /**
  * eta class that represents an eta element
@@ -116,7 +116,7 @@ class rEta
     */
    private function dbInitEtaById ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT * FROM mantis_plugin_roadmappro_eta_table WHERE eta_config_value=' . $this->etaConfig;
@@ -134,7 +134,7 @@ class rEta
     */
    private function dbInsertEta ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_eta_table ( id, eta_config_value, eta_user_value )
@@ -153,7 +153,7 @@ class rEta
     */
    private function dbUpdateEta ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_eta_table
@@ -169,7 +169,7 @@ class rEta
     */
    private function dbCheckEtaIsSet ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT id FROM mantis_plugin_RoadmapPro_eta_table WHERE eta_config_value = ' . $this->etaConfig;

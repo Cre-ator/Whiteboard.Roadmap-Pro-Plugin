@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/rProApi.php' );
 
 /**
  * profile class that represents a roadmap profile
@@ -201,7 +201,7 @@ class rProfile
     */
    private function dbInitProfileById ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profile_table WHERE id=' . $this->profileId;
@@ -222,7 +222,7 @@ class rProfile
     */
    private function dbInsertProfile ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio, profile_effort )
@@ -241,7 +241,7 @@ class rProfile
     */
    private function dbUpdateProfile ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_profile_table
@@ -259,7 +259,7 @@ class rProfile
     */
    private function dbDeleteProfile ()
    {
-      $this->mysqli = roadmap_pro_api::initializeDbConnection ();
+      $this->mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_profile_table WHERE id=' . $this->profileId;

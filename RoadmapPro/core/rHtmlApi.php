@@ -1,8 +1,19 @@
 <?php
-require_once ( __DIR__ . '/roadmap_db.php' );
-require_once ( __DIR__ . '/../core/roadmap_pro_api.php' );
+require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
+require_once ( __DIR__ . '/../core/rProApi.php' );
+require_once ( __DIR__ . '/rProfileManager.php' );
+require_once ( __DIR__ . '/rProfile.php' );
+require_once ( __DIR__ . '/rGroupManager.php' );
+require_once ( __DIR__ . '/rGroup.php' );
 
-class roadmap_html_api
+/**
+ * Class roadmap_html_api
+ *
+ * provides functions to print html content
+ *
+ * @author Stefan Schwarz
+ */
+class rHtmlApi
 {
    /**
     * Prints a radio button element
@@ -42,12 +53,11 @@ class roadmap_html_api
    /**
     * prints opening table tag
     *
-    * @param $class
     * @param null $id
     */
-   public static function htmlPluginConfigOpenTable ( $class, $id = null )
+   public static function htmlPluginConfigOpenTable ( $id = null )
    {
-      $htmlString = '<table align="center" cellspacing="1" class="' . $class . '"';
+      $htmlString = '<table align="center" cellspacing="1" class="config-table"';
       if ( $id != null )
       {
          $htmlString .= ' id="' . $id . '"';
@@ -57,29 +67,12 @@ class roadmap_html_api
    }
 
    /**
-    * prints closing table tag
+    * print progress bar for single roadmap
+    *
+    * @param $progress
+    * @param $progressString
+    * @param $versionId
     */
-   public static function htmlPluginConfigCloseTable ()
-   {
-      echo '</table>';
-   }
-
-   private static function htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress )
-   {
-      $pageProgress = '';
-      if ( $useEta == true )
-      {
-         $calculatedEta = roadmap_pro_api::calculateEtaUnit ( $tempEta );
-         $pageProgress .= $calculatedEta[ 0 ] . '&nbsp;' . $calculatedEta[ 1 ];
-      }
-      else
-      {
-         $pageProgress .= round ( $hashProgress, 1 ) . '%';
-      }
-
-      return $pageProgress;
-   }
-
    private static function printSingleProgressbar ( $progress, $progressString, $versionId )
    {
       echo '<div class="progress9001">';
@@ -90,10 +83,13 @@ class roadmap_html_api
       self::htmlPluginAddDirectoryProgressBar ( $versionId, $progressHtmlString );
    }
 
+   /**
+    * print progress bar for a progress group
+    *
+    * @param roadmap $roadmap
+    */
    private static function printScaledProgressbar ( roadmap $roadmap )
    {
-      $roadmapDb = new roadmap_db();
-
       $useEta = $roadmap->getEtaIsSet ();
       $profileHashMap = $roadmap->getProfileHashArray ();
       $fullEta = $roadmap->getFullEta ();
@@ -111,8 +107,8 @@ class roadmap_html_api
             $hashProgress = $profileHash[ 1 ];
 
             # get profile color
-            $dbProfileRow = $roadmapDb->dbGetProfile ( $hashProfileId );
-            $profileColor = '#' . $dbProfileRow[ 2 ];
+            $profile = new rProfile( $hashProfileId );
+            $profileColor = '#' . $profile->getProfileColor ();
 
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
 
@@ -122,21 +118,21 @@ class roadmap_html_api
             if ( $index == 0 )
             {
                $progressHtmlString .= '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div><!--';
             }
             # n - 2 (first, last) following
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
                $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div>';
             }
             # last bar
             else
             {
                $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= self::htmlRoadmapPageProgress ( $useEta, $tempEta, $hashProgress );
+               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div><!--';
             }
             echo $progressHtmlString;
@@ -152,27 +148,31 @@ class roadmap_html_api
       echo '<div class="progress-suffix">';
       if ( $useEta == true )
       {
-         $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
-         $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
+         $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
+         $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
          echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
       }
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         echo '&nbsp;(' . round ( $roadmap->getSclaedProgressPercent (), 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . round ( $roadmap->getGroupProgressPercent (), 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';
    }
 
+   /**
+    * print progress as text
+    *
+    * @param roadmap $roadmap
+    */
    public static function printVersionProgressAsText ( roadmap $roadmap )
    {
       $overallBugAmount = count ( $roadmap->getBugIds () );
       $doneBugAmount = count ( $roadmap->getDoneBugIds () );
       $progressPercent = $roadmap->getSingleProgressPercent ();
       $useEta = $roadmap->getEtaIsSet ();
-      echo '<div class="tr">' . PHP_EOL;
-      echo '<div class="td">';
+      echo '<div class="tr"><div class="td">' . PHP_EOL;
       if ( $useEta && config_get ( 'enable_eta' ) )
       {
          echo sprintf ( plugin_lang_get ( 'roadmap_page_resolved_time' ), $doneBugAmount, $overallBugAmount );
@@ -181,19 +181,22 @@ class roadmap_html_api
       {
          echo sprintf ( lang_get ( 'resolved_progress' ), $doneBugAmount, $overallBugAmount, $progressPercent );
       }
-      echo '</div>' . PHP_EOL;
-      echo '</div>' . PHP_EOL;
+      echo '</div></div>' . PHP_EOL;
    }
 
+   /**
+    * wraps content into a cell
+    *
+    * @param $content
+    */
    public static function printWrapperInHTML ( $content )
    {
-      echo '<div class="tr">' . PHP_EOL;
-      echo '<div class="td">';
-      echo $content;
-      echo '</div>' . PHP_EOL;
-      echo '</div>' . PHP_EOL;
+      echo '<div class="tr"><div class="td">' . $content . '</div></div>' . PHP_EOL;
    }
 
+   /**
+    * print the initial html content for the directory
+    */
    public static function htmlPluginDirectory ()
    {
       echo '<div class="table" id="directory">';
@@ -202,36 +205,132 @@ class roadmap_html_api
       self::htmlPluginSpacer ();
    }
 
+   /**
+    * print the plugin profile switcher
+    */
    public static function printProfileSwitcher ()
    {
-      $roadmapDb = new roadmap_db();
-      $roadmapProfiles = $roadmapDb->dbGetProfiles ();
+      $groupIds = rGroupManager::getRGroupIds ();
+      $groupCount = count ( $groupIds );
 
-      echo '<div class="table_center">' . PHP_EOL;
-      echo '<div class="tr">' . PHP_EOL;
-      # print roadmap_profile-links
-      foreach ( $roadmapProfiles as $roadmapProfile )
+      $profileIds = rProfileManager::getRProfileIds ();
+      $profileCount = count ( $profileIds );
+
+      echo '<div class="table_center"><div class="tr">' . PHP_EOL;
+      # groups are available
+      if ( $groupCount > 0 )
       {
-         $profileId = $roadmapProfile[ 0 ];
-         $profileName = $roadmapProfile[ 1 ];
+         foreach ( $groupIds as $groupId )
+         {
+            $group = new rGroup( $groupId );
+            $groupName = $group->getGroupName ();
 
-         echo '<div class="td">';
-         self::printLinkStringWithGetParameters ( string_display ( $profileName ), $profileId );
-         echo '</div>' . PHP_EOL;
+            echo '<div class="td">';
+            self::htmlLinkGroupSwitcher ( $groupName, $groupId );
+            echo '</div>' . PHP_EOL;
+         }
       }
-      # show whole progress, when there is more then one different profile
-      if ( count ( $roadmapProfiles ) > 1 )
+      # no groups available
+      else
       {
-         echo '<div class="td">';
-         self::printLinkStringWithGetParameters ( plugin_lang_get ( 'roadmap_page_whole_progress' ) );
-         echo '</div>' . PHP_EOL;
-      }
+         # print roadmap_profile-links
+         if ( $profileCount > 0 )
+         {
+            foreach ( $profileIds as $profileId )
+            {
+               $profile = new rProfile( $profileId );
+               $profileName = $profile->getProfileName ();
 
-      echo '</div>' . PHP_EOL;
-      echo '</div>' . PHP_EOL;
+               echo '<div class="td">';
+               self::htmlLinkProfileSwitcher ( string_display ( $profileName ), $profileId );
+               echo '</div>' . PHP_EOL;
+            }
+         }
+         # show whole progress, when there is more then one different profile
+         if ( $profileCount > 1 )
+         {
+            echo '<div class="td">';
+            self::htmlLinkProfileSwitcher ( plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+            echo '</div>' . PHP_EOL;
+         }
+      }
+      echo '</div></div>' . PHP_EOL;
    }
 
-   private static function printLinkStringWithGetParameters ( $linkDescription, $profileId = null )
+   /**
+    * print profile switcher for a group
+    *
+    * @param $groupId
+    */
+   public static function htmlGroupProfileSwitcher ( $groupId )
+   {
+      $group = new rGroup( $groupId );
+      $groupProfileIds = explode ( ';', $group->getGroupProfiles () );
+      $groupProfileIdCount = count ( $groupProfileIds );
+
+      echo '<div class="table_center"><div class="tr">' . PHP_EOL;
+      if ( $groupProfileIdCount > 0 )
+      {
+         foreach ( $groupProfileIds as $groupProfileId )
+         {
+            $profile = new rProfile( $groupProfileId );
+            $profileName = $profile->getProfileName ();
+            echo '<div class="td">';
+            self::htmlLinkGroupProfileSwitcher ( string_display ( $profileName ), $groupId, $groupProfileId );
+            echo '</div>' . PHP_EOL;
+         }
+      }
+      # show whole progress, when there is more then one different profile
+      if ( $groupProfileIdCount > 1 )
+      {
+         echo '<div class="td">';
+         self::htmlLinkGroupProfileSwitcher ( plugin_lang_get ( 'roadmap_page_whole_progress' ), $groupId );
+         echo '</div>' . PHP_EOL;
+      }
+      echo '</div></div>' . PHP_EOL;
+   }
+
+   /**
+    * print the links for a group
+    *
+    * @param $groupName
+    * @param $groupId
+    */
+   private static function htmlLinkGroupSwitcher ( $groupName, $groupId )
+   {
+      $getVersionId = $_GET[ 'version_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $currentProjectId = helper_get_current_project ();
+
+      echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=';
+      # check specific profile id is given
+      if ( $groupId != null )
+      {
+         echo $groupId;
+      }
+      # check version id is get parameter
+      if ( $getVersionId != null )
+      {
+         echo '&amp;version_id=' . $getVersionId;
+      }
+      # check project id is get parameter
+      if ( $getProjectId != null )
+      {
+         echo '&amp;project_id=' . $getProjectId;
+      }
+      echo '&amp;sproject_id=' . $currentProjectId;
+      echo '">';
+      echo $groupName;
+      echo '</a> ]';
+   }
+
+   /**
+    * print the link for a profile
+    *
+    * @param $linkDescription
+    * @param null $profileId
+    */
+   private static function htmlLinkProfileSwitcher ( $linkDescription, $profileId = null )
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
@@ -263,10 +362,53 @@ class roadmap_html_api
       echo '</a> ]';
    }
 
+   /**
+    * print profile link in a group
+    *
+    * @param $linkDescription
+    * @param $groupId
+    * @param null $profileId
+    */
+   private static function htmlLinkGroupProfileSwitcher ( $linkDescription, $groupId, $profileId = null )
+   {
+      $getVersionId = $_GET[ 'version_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $currentProjectId = helper_get_current_project ();
+
+      echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=' . $groupId . '&amp;profile_id=';
+      # check specific profile id is given
+      if ( $profileId != null )
+      {
+         echo $profileId;
+      }
+      else
+      {
+         echo '-1';
+      }
+      # check version id is get parameter
+      if ( $getVersionId != null )
+      {
+         echo '&amp;version_id=' . $getVersionId;
+      }
+      # check project id is get parameter
+      if ( $getProjectId != null )
+      {
+         echo '&amp;project_id=' . $getProjectId;
+      }
+      echo '&amp;sproject_id=' . $currentProjectId;
+      echo '">';
+      echo $linkDescription;
+      echo '</a> ]';
+   }
+
+   /**
+    * print the progress of a roadmap
+    *
+    * @param roadmap $roadmap
+    */
    public static function printVersionProgress ( roadmap $roadmap )
    {
-      echo '<div class="tr">' . PHP_EOL;
-      echo '<div class="td">';
+      echo '<div class="tr"><div class="td">';
       $profileId = $roadmap->getProfileId ();
       if ( $profileId == -1 )
       {
@@ -281,8 +423,8 @@ class roadmap_html_api
          $progressPercent = $roadmap->getSingleProgressPercent ();
          if ( $useEta && config_get ( 'enable_eta' ) )
          {
-            $calculatedDoneEta = roadmap_pro_api::calculateEtaUnit ( $doneEta );
-            $calculatedFullEta = roadmap_pro_api::calculateEtaUnit ( $fullEta );
+            $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
+            $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
                '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
@@ -295,11 +437,15 @@ class roadmap_html_api
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
          }
       }
-
-      echo '</div>' . PHP_EOL;
-      echo '</div>' . PHP_EOL;
+      echo '</div></div>' . PHP_EOL;
    }
 
+   /**
+    * print the bug list of a roadmap
+    *
+    * @param $bugIds
+    * @param bool $doneBugs
+    */
    public static function printBugList ( $bugIds, $doneBugs = false )
    {
       foreach ( $bugIds as $bugId )
@@ -314,7 +460,7 @@ class roadmap_html_api
          # bug category
          echo string_display_line ( category_full_name ( $bug->category_id ) );
          # bug symbols
-         roadmap_pro_api::calcBugSmybols ( $bugId );
+         rProApi::calcBugSmybols ( $bugId );
          # bug summary
          echo string_display_line ( $bug->summary );
          # bug assigned user
@@ -325,11 +471,15 @@ class roadmap_html_api
          }
          # bug status
          echo '&nbsp;-&nbsp;' . string_display_line ( get_enum_element ( 'status', $bug->status ) ) . '.';
-         echo '</div>' . PHP_EOL . '</div>' . PHP_EOL;
+         echo '</div></div>' . PHP_EOL;
       }
    }
 
-
+   /**
+    * print opening cell element for a bug
+    *
+    * @param $bugIsDone
+    */
    public static function htmlPluginBugCol ( $bugIsDone )
    {
       if ( $bugIsDone )
@@ -342,16 +492,19 @@ class roadmap_html_api
       }
    }
 
+   /**
+    * print the project title in a roadmap
+    *
+    * @param $profileId
+    * @param $projectId
+    */
    public static function htmlPluginProjectTitle ( $profileId, $projectId )
    {
-      $roadmapDb = new roadmap_db();
-      $profile = $roadmapDb->dbGetProfile ( $profileId );
-      $profileName = string_display ( $profile[ 1 ] );
+      $profile = new rProfile( $profileId );
+      $profileName = string_display ( $profile->getProfileName () );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
-      echo '<div class="tr">';
-      echo '<div class="td">';
-      echo '<span class="pagetitle" id="p' . $projectId . '">';
+      echo '<div class="tr"><div class="td"><span class="pagetitle" id="p' . $projectId . '">';
       if ( $profileId == -1 )
       {
          echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
@@ -360,16 +513,20 @@ class roadmap_html_api
       {
          echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $projectName, $profileName );
       }
-      echo '</span>';
-      echo '</div>';
-      echo '</div>';
+      echo '</span></div></div>';
    }
 
+   /**
+    * print spacer element
+    */
    public static function htmlPluginSpacer ()
    {
       echo '<div class="tr"><div class="td"><div class="spacer"></div></div></div>';
    }
 
+   /**
+    * triggers whiteboard menu if installed
+    */
    public static function htmlPluginTriggerWhiteboardMenu ()
    {
       if ( plugin_is_installed ( 'WhiteboardMenu' ) &&
@@ -381,25 +538,56 @@ class roadmap_html_api
       }
    }
 
-   public static function htmlPluginAddDirectoryVersionEntry ( $projectName, $versionId, $versionName )
+   /**
+    * add version entry to directory
+    *
+    * @param $projectId
+    * @param $versionId
+    * @param $versionName
+    */
+   public static function htmlPluginAddDirectoryVersionEntry ( $projectId, $versionId, $versionName )
    {
       echo '<script type="text/javascript">';
-      echo 'addVersionEntryToDirectory (\'' . $projectName . '\',\'' . $versionId . '\',\'' . $versionName . '\')';
+      echo 'addVersionEntryToDirectory (\'' . project_get_name ( $projectId ) . '\',\'' . $versionId . '\',\'' . $versionName . '\');';
       echo '</script>';
    }
 
+   /**
+    * add project entry to directory
+    *
+    * @param $projectId
+    */
    public static function htmlPluginAddDirectoryProjectEntry ( $projectId )
    {
       $projectName = project_get_name ( $projectId );
       echo '<script type="text/javascript">';
-      echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\')';
+      echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\');';
       echo '</script>';
    }
 
+   /**
+    * add progress bar to directory
+    *
+    * @param $versionId
+    * @param $htmlString
+    */
    public static function htmlPluginAddDirectoryProgressBar ( $versionId, $htmlString )
    {
       echo '<script type="text/javascript">';
-      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $htmlString . '\')';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $htmlString . '\');';
       echo '</script>';
+   }
+
+   /**
+    * prints initial ressources for the page
+    *
+    * @param $profileColor
+    */
+   public static function htmlInitializeRessources ( $profileColor )
+   {
+      echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $profileColor . '"/>';
+      echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
+      echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
+      echo '<script type="text/javascript">backToTop();</script>';
    }
 }

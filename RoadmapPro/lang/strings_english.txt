@@ -1,5 +1,4 @@
 <?php
-
 $s_plugin_RoadmapPro_menu_title = 'Roadmap Pro';
 
 $s_plugin_RoadmapPro_config_page_title = 'Roadmap Pro Configuration';
@@ -23,14 +22,17 @@ $s_plugin_RoadmapPro_config_page_profile_prio = 'Priority';
 $s_plugin_RoadmapPro_config_page_profile_effort = '% of the workflow';
 $s_plugin_RoadmapPro_config_page_profile_action = 'Action';
 $s_plugin_RoadmapPro_config_page_eta_unit = 'h';
-$s_plugin_RoadmapPro_config_page_add_profile = 'Add profile';
+$s_plugin_RoadmapPro_config_page_add_profile = 'Add Profile';
 $s_plugin_RoadmapPro_config_page_profile_list = 'Profiles';
 $s_plugin_RoadmapPro_config_page_delete_profile = 'Remove';
 
-$s_plugin_RoadmapPro_config_page_eta_management = 'effort management';
+$s_plugin_RoadmapPro_config_page_prfgr_management = 'Profile Group Management';
+$s_plugin_RoadmapPro_config_page_prfgr_profiles = 'Contains Profiles';
+
+$s_plugin_RoadmapPro_config_page_eta_management = 'Effort Management';
 $s_plugin_RoadmapPro_config_page_prio_decription = 'The priority represents the time in the workflow';
 
-$s_plugin_RoadmapPro_config_reset_ensure_title = 'Reset plugin configuration';
+$s_plugin_RoadmapPro_config_reset_ensure_title = 'Reset Plugin Configuration';
 $s_plugin_RoadmapPro_config_reset_ensure_expl = 'Caution, if you proceed all data stored in the plugin are permanently deleted. Continue?';
 $s_plugin_RoadmapPro_config_reset_ensure_conf = 'Continue';
 $s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abort';
@@ -39,6 +41,6 @@ $s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d from %2$d Issues done.';
 $s_plugin_RoadmapPro_roadmap_page_version_title = '%1$s - Roadmap in %2$s';
 $s_plugin_RoadmapPro_roadmap_page_bar_time = 'Duration';
 $s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Amount';
-$s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Overall progress';
+$s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Overall Progress';
 $s_plugin_RoadmapPro_roadmap_page_no_eta = 'Progress not defined.';
 $s_plugin_RoadmapPro_roadmap_page_directory = 'Overview';

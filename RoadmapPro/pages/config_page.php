@@ -12,7 +12,7 @@ require_once ( __DIR__ . '/../core/rEta.php' );
 auth_reauthenticate ();
 
 html_page_top1 ( plugin_lang_get ( 'config_page_title' ) );
-echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro_config.css"/>';
+echo '<link rel="stylesheet" href="plugins/RoadmapPro/files/roadmappro_config.css"/>';
 html_page_top2 ();
 print_manage_menu ();
 echo '<script type="text/javascript" src="plugins/RoadmapPro/files/jscolor/jscolor.js"></script>';
@@ -23,7 +23,6 @@ echo '<form action="' . plugin_page ( 'config_update' ) . '" method="post">';
 echo form_security_field ( 'plugin_RoadmapPro_config_update' );
 
 rHtmlApi::htmlPluginConfigOpenTable ();
-
 # General configuration
 echo '<tr>';
 rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_general', 3 );
@@ -52,11 +51,8 @@ if ( config_get ( 'enable_eta' ) )
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    echo '</tr>';
-   # eta management
 
-   $etaEnumString = config_get ( 'eta_enum_string' );
-   $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-   $rowCount = count ( $etaEnumValues );
+   $etaEnumValues = MantisEnum::getValues ( config_get ( 'eta_enum_string' ) );
    foreach ( $etaEnumValues as $etaEnumValue )
    {
       $eta = new rEta( $etaEnumValue );
@@ -85,9 +81,8 @@ if ( config_get ( 'enable_eta' ) )
    if ( $thresholdCount > 0 )
    {
       # iterate through thresholds
-      for ( $index = 0; $index < $thresholdCount; $index++ )
+      foreach ( $thresholdIds as $thresholdId )
       {
-         $thresholdId = $thresholdIds[ $index ];
          $threshold = new rThreshold( $thresholdId );
          $thresholdFrom = $threshold->getThresholdFrom ();
          $thresholdTo = $threshold->getThresholdTo ();

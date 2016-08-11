@@ -1,4 +1,6 @@
 id,profile_name,profile_color,profile_status,profile_prio,profile_effort
 1,"Analyse fertig",FFCD85,30;50;80;90,1,20
-2,"Verifikation fertig",FFF494,85;90,3,30
-3,"Bearbeitung fertig",D2F5B0,80;90,2,50
+2,"Verifikation fertig",FFF494,85;90,2,30
+3,"Bearbeitung fertig",D2F5B0,80;90,3,50
+4,"Analyse",E3B7EB,20,4,10
+5,"In Bearbeitung",C2DFFF,20;50,5,70

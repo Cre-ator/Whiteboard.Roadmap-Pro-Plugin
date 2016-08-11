@@ -38,7 +38,7 @@ class rEta
       if ( $etaConfig != null )
       {
          $this->etaConfig = $etaConfig;
-         $this->dbInitEtaById ();
+         $this->dbInitEtaByConfigValue ();
       }
    }
 
@@ -89,7 +89,7 @@ class rEta
    public function triggerInsertIntoDb ()
    {
       if (
-         $this->etaUser != null &&
+         ( $this->etaUser != null ) &&
          is_numeric ( $this->etaUser )
       )
       {
@@ -103,7 +103,7 @@ class rEta
    public function triggerUpdateInDb ()
    {
       if (
-         $this->etaUser != null &&
+         ( $this->etaUser != null ) &&
          is_numeric ( $this->etaUser )
       )
       {
@@ -114,7 +114,7 @@ class rEta
    /**
     * initializes an eta object with database data
     */
-   private function dbInitEtaById ()
+   private function dbInitEtaByConfigValue ()
    {
       $this->mysqli = rProApi::initializeDbConnection ();
 

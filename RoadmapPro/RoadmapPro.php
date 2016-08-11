@@ -82,17 +82,6 @@ class RoadmapProPlugin extends MantisPlugin
       );
    }
 
-   function init ()
-   {
-      $tCorePath = config_get_global ( 'plugin_path' )
-         . plugin_get_current ()
-         . DIRECTORY_SEPARATOR
-         . 'core'
-         . DIRECTORY_SEPARATOR;
-
-      require_once ( $tCorePath . 'roadmap_constant_api.php' );
-   }
-
    function footer ()
    {
       if ( plugin_config_get ( 'show_footer' ) )

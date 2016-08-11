@@ -47,6 +47,14 @@ class rGroup
    }
 
    /**
+    * @return int
+    */
+   public function getGroupId ()
+   {
+      return $this->groupId;
+   }
+
+   /**
     * @return string
     */
    public function getGroupName ()
@@ -84,8 +92,8 @@ class rGroup
    public function triggerInsertIntoDb ()
    {
       if (
-         $this->groupName != null &&
-         $this->groupProfiles != null
+         ( $this->groupName != null ) &&
+         ( $this->groupProfiles != null )
       )
       {
          $this->dbInsertGroup ();
@@ -98,10 +106,10 @@ class rGroup
    public function triggerUpdateInDb ()
    {
       if (
-         $this->groupId != null &&
+         ( $this->groupId != null ) &&
          is_numeric ( $this->groupId ) &&
-         $this->groupName != null &&
-         $this->groupProfiles != null
+         ( $this->groupName != null ) &&
+         ( $this->groupProfiles != null )
       )
       {
          $this->dbUpdateGroup ();
@@ -114,7 +122,7 @@ class rGroup
    public function triggerDeleteFromDb ()
    {
       if (
-         $this->groupId != null &&
+         ( $this->groupId != null ) &&
          is_numeric ( $this->groupId )
       )
       {

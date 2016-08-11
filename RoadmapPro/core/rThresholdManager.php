@@ -36,22 +36,4 @@ class rThresholdManager
 
       return $thresholdIds;
    }
-
-   /**
-    * iterates the given threshold ids and returns the assigned threshold objects
-    *
-    * @param $thresholdIds
-    * @return array
-    */
-   public static function getRGroups ( $thresholdIds )
-   {
-      $thresholds = array ();
-      foreach ( $thresholdIds as $thresholdId )
-      {
-         $threshold = new rThreshold( $thresholdId );
-         array_push ( $thresholds, $threshold );
-      }
-
-      return $thresholds;
-   }
 }

@@ -8,7 +8,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.1.17';
+      $this->version = '1.1.18';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -80,17 +80,6 @@ class RoadmapProPlugin extends MantisPlugin
             " )
          )
       );
-   }
-
-   function init ()
-   {
-      $tCorePath = config_get_global ( 'plugin_path' )
-         . plugin_get_current ()
-         . DIRECTORY_SEPARATOR
-         . 'core'
-         . DIRECTORY_SEPARATOR;
-
-      require_once ( $tCorePath . 'roadmap_constant_api.php' );
    }
 
    function footer ()

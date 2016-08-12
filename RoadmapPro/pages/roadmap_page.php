@@ -2,7 +2,6 @@
 require_once ( __DIR__ . '/../core/rProApi.php' );
 require_once ( __DIR__ . '/../core/rHtmlApi.php' );
 require_once ( __DIR__ . '/../core/roadmapManager.php' );
-require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
 require_once ( __DIR__ . '/../core/roadmap.php' );
 require_once ( __DIR__ . '/../core/rProfile.php' );
 

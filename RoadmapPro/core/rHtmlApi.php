@@ -1,5 +1,4 @@
 <?php
-require_once ( __DIR__ . '/../core/roadmap_constant_api.php' );
 require_once ( __DIR__ . '/../core/rProApi.php' );
 require_once ( __DIR__ . '/rProfileManager.php' );
 require_once ( __DIR__ . '/rProfile.php' );
@@ -585,8 +584,8 @@ class rHtmlApi
     */
    public static function htmlInitializeRessources ( $profileColor )
    {
-      echo '<link rel="stylesheet" href="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.css.php?profile_color=' . $profileColor . '"/>';
-      echo '<script type="text/javascript" src="' . ROADMAPPRO_PLUGIN_URL . 'files/roadmappro.js"></script>';
+      echo '<link rel="stylesheet" href="plugins/RoadmapPro/files/roadmappro.css.php?profile_color=' . $profileColor . '"/>';
+      echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
       echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
       echo '<script type="text/javascript">backToTop();</script>';
    }

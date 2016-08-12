@@ -152,11 +152,11 @@ class rProfile
    public function triggerInsertIntoDb ()
    {
       if (
-         $this->profileName != null &&
-         $this->profileColor != null &&
-         $this->profileStatus != null &&
-         $this->profilePriority != null &&
-         $this->profileEffort != null
+         ( $this->profileName != null ) &&
+         ( $this->profileColor != null ) &&
+         ( $this->profileStatus != null ) &&
+         ( $this->profilePriority != null ) &&
+         ( $this->profileEffort != null )
       )
       {
          $this->dbInsertProfile ();
@@ -169,13 +169,13 @@ class rProfile
    public function triggerUpdateInDb ()
    {
       if (
-         $this->profileId != null &&
+         ( $this->profileId != null ) &&
          is_numeric ( $this->profileId ) &&
-         $this->profileName != null &&
-         $this->profileColor != null &&
-         $this->profileStatus != null &&
-         $this->profilePriority != null &&
-         $this->profileEffort != null
+         ( $this->profileName != null ) &&
+         ( $this->profileColor != null ) &&
+         ( $this->profileStatus != null ) &&
+         ( $this->profilePriority != null ) &&
+         ( $this->profileEffort != null )
       )
       {
          $this->dbUpdateProfile ();
@@ -188,7 +188,7 @@ class rProfile
    public function triggerDeleteFromDb ()
    {
       if (
-         $this->profileId != null &&
+         ( $this->profileId != null ) &&
          is_numeric ( $this->profileId )
       )
       {

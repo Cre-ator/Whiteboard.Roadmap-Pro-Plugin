@@ -57,6 +57,14 @@ class rThreshold
    /**
     * @return int
     */
+   public function getThresholdId ()
+   {
+      return $this->thresholdId;
+   }
+
+   /**
+    * @return int
+    */
    public function getThresholdFrom ()
    {
       return $this->thresholdFrom;
@@ -124,12 +132,12 @@ class rThreshold
    public function triggerInsertIntoDb ()
    {
       if (
-         $this->thresholdFrom != null &&
+         ( $this->thresholdFrom != null ) &&
          is_numeric ( $this->thresholdFrom ) &&
-         $this->thresholdTo != null &&
+         ( $this->thresholdTo != null ) &&
          is_numeric ( $this->thresholdTo ) &&
-         $this->thresholdUnit != null &&
-         $this->thresholdFactor != null &&
+         ( $this->thresholdUnit != null ) &&
+         ( $this->thresholdFactor != null ) &&
          is_numeric ( $this->thresholdFactor )
       )
       {
@@ -143,14 +151,14 @@ class rThreshold
    public function triggerUpdateInDb ()
    {
       if (
-         $this->thresholdFrom != null &&
+         ( $this->thresholdFrom != null ) &&
          is_numeric ( $this->thresholdFrom ) &&
-         $this->thresholdTo != null &&
+         ( $this->thresholdTo != null ) &&
          is_numeric ( $this->thresholdTo ) &&
-         $this->thresholdUnit != null &&
-         $this->thresholdFactor != null &&
+         ( $this->thresholdUnit != null ) &&
+         ( $this->thresholdFactor != null ) &&
          is_numeric ( $this->thresholdFactor ) &&
-         $this->thresholdId != null &&
+         ( $this->thresholdId != null ) &&
          is_numeric ( $this->thresholdId )
       )
       {
@@ -164,7 +172,7 @@ class rThreshold
    public function triggerDeleteFromDb ()
    {
       if (
-         $this->thresholdId != null &&
+         ( $this->thresholdId != null ) &&
          is_numeric ( $this->thresholdId )
       )
       {

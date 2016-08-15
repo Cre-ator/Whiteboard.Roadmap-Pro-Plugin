@@ -9,10 +9,6 @@ require_once ( __DIR__ . '/rProApi.php' );
 class rThreshold
 {
    /**
-    * @var mysqli
-    */
-   private $mysqli;
-   /**
     * @var integer
     */
    private $thresholdId;
@@ -185,14 +181,14 @@ class rThreshold
     */
    private function dbInitThresholdById ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT * FROM mantis_plugin_roadmappro_etathreshold_table WHERE id=' . $this->thresholdId;
 
-      $result = $this->mysqli->query ( $query );
+      $result = $mysqli->query ( $query );
       $dbThresholdRow = mysqli_fetch_row ( $result );
-      $this->mysqli->close ();
+      $mysqli->close ();
 
       $this->thresholdFrom = $dbThresholdRow[ 1 ];
       $this->thresholdTo = $dbThresholdRow[ 2 ];
@@ -205,7 +201,7 @@ class rThreshold
     */
    private function dbInsertThreshold ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
@@ -214,9 +210,9 @@ class rThreshold
          SELECT 1 FROM mantis_plugin_RoadmapPro_etathreshold_table
          WHERE eta_thr_unit=\'' . $this->thresholdUnit . '\')';
 
-      $this->mysqli->query ( $query );
-      $this->thresholdId = $this->mysqli->insert_id;
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $this->thresholdId = $mysqli->insert_id;
+      $mysqli->close ();
    }
 
    /**
@@ -224,15 +220,15 @@ class rThreshold
     */
    private function dbUpdateThreshold ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_etathreshold_table
          SET eta_thr_from=' . (int)$this->thresholdFrom . ',eta_thr_to=' . (int)$this->thresholdTo . ',eta_thr_unit=\'' . $this->thresholdUnit . '\',eta_thr_factor=' . (int)$this->thresholdFactor . '
          WHERE id=' . $this->thresholdId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 
    /**
@@ -240,12 +236,12 @@ class rThreshold
     */
    private function dbDeleteThreshold ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table WHERE id=' . $this->thresholdId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 }

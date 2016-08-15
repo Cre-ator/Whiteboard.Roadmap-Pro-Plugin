@@ -9,10 +9,6 @@ require_once ( __DIR__ . '/rProApi.php' );
 class rEta
 {
    /**
-    * @var mysqli
-    */
-   private $mysqli;
-   /**
     * @var integer
     */
    private $etaId;
@@ -116,14 +112,14 @@ class rEta
     */
    private function dbInitEtaByConfigValue ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT * FROM mantis_plugin_roadmappro_eta_table WHERE eta_config_value=' . $this->etaConfig;
 
-      $result = $this->mysqli->query ( $query );
+      $result = $mysqli->query ( $query );
       $dbEtaRow = mysqli_fetch_row ( $result );
-      $this->mysqli->close ();
+      $mysqli->close ();
 
       $this->etaId = $dbEtaRow[ 0 ];
       $this->etaUser = $dbEtaRow[ 2 ];
@@ -134,7 +130,7 @@ class rEta
     */
    private function dbInsertEta ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_eta_table ( id, eta_config_value, eta_user_value )
@@ -143,9 +139,9 @@ class rEta
          SELECT 1 FROM mantis_plugin_RoadmapPro_eta_table
          WHERE eta_config_value=' . $this->etaConfig . ')';
 
-      $this->mysqli->query ( $query );
-      $this->etaId = $this->mysqli->insert_id;
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $this->etaId = $mysqli->insert_id;
+      $mysqli->close ();
    }
 
    /**
@@ -153,15 +149,15 @@ class rEta
     */
    private function dbUpdateEta ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_eta_table
          SET eta_user_value=' . (double)$this->etaUser . '
          WHERE eta_config_value=' . $this->etaConfig;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 
    /**
@@ -169,13 +165,13 @@ class rEta
     */
    private function dbCheckEtaIsSet ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT id FROM mantis_plugin_RoadmapPro_eta_table WHERE eta_config_value = ' . $this->etaConfig;
 
-      $result = $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $result = $mysqli->query ( $query );
+      $mysqli->close ();
 
       if ( 0 != $result->num_rows )
       {

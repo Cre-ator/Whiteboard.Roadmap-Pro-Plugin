@@ -9,10 +9,6 @@ require_once ( __DIR__ . '/rProApi.php' );
 class rProfile
 {
    /**
-    * @var mysqli
-    */
-   private $mysqli;
-   /**
     * @var integer
     */
    private $profileId;
@@ -201,14 +197,14 @@ class rProfile
     */
    private function dbInitProfileById ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profile_table WHERE id=' . $this->profileId;
 
-      $result = $this->mysqli->query ( $query );
+      $result = $mysqli->query ( $query );
       $dbProfileRow = mysqli_fetch_row ( $result );
-      $this->mysqli->close ();
+      $mysqli->close ();
 
       $this->profileName = $dbProfileRow[ 1 ];
       $this->profileColor = $dbProfileRow[ 2 ];
@@ -222,7 +218,7 @@ class rProfile
     */
    private function dbInsertProfile ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio, profile_effort )
@@ -231,9 +227,9 @@ class rProfile
          SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
          WHERE profile_name=\'' . $this->profileName . '\')';
 
-      $this->mysqli->query ( $query );
-      $this->profileId = $this->mysqli->insert_id;
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $this->profileId = $mysqli->insert_id;
+      $mysqli->close ();
    }
 
    /**
@@ -241,7 +237,7 @@ class rProfile
     */
    private function dbUpdateProfile ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_profile_table
@@ -250,8 +246,8 @@ class rProfile
          profile_effort=' . (int)$this->profileEffort . '
          WHERE id=' . $this->profileId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 
    /**
@@ -259,12 +255,12 @@ class rProfile
     */
    private function dbDeleteProfile ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_profile_table WHERE id=' . $this->profileId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 }

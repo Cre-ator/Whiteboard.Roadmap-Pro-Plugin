@@ -9,10 +9,6 @@ require_once ( __DIR__ . '/rProApi.php' );
 class rGroup
 {
    /**
-    * @var mysqli
-    */
-   private $mysqli;
-   /**
     * @var integer
     */
    private $groupId;
@@ -135,14 +131,14 @@ class rGroup
     */
    private function dbInitGroupById ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'SELECT DISTINCT * FROM mantis_plugin_RoadmapPro_profilegroup_table WHERE id=' . $this->groupId;
 
-      $result = $this->mysqli->query ( $query );
+      $result = $mysqli->query ( $query );
       $dbGroupRow = mysqli_fetch_row ( $result );
-      $this->mysqli->close ();
+      $mysqli->close ();
 
       $this->groupName = $dbGroupRow[ 1 ];
       $this->groupProfiles = $dbGroupRow[ 2 ];
@@ -153,7 +149,7 @@ class rGroup
     */
    private function dbInsertGroup ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'INSERT INTO mantis_plugin_RoadmapPro_profilegroup_table ( id, group_name, group_profiles )
@@ -162,9 +158,9 @@ class rGroup
          SELECT 1 FROM mantis_plugin_RoadmapPro_profilegroup_table
          WHERE group_name=\'' . $this->groupName . '\')';
 
-      $this->mysqli->query ( $query );
-      $this->groupId = $this->mysqli->insert_id;
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $this->groupId = $mysqli->insert_id;
+      $mysqli->close ();
    }
 
    /**
@@ -172,15 +168,15 @@ class rGroup
     */
    private function dbUpdateGroup ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_RoadmapPro_profilegroup_table
          SET group_name=\'' . $this->groupName . '\',group_profiles=\'' . $this->groupProfiles . '\'
          WHERE id=' . $this->groupId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 
    /**
@@ -188,12 +184,12 @@ class rGroup
     */
    private function dbDeleteGroup ()
    {
-      $this->mysqli = rProApi::initializeDbConnection ();
+      $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
          'DELETE FROM mantis_plugin_RoadmapPro_profilegroup_table WHERE id=' . $this->groupId;
 
-      $this->mysqli->query ( $query );
-      $this->mysqli->close ();
+      $mysqli->query ( $query );
+      $mysqli->close ();
    }
 }

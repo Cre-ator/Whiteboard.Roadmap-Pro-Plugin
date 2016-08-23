@@ -118,11 +118,14 @@ class rEta
          'SELECT * FROM mantis_plugin_roadmappro_eta_table WHERE eta_config_value=' . $this->etaConfig;
 
       $result = $mysqli->query ( $query );
-      $dbEtaRow = mysqli_fetch_row ( $result );
-      $mysqli->close ();
+      if ( $result->num_rows != 0 )
+      {
+         $dbEtaRow = mysqli_fetch_row ( $result );
 
-      $this->etaId = $dbEtaRow[ 0 ];
-      $this->etaUser = $dbEtaRow[ 2 ];
+         $this->etaId = $dbEtaRow[ 0 ];
+         $this->etaUser = $dbEtaRow[ 2 ];
+      }
+      $mysqli->close ();
    }
 
    /**

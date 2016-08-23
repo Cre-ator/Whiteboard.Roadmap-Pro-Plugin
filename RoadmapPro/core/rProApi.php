@@ -616,4 +616,54 @@ class rProApi
          plugin_config_set ( $config, $button );
       }
    }
+
+   /**
+    * get done issues for all profiles
+    *
+    * @param $bugIds
+    * @param $groupId
+    * @return array
+    */
+   public static function getDoneIssueIdsForAllProfiles ( $bugIds, $groupId )
+   {
+      $doneIssuesForAllProfiles = array ();
+
+      $group = new rGroup( $groupId );
+      $profileIds = $group->getGroupProfiles ();
+      $profileIdArray = explode ( ';', $profileIds );
+
+      foreach ( $bugIds as $bugId )
+      {
+         $bugStatus = bug_get_field ( $bugId, 'status' );
+         $profileCount = count ( $profileIdArray );
+         $doneCount = 0;
+         foreach ( $profileIdArray as $profileId )
+         {
+            $profile = new rProfile( $profileId );
+            $profileStatus = $profile->getProfileStatus ();
+            $profileStatusArray = explode ( ';', $profileStatus );
+
+            $done = false;
+            foreach ( $profileStatusArray as $profileStatus )
+            {
+               if ( $bugStatus == $profileStatus )
+               {
+                  $done = true;
+               }
+            }
+
+            if ( $done )
+            {
+               $doneCount++;
+            }
+         }
+
+         if ( $doneCount == $profileCount )
+         {
+            array_push ( $doneIssuesForAllProfiles, $bugId );
+         }
+      }
+
+      return $doneIssuesForAllProfiles;
+   }
 }

@@ -109,8 +109,18 @@ function processTable ( $profileId )
             # print version progress bar
             rHtmlApi::printVersionProgress ( $roadmap, $projectId );
             # print bug list
-            rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
-            rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+            if ( $profileId == -1 )
+            {
+               $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
+               $doingBugIds = array_diff ( $bugIds, $doneBugIds );
+               rHtmlApi::printBugList ( $doingBugIds );
+               rHtmlApi::printBugList ( $doneBugIds, true );
+            }
+            else
+            {
+               rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
+               rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+            }
             # print text progress
             ( $profileId >= 0 ) ? rHtmlApi::printVersionProgressAsText ( $roadmap ) : null;
             # print spacer

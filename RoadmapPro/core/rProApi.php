@@ -257,19 +257,19 @@ class rProApi
 
       if ( $useEta )
       {
-         echo '<img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/clock.png' . '" alt="clock" />&nbsp;';
+         echo '<img class="symbol" src="plugins/RoadmapPro/files/clock.png' . '" alt="clock" />&nbsp;';
       }
       if ( $forbiddenFlag )
       {
-         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_forbidden.png" alt="' . $forbiddenAltText . '" title="' . $forbiddenAltText . '" /></a>&nbsp;';
+         echo '<a href="' . $href . '"><img class="symbol" src="plugins/RoadmapPro/files/sign_forbidden.png" alt="' . $forbiddenAltText . '" title="' . $forbiddenAltText . '" /></a>&nbsp;';
       }
       if ( $stopFlag )
       {
-         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_stop.png" alt="' . $stopAltText . '" title="' . $stopAltText . '" /></a>&nbsp;';
+         echo '<a href="' . $href . '"><img class="symbol" src="plugins/RoadmapPro/files/sign_stop.png" alt="' . $stopAltText . '" title="' . $stopAltText . '" /></a>&nbsp;';
       }
       if ( $warningFlag )
       {
-         echo '<a href="' . $href . '"><img class="symbol" src="' . ROADMAPPRO_PLUGIN_URL . 'files/sign_warning.png" alt="' . $warningAltText . '" title="' . $warningAltText . '" /></a>&nbsp;';
+         echo '<a href="' . $href . '"><img class="symbol" src="plugins/RoadmapPro/files/sign_warning.png" alt="' . $warningAltText . '" title="' . $warningAltText . '" /></a>&nbsp;';
       }
 
       echo '&nbsp;';

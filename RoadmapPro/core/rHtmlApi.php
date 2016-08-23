@@ -95,8 +95,9 @@ class rHtmlApi
       $profileHashMap = $roadmap->getProfileHashArray ();
       $fullEta = $roadmap->getFullEta ();
       $doneEta = 0;
+      $sumPercentDone = 0;
       echo '<div class="progress9001">';
-      if ( empty( $profileHashMap ) == false )
+      if ( !empty( $profileHashMap ) )
       {
          $profileHashCount = count ( $profileHashMap );
          $sumProgressHtmlString = '';
@@ -106,6 +107,11 @@ class rHtmlApi
             $profileHash = explode ( ';', $profileHashMap[ $index ] );
             $hashProfileId = $profileHash[ 0 ];
             $hashProgress = $profileHash[ 1 ];
+
+            if ( ( $sumPercentDone + $hashProgress ) >= 99 )
+            {
+               $hashProgress = ( 100 - $sumPercentDone );
+            }
 
             # get profile color
             $profile = new rProfile( $hashProfileId );
@@ -139,6 +145,7 @@ class rHtmlApi
             echo $progressHtmlString;
 
             $sumProgressHtmlString .= $progressHtmlString;
+            $sumPercentDone += $hashProgress;
             $doneEta += $tempEta;
          }
          $versionId = $roadmap->getVersionId ();
@@ -147,7 +154,7 @@ class rHtmlApi
 
       echo '</div>';
       echo '<div class="progress-suffix">';
-      if ( $useEta == true )
+      if ( $useEta )
       {
          $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
@@ -156,7 +163,7 @@ class rHtmlApi
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         echo '&nbsp;(' . round ( $roadmap->getGroupProgressPercent (), 1 ) . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . $sumPercentDone . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';

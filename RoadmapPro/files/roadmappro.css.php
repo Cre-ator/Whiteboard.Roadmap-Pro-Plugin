@@ -209,6 +209,17 @@ div.td {
    float: left;
 }
 
+div.tddir {
+   display: table-cell;
+   border: none;
+   height: 20px;
+   vertical-align: middle;
+}
+
+.wd300 {
+   width: 300px;
+}
+
 div.spacer {
    border: none;
    padding: 5px;

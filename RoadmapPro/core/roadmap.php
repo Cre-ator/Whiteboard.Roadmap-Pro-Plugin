@@ -213,14 +213,6 @@ class roadmap
    }
 
    /**
-    * calc the percentage of done progress for a roadmap group
-    */
-   public function getGroupProgressPercent ()
-   {
-      return $this->progressPercent;
-   }
-
-   /**
     * returns true if every item of bug id array has set eta value
     */
    private function checkEtaIsSet ()

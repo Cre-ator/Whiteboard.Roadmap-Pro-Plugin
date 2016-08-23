@@ -149,10 +149,11 @@ function delRow(initialRowCount, tableId) {
  * adds a progress bar to the directory
  *
  * @param versionId
+ * @param projectId
  * @param progressHtmlString
  */
-function addProgressBarToDirectory(versionId, progressHtmlString) {
-    var trdiv = document.getElementById('d' + versionId);
+function addProgressBarToDirectory(versionId, projectId, progressHtmlString) {
+    var trdiv = document.getElementById('d' + projectId + versionId);
 
     var trbardiv = document.createElement("div");
     trbardiv.className = 'tr';
@@ -173,20 +174,21 @@ function addProgressBarToDirectory(versionId, progressHtmlString) {
  * adds a version entry to the directory
  *
  * @param projectName
+ * @param projectId
  * @param versionId
  * @param versionName
  */
-function addVersionEntryToDirectory(projectName, versionId, versionName) {
+function addVersionEntryToDirectory(projectName, projectId, versionId, versionName) {
     var table = document.getElementById(projectName);
 
     var trdiv = document.createElement("div");
     trdiv.className = 'tr';
-    trdiv.id = 'd' + versionId;
+    trdiv.id = 'd' + projectId + versionId;
     table.appendChild(trdiv);
 
     var tddiv = document.createElement("div");
     tddiv.className = 'td';
-    tddiv.innerHTML = '<a class="directory version" href="#v' + versionId + '">' + versionName + '</a>';
+    tddiv.innerHTML = '<a class="directory version" href="#v' + projectId + '_' + versionId + '">' + versionName + '</a>';
 
     trdiv.appendChild(tddiv);
 }

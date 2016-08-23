@@ -145,7 +145,7 @@ class rProApi
       {
          $releaseTitleString .= '&amp;group_id=' . $getGroupId;
       }
-      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $versionId . '">'
+      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $projectId . '_' . $versionId . '">'
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
          . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' );
 

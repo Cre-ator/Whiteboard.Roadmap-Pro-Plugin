@@ -226,12 +226,19 @@ class roadmap
    private function checkEtaIsSet ()
    {
       $this->etaIsSet = true;
-      foreach ( $this->bugIds as $bugId )
+      if ( !config_get ( 'enable_eta' ) )
       {
-         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == 10 ) )
+         $this->etaIsSet = false;
+      }
+      else
+      {
+         foreach ( $this->bugIds as $bugId )
          {
-            $this->etaIsSet = false;
+            $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+            if ( ( $bugEtaValue == null ) || ( $bugEtaValue == 10 ) )
+            {
+               $this->etaIsSet = false;
+            }
          }
       }
    }

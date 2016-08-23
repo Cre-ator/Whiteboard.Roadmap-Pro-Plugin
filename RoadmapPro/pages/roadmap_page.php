@@ -107,7 +107,7 @@ function processTable ( $profileId )
             # print version description
             rHtmlApi::printWrapperInHTML ( $version[ 'description' ] );
             # print version progress bar
-            rHtmlApi::printVersionProgress ( $roadmap );
+            rHtmlApi::printVersionProgress ( $roadmap, $projectId );
             # print bug list
             rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
             rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );

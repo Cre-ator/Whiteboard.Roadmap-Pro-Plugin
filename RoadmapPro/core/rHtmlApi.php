@@ -71,23 +71,25 @@ class rHtmlApi
     * @param $progress
     * @param $progressString
     * @param $versionId
+    * @param $projectId
     */
-   private static function printSingleProgressbar ( $progress, $progressString, $versionId )
+   private static function printSingleProgressbar ( $progress, $progressString, $versionId, $projectId )
    {
       echo '<div class="progress9001">';
       $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
       echo $progressHtmlString;
       echo '</div>';
 
-      self::htmlPluginAddDirectoryProgressBar ( $versionId, $progressHtmlString );
+      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $progressHtmlString );
    }
 
    /**
     * print progress bar for a progress group
     *
     * @param roadmap $roadmap
+    * @param $projectId
     */
-   private static function printScaledProgressbar ( roadmap $roadmap )
+   private static function printScaledProgressbar ( roadmap $roadmap, $projectId )
    {
       $useEta = $roadmap->getEtaIsSet ();
       $profileHashMap = $roadmap->getProfileHashArray ();
@@ -140,7 +142,7 @@ class rHtmlApi
             $doneEta += $tempEta;
          }
          $versionId = $roadmap->getVersionId ();
-         self::htmlPluginAddDirectoryProgressBar ( $versionId, $sumProgressHtmlString );
+         self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $sumProgressHtmlString );
       }
 
       echo '</div>';
@@ -404,14 +406,15 @@ class rHtmlApi
     * print the progress of a roadmap
     *
     * @param roadmap $roadmap
+    * @param $projectId
     */
-   public static function printVersionProgress ( roadmap $roadmap )
+   public static function printVersionProgress ( roadmap $roadmap, $projectId )
    {
       echo '<div class="tr"><div class="td">';
       $profileId = $roadmap->getProfileId ();
       if ( $profileId == -1 )
       {
-         self::printScaledProgressbar ( $roadmap );
+         self::printScaledProgressbar ( $roadmap, $projectId );
       }
       else
       {
@@ -426,14 +429,14 @@ class rHtmlApi
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
                '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
          }
          else
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
             $progressString = $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
-            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
          }
       }
       echo '</div></div>' . PHP_EOL;
@@ -547,7 +550,7 @@ class rHtmlApi
    public static function htmlPluginAddDirectoryVersionEntry ( $projectId, $versionId, $versionName )
    {
       echo '<script type="text/javascript">';
-      echo 'addVersionEntryToDirectory (\'' . project_get_name ( $projectId ) . '\',\'' . $versionId . '\',\'' . $versionName . '\');';
+      echo 'addVersionEntryToDirectory (\'' . project_get_name ( $projectId ) . '\',\'' . $projectId . '\',\'' . $versionId . '\',\'' . $versionName . '\');';
       echo '</script>';
    }
 
@@ -568,12 +571,13 @@ class rHtmlApi
     * add progress bar to directory
     *
     * @param $versionId
+    * @param $projectId
     * @param $htmlString
     */
-   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $htmlString )
+   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $htmlString )
    {
       echo '<script type="text/javascript">';
-      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $htmlString . '\');';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $htmlString . '\');';
       echo '</script>';
    }
 

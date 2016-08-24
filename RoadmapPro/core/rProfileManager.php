@@ -1,6 +1,7 @@
 <?php
 require_once ( __DIR__ . '/rProApi.php' );
 require_once ( __DIR__ . '/rProfile.php' );
+require_once ( __DIR__ . '/rGroup.php' );
 
 /**
  * the profile manager gets data from multiple roadmap profiles
@@ -58,22 +59,47 @@ class rProfileManager
    /**
     * returns the sum of alle profile efforts
     *
+    * @param null $groupId
     * @return int
     */
-   public static function getSumRProfileEffort ()
+   public static function getSumRProfileEffort ( $groupId = null )
    {
       $mysqli = rProApi::initializeDbConnection ();
 
-      $query = /** @lang sql */
-         'SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table';
-
-      $result = $mysqli->query ( $query );
-
-      $sumProfileEffort = 0;
-      if ( 0 != $result->num_rows )
+      if ( $groupId == null )
       {
-         $sumProfileEffort = $result->fetch_row ()[ 0 ];
+         $query = /** @lang sql */
+            'SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table';
+
+         $result = $mysqli->query ( $query );
+
+         $sumProfileEffort = 0;
+         if ( 0 != $result->num_rows )
+         {
+            $sumProfileEffort = $result->fetch_row ()[ 0 ];
+         }
       }
+      else
+      {
+         $group = new rGroup( $groupId );
+         $groupProfileIds = explode ( ';', $group->getGroupProfiles () );
+         $sumProfileEffort = 0;
+         foreach ( $groupProfileIds as $groupProfileId )
+         {
+            $query = /** @lang sql */
+               'SELECT profile_effort FROM mantis_plugin_roadmappro_profile_table WHERE id =' . $groupProfileId;
+
+            $result = $mysqli->query ( $query );
+            $profileEffort = 0;
+            if ( $result->num_rows != 0 )
+            {
+               $profileEffort = $result->fetch_row ()[ 0 ];
+            }
+
+            $sumProfileEffort += $profileEffort;
+         }
+      }
+
       $mysqli->close ();
 
       return $sumProfileEffort;

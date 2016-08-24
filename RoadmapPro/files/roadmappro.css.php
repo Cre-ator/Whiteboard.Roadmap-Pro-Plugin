@@ -41,7 +41,7 @@ hr.version-separator {
    position: relative;
    background: #fff;
    width: 400px;
-   height: 20px;
+   height: 19px;
    border: 1px solid #d7d7d7;
    -moz-border-radius: 6px;
    -webkit-border-radius: 6px;
@@ -55,6 +55,7 @@ hr.version-separator {
    padding: 3px;
    display: inline-block;
    font-weight: normal;
+   vertical-align: middle;
    height: 100%;
    color: #111;
 }
@@ -64,6 +65,7 @@ hr.version-separator {
    display: inline-block;
    font-weight: normal;
    font-size: smaller;
+   vertical-align: middle;
    height: 100%;
    color: #111;
 }

@@ -404,7 +404,7 @@ class roadmap
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
       $profileCount = count ( $roadmapProfileIds );
-      $sumProfileEffort = rProfileManager::getSumRProfileEffort ();
+      $sumProfileEffort = rProfileManager::getSumRProfileEffort ( $this->groupId );
 
       $wholeProgress = 0;
       # iterate through profiles

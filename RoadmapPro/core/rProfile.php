@@ -150,9 +150,7 @@ class rProfile
       if (
          ( $this->profileName != null ) &&
          ( $this->profileColor != null ) &&
-         ( $this->profileStatus != null ) &&
-         ( $this->profilePriority != null ) &&
-         ( $this->profileEffort != null )
+         ( $this->profileStatus != null )
       )
       {
          $this->dbInsertProfile ();
@@ -169,9 +167,7 @@ class rProfile
          is_numeric ( $this->profileId ) &&
          ( $this->profileName != null ) &&
          ( $this->profileColor != null ) &&
-         ( $this->profileStatus != null ) &&
-         ( $this->profilePriority != null ) &&
-         ( $this->profileEffort != null )
+         ( $this->profileStatus != null )
       )
       {
          $this->dbUpdateProfile ();

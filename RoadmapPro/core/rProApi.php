@@ -136,8 +136,6 @@ class rProApi
    {
       $versionId = $version[ 'id' ];
       $versionName = $version[ 'version' ];
-      $versionDate = $version[ 'date_order' ];
-      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
       $projectName = string_display ( project_get_name ( $projectId ) );
 
       $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' );
@@ -155,13 +153,40 @@ class rProApi
       }
       $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
          . string_display_line ( $versionName ) . '</a>'
-         . '&nbsp;(' . lang_get ( 'scheduled_release' ) . '&nbsp;'
-         . $versionReleaseDate . ')&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
+         . '&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
          . FILTER_PROPERTY_PROJECT_ID . '=' . $projectId . '&amp;'
          . filter_encode_field_and_value ( FILTER_PROPERTY_TARGET_VERSION, $versionName ) . '">'
          . lang_get ( 'view_bugs_link' ) . '</a>&nbsp;]';
 
       return $releaseTitleString;
+   }
+
+   /**
+    * returns version date order string
+    *
+    * @param $version
+    * @return string
+    */
+   public static function getReleasedDateString ( $version )
+   {
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $version[ 'date_order' ] ) );
+
+      return plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate;
+   }
+
+   /**
+    * returns version description string
+    *
+    * @param $version
+    * @return string
+    */
+   public static function getDescription ( $version )
+   {
+      $description = $version[ 'description' ];
+      if ( strlen ( $description ) > 0 )
+      {
+         return lang_get ( 'description' ) . ':&nbsp;' . $description;
+      }
    }
 
    /**

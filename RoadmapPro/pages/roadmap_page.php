@@ -66,7 +66,6 @@ function processTable ( $profileId )
    # print content title
    rHtmlApi::htmlPluginContentTitle ();
 
-
    # iterate through projects
    foreach ( $projectIds as $projectId )
    {
@@ -105,11 +104,13 @@ function processTable ( $profileId )
             $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $version[ 'id' ] );
             # add version to directory
             rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $projectId, $version[ 'id' ], $version[ 'version' ] );
-            # define and print release title
+            # define and print title
             $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
             rHtmlApi::printWrapperInHTML ( $releaseTitleString );
+            # define and print realease date
+            rHtmlApi::printWrapperInHTML ( rProApi::getReleasedDateString ( $version ) );
             # print version description
-            rHtmlApi::printWrapperInHTML ( $version[ 'description' ] );
+            rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
             # print version progress bar
             rHtmlApi::printVersionProgress ( $roadmap, $projectId );
             # print bug list

@@ -46,3 +46,4 @@ $s_plugin_RoadmapPro_roadmap_page_bar_from = 'from';
 $s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Overall Progress';
 $s_plugin_RoadmapPro_roadmap_page_no_eta = 'Progress not defined.';
 $s_plugin_RoadmapPro_roadmap_page_directory = 'Overview';
+$s_plugin_RoadmapPro_roadmap_page_no_cat = 'No Category';

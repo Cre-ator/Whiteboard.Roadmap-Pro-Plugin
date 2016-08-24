@@ -473,10 +473,10 @@ class rHtmlApi
          self::htmlPluginBugCol ( $doneBugs );
          # bug id
          echo string_get_bug_view_link ( $bugId ) . '&nbsp;';
-         # bug category
-         echo string_display_line ( category_full_name ( $bug->category_id ) );
          # bug symbols
          rProApi::calcBugSmybols ( $bugId );
+         # bug category
+         self::htmlPluginPrintCategory ( $bug->category_id );
          # bug summary
          echo string_display_line ( $bug->summary );
          # bug assigned user
@@ -488,6 +488,18 @@ class rHtmlApi
          # bug status
          echo '&nbsp;-&nbsp;' . string_display_line ( get_enum_element ( 'status', $bug->status ) ) . '.';
          echo '</div></div>' . PHP_EOL;
+      }
+   }
+
+   private static function htmlPluginPrintCategory ( $categoryId )
+   {
+      if ( $categoryId == 0 )
+      {
+         echo '[' . plugin_lang_get ( 'roadmap_page_no_cat' ) . ']&nbsp;';
+      }
+      else
+      {
+         echo '[' . category_get_field ( $categoryId, 'name' ) . ']&nbsp;';
       }
    }
 

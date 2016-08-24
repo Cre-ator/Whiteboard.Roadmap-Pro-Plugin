@@ -37,10 +37,12 @@ $s_plugin_RoadmapPro_config_reset_ensure_expl = 'Achtung, wenn Sie fortfahren we
 $s_plugin_RoadmapPro_config_reset_ensure_conf = 'Fortfahren';
 $s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abbrechen';
 
+$s_plugin_RoadmapPro_roadmap_page_content_title = 'Roadmaps';
 $s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d von %2$d Einträgen erledigt.';
 $s_plugin_RoadmapPro_roadmap_page_version_title = '%1$s - Roadmap für %2$s';
 $s_plugin_RoadmapPro_roadmap_page_bar_time = 'Dauer';
 $s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Anzahl';
+$s_plugin_RoadmapPro_roadmap_page_bar_from = 'von';
 $s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Gesamt-Fortschritt';
 $s_plugin_RoadmapPro_roadmap_page_no_eta = 'Aufwand nicht definiert.';
 $s_plugin_RoadmapPro_roadmap_page_directory = 'Übersicht';

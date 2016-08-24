@@ -155,10 +155,6 @@ function delRow(initialRowCount, tableId) {
 function addProgressBarToDirectory(versionId, projectId, progressHtmlString) {
     var trdiv = document.getElementById('d' + projectId + versionId);
 
-    // var trbardiv = document.createElement("div");
-    // trbardiv.className = 'tr';
-    // trdiv.parentNode.appendChild(trbardiv);
-
     var tddiv = document.createElement("div");
     tddiv.className = 'tddir';
     trdiv.appendChild(tddiv);

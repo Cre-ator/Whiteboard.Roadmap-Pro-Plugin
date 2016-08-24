@@ -63,6 +63,10 @@ function processTable ( $profileId )
    # initialize directory
    rHtmlApi::htmlPluginDirectory ();
 
+   # print content title
+   rHtmlApi::htmlPluginContentTitle ();
+
+
    # iterate through projects
    foreach ( $projectIds as $projectId )
    {

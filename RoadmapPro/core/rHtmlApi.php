@@ -158,12 +158,12 @@ class rHtmlApi
       {
          $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
-         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+         echo '&nbsp;(' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
       }
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         echo '&nbsp;(' . $sumPercentDone . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . $sumPercentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';
@@ -207,10 +207,17 @@ class rHtmlApi
     */
    public static function htmlPluginDirectory ()
    {
+      echo '<div class="tr"><span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_directory' ) . '</span></div>';
+      echo '<div class="tr"><hr /></div>';
       echo '<div class="table" id="directory">';
-      echo '<span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_directory' ) . '</span>';
       echo '</div>';
       self::htmlPluginSpacer ();
+   }
+
+   public static function htmlPluginContentTitle ()
+   {
+      echo '<div class="tr"><span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_content_title' ) . '</span></div>';
+      echo '<div class="tr"><hr /></div>';
    }
 
    /**
@@ -435,14 +442,14 @@ class rHtmlApi
             $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
-               '&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
          }
          else
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
-            $progressString = $progressPercent . '%&nbsp;' . lang_get ( 'from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+            $progressString = $progressPercent . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
          }
       }

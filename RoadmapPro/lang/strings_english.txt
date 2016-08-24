@@ -37,10 +37,12 @@ $s_plugin_RoadmapPro_config_reset_ensure_expl = 'Caution, if you proceed all dat
 $s_plugin_RoadmapPro_config_reset_ensure_conf = 'Continue';
 $s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abort';
 
+$s_plugin_RoadmapPro_roadmap_page_content_title = 'Roadmaps';
 $s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d from %2$d Issues done.';
 $s_plugin_RoadmapPro_roadmap_page_version_title = '%1$s - Roadmap in %2$s';
 $s_plugin_RoadmapPro_roadmap_page_bar_time = 'Duration';
 $s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Amount';
+$s_plugin_RoadmapPro_roadmap_page_bar_from = 'from';
 $s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Overall Progress';
 $s_plugin_RoadmapPro_roadmap_page_no_eta = 'Progress not defined.';
 $s_plugin_RoadmapPro_roadmap_page_directory = 'Overview';

@@ -437,7 +437,7 @@ class rProApi
       }
       else
       {
-         $pageProgress .= round ( $hashProgress, 1 ) . '%';
+         $pageProgress .= round ( $hashProgress ) . '%';
       }
 
       return $pageProgress;
@@ -654,10 +654,16 @@ class rProApi
    public static function getDoneIssueIdsForAllProfiles ( $bugIds, $groupId )
    {
       $doneIssuesForAllProfiles = array ();
-
-      $group = new rGroup( $groupId );
-      $profileIds = $group->getGroupProfiles ();
-      $profileIdArray = explode ( ';', $profileIds );
+      if ( $groupId == null )
+      {
+         $profileIdArray = rProfileManager::getRProfileIds ();
+      }
+      else
+      {
+         $group = new rGroup( $groupId );
+         $profileIds = $group->getGroupProfiles ();
+         $profileIdArray = explode ( ';', $profileIds );
+      }
 
       foreach ( $bugIds as $bugId )
       {

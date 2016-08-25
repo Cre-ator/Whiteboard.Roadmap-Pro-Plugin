@@ -69,7 +69,7 @@ class rProfileManager
       if ( $groupId == null )
       {
          $query = /** @lang sql */
-            'SELECT SUM(profile_effort) FROM mantis_plugin_roadmappro_profile_table';
+            'SELECT SUM(profile_effort) FROM mantis_plugin_RoadmapPro_profile_table';
 
          $result = $mysqli->query ( $query );
 
@@ -87,7 +87,7 @@ class rProfileManager
          foreach ( $groupProfileIds as $groupProfileId )
          {
             $query = /** @lang sql */
-               'SELECT profile_effort FROM mantis_plugin_roadmappro_profile_table WHERE id =' . $groupProfileId;
+               'SELECT profile_effort FROM mantis_plugin_RoadmapPro_profile_table WHERE id =' . $groupProfileId;
 
             $result = $mysqli->query ( $query );
             $profileEffort = 0;

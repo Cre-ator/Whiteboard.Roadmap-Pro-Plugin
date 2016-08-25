@@ -369,7 +369,7 @@ class roadmap
 
          if ( $fullEta > 0 )
          {
-            $this->progressPercent = round ( ( ( $this->doneEta / $fullEta ) * 100 ), 1 );
+            $this->progressPercent = ( ( $this->doneEta / $fullEta ) * 100 );
          }
       }
       else
@@ -377,7 +377,7 @@ class roadmap
          $doneBugAmount = count ( $doneBugIds );
          $allBugCount = count ( $this->bugIds );
          $progress = ( $doneBugAmount / $allBugCount );
-         $this->progressPercent = round ( ( $progress * 100 ), 1 );
+         $this->progressPercent = round ( $progress * 100 );
       }
    }
 

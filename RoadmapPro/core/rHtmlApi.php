@@ -108,11 +108,6 @@ class rHtmlApi
             $hashProfileId = $profileHash[ 0 ];
             $hashProgress = $profileHash[ 1 ];
 
-            if ( ( $sumPercentDone + $hashProgress ) >= 99 )
-            {
-               $hashProgress = ( 100 - $sumPercentDone );
-            }
-
             # get profile color
             $profile = new rProfile( $hashProfileId );
             $profileColor = '#' . $profile->getProfileColor ();
@@ -128,14 +123,19 @@ class rHtmlApi
                $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div><!--';
             }
-            # n - 2 (first, last) following
+            # last bar
             elseif ( $index == ( $profileHashCount - 1 ) )
             {
+               if ( ( $sumPercentDone + $hashProgress ) >= 99 )
+               {
+                  $hashProgress = ( 100 - $sumPercentDone );
+               }
+
                $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $progressHtmlString .= '</div>';
             }
-            # last bar
+            # n - 2 (first, last) following
             else
             {
                $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
@@ -163,7 +163,7 @@ class rHtmlApi
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         echo '&nbsp;(' . round ( $sumPercentDone, 1 ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . round ( $sumPercentDone ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';
@@ -602,8 +602,11 @@ class rHtmlApi
     */
    public static function htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $htmlString )
    {
+      $versionDate = version_get_field ( $versionId, 'date_order' );
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
+      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' );
       echo '<script type="text/javascript">';
-      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $htmlString . '\');';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $htmlString . '\',\'' . $versionReleaseDate . '\',\'' . $versionReleaseString . '\',\'' . $versionDate . '\');';
       echo '</script>';
    }
 

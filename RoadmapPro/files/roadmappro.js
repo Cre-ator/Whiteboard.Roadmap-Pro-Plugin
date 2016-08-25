@@ -151,8 +151,11 @@ function delRow(initialRowCount, tableId) {
  * @param versionId
  * @param projectId
  * @param progressHtmlString
+ * @param versionReleaseDate
+ * @param versionReleaseString
+ * @param versionDate
  */
-function addProgressBarToDirectory(versionId, projectId, progressHtmlString) {
+function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, versionDate) {
     var trdiv = document.getElementById('d' + projectId + versionId);
 
     var tddiv = document.createElement("div");
@@ -164,6 +167,28 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString) {
     p9001div.innerHTML = progressHtmlString;
 
     tddiv.appendChild(p9001div);
+
+
+    var dateNow = Math.floor(Date.now() / 1000);
+    var dif = dateNow - versionDate;
+    var dateDifSec = Math.abs(dif);
+
+    var operator = '';
+    if (dif > 0) {
+        operator = '+';
+    }
+    else {
+        operator = '-';
+    }
+
+    var dateDifDay = Math.floor(dateDifSec / 86400);
+    var dateDifDayInSec = dateDifDay * 86400;
+    var dateDifHour = Math.floor((dateDifSec - dateDifDayInSec) / 3600);
+
+    var datediv = document.createElement("div");
+    datediv.className = 'tddir';
+    datediv.innerHTML = versionReleaseString + ':&nbsp;' + versionReleaseDate + '&nbsp;[' + operator + '&nbsp;' + dateDifDay + 'd&nbsp;' + dateDifHour + 'h' + ']';
+    trdiv.appendChild(datediv);
 }
 
 /**

@@ -215,7 +215,7 @@ div.tddir {
    display: table-cell;
    border: none;
    height: 20px;
-   vertical-align: middle;
+   vertical-align: top;
    padding-left: 10px;
 }
 

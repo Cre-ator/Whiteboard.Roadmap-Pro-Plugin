@@ -2,19 +2,22 @@
 
 class RoadmapProPlugin extends MantisPlugin
 {
+   private $shortName = null;
+
    function register ()
    {
-      $this->name = 'RoadmapPro';
+      $this->shortName = 'RoadmapPro';
+      $this->name = 'Whiteboard.' . $this->shortName;
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.1.33';
+      $this->version = '1.1.34';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
       );
 
-      $this->author = 'Stefan Schwarz';
+      $this->author = 'cbb software GmbH, Rainer Dierck, Stefan Schwarz';
       $this->contact = '';
       $this->url = 'https://github.com/Cre-ator';
    }
@@ -86,7 +89,7 @@ class RoadmapProPlugin extends MantisPlugin
    {
       if ( plugin_config_get ( 'show_footer' ) )
       {
-         return '<address>' . $this->name . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
+         return '<address>' . $this->shortName . '&nbsp;' . $this->version . '&nbsp;Copyright&nbsp;&copy;&nbsp;2016&nbsp;by&nbsp;' . $this->author . '</address>';
       }
       return null;
    }

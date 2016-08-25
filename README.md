@@ -7,6 +7,7 @@ Features
 + create and manage different roadmap profiles
 + display different roadmaps as specified in a profile
 + additional informations
++ directory for simple navigation (requires javascript enabled)
 
 Requirements
 

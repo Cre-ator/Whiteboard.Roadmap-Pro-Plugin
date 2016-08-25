@@ -209,11 +209,9 @@ class rHtmlApi
     */
    public static function htmlPluginDirectory ()
    {
-      echo '<div class="tr"><span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_directory' ) . '</span></div>';
-      echo '<div class="tr"><hr /></div>';
-      echo '<div class="table" id="directory">';
-      echo '</div>';
-      self::htmlPluginSpacer ();
+      echo '<script type="text/javascript">';
+      echo 'addRoadmapDirectoryBox (\'' . plugin_lang_get ( 'roadmap_page_directory' ) . '\');';
+      echo '</script>';
    }
 
    public static function htmlPluginContentTitle ()

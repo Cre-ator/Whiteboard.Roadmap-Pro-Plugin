@@ -146,6 +146,18 @@ function delRow(initialRowCount, tableId) {
 }
 
 /**
+ * adds the box for the roadmap directory
+ *
+ * @param directoryTitle
+ * @returns {string}
+ */
+function addRoadmapDirectoryBox(directoryTitle) {
+    document.write('<div class="tr"><span class="pagetitle">' + directoryTitle + '</span></div>' +
+        '<div class="tr"><hr /></div><div class="table" id="directory"></div>' +
+        '<div class="tr"><div class="td"><div class="spacer"></div></div></div>');
+}
+
+/**
  * adds a progress bar to the directory
  *
  * @param versionId

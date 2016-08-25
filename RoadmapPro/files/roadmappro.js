@@ -198,13 +198,11 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
         operator = '-';
     }
 
-    var dateDifDay = Math.floor(dateDifSec / 86400);
-    var dateDifDayInSec = dateDifDay * 86400;
-    var dateDifHour = Math.floor((dateDifSec - dateDifDayInSec) / 3600);
+    var dateDifDay = Math.ceil(dateDifSec / 86400);
 
     var datediv = document.createElement("div");
     datediv.className = 'tddir';
-    datediv.innerHTML = versionReleaseString + ':&nbsp;' + versionReleaseDate + '&nbsp;[' + operator + '&nbsp;' + dateDifDay + 'd&nbsp;' + dateDifHour + 'h' + ']';
+    datediv.innerHTML = versionReleaseString + ':&nbsp;' + versionReleaseDate + '&nbsp;[' + operator + '&nbsp;' + dateDifDay + 'd&nbsp;' + ']';
     trdiv.appendChild(datediv);
 }
 

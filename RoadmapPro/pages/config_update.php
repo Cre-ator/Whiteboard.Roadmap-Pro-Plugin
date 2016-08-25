@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/../core/rProApi.php' );
+require_once ( COREPATH . 'rProApi.php' );
 
 auth_reauthenticate ();
 

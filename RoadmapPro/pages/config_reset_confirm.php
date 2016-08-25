@@ -1,6 +1,6 @@
 <?php
 
-require_once ( __DIR__ . '/../core/rProApi.php' );
+require_once ( COREPATH . 'rProApi.php' );
 
 if ( isset( $_POST[ 'con_reset' ] ) )
 {

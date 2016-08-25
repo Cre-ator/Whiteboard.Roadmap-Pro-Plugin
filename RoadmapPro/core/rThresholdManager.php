@@ -1,6 +1,6 @@
 <?php
-require_once ( __DIR__ . '/rProApi.php' );
-require_once ( __DIR__ . '/rThreshold.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProApi.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThreshold.php' );
 
 /**
  * the threshold manager gets data from multiple eta thresholds

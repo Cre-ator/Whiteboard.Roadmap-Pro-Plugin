@@ -1,14 +1,14 @@
 <?php
-require_once ( __DIR__ . '/rHtmlApi.php' );
-require_once ( __DIR__ . '/roadmapManager.php' );
-require_once ( __DIR__ . '/roadmap.php' );
-require_once ( __DIR__ . '/rGroupManager.php' );
-require_once ( __DIR__ . '/rGroup.php' );
-require_once ( __DIR__ . '/rProfileManager.php' );
-require_once ( __DIR__ . '/rProfile.php' );
-require_once ( __DIR__ . '/rThresholdManager.php' );
-require_once ( __DIR__ . '/rThreshold.php' );
-require_once ( __DIR__ . '/rEta.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rHtmlApi.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'roadmapManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'roadmap.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroupManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroup.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfileManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfile.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThresholdManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThreshold.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rEta.php' );
 
 /**
  * Class roadmap_pro_api

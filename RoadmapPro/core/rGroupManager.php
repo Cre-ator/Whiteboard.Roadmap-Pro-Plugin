@@ -1,6 +1,6 @@
 <?php
-require_once ( __DIR__ . '/rProApi.php' );
-require_once ( __DIR__ . '/rGroup.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProApi.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroup.php' );
 
 /**
  * the group manager gets data from multiple group profiles

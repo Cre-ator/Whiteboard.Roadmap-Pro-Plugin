@@ -1,13 +1,13 @@
 <?php
-require_once ( __DIR__ . '/../core/rHtmlApi.php' );
-require_once ( __DIR__ . '/../core/rProApi.php' );
-require_once ( __DIR__ . '/../core/rProfileManager.php' );
-require_once ( __DIR__ . '/../core/rProfile.php' );
-require_once ( __DIR__ . '/../core/rGroupManager.php' );
-require_once ( __DIR__ . '/../core/rGroup.php' );
-require_once ( __DIR__ . '/../core/rThresholdManager.php' );
-require_once ( __DIR__ . '/../core/rThreshold.php' );
-require_once ( __DIR__ . '/../core/rEta.php' );
+require_once ( COREPATH . 'rHtmlApi.php' );
+require_once ( COREPATH . 'rProApi.php' );
+require_once ( COREPATH . 'rProfileManager.php' );
+require_once ( COREPATH . 'rProfile.php' );
+require_once ( COREPATH . 'rGroupManager.php' );
+require_once ( COREPATH . 'rGroup.php' );
+require_once ( COREPATH . 'rThresholdManager.php' );
+require_once ( COREPATH . 'rThreshold.php' );
+require_once ( COREPATH . 'rEta.php' );
 
 auth_reauthenticate ();
 

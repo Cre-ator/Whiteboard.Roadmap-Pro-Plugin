@@ -1,7 +1,7 @@
 <?php
-require_once ( __DIR__ . '/rProfileManager.php' );
-require_once ( __DIR__ . '/rProfile.php' );
-require_once ( __DIR__ . '/rEta.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfileManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfile.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rEta.php' );
 
 /**
  * roadmap class that represents a roadmap

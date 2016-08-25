@@ -1,9 +1,9 @@
 <?php
-require_once ( __DIR__ . '/../core/rProApi.php' );
-require_once ( __DIR__ . '/rProfileManager.php' );
-require_once ( __DIR__ . '/rProfile.php' );
-require_once ( __DIR__ . '/rGroupManager.php' );
-require_once ( __DIR__ . '/rGroup.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rProApi.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfileManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfile.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroupManager.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroup.php' );
 
 /**
  * Class roadmap_html_api

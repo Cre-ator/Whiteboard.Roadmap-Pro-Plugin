@@ -1,5 +1,5 @@
 <?php
-require_once ( __DIR__ . '/rProApi.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProApi.php' );
 
 /**
  * eta class that represents an eta element

@@ -1,9 +1,9 @@
 <?php
-require_once ( __DIR__ . '/../core/rProApi.php' );
-require_once ( __DIR__ . '/../core/rHtmlApi.php' );
-require_once ( __DIR__ . '/../core/roadmapManager.php' );
-require_once ( __DIR__ . '/../core/roadmap.php' );
-require_once ( __DIR__ . '/../core/rProfile.php' );
+require_once ( COREPATH . 'rProApi.php' );
+require_once ( COREPATH . 'rHtmlApi.php' );
+require_once ( COREPATH . 'roadmapManager.php' );
+require_once ( COREPATH . 'roadmap.php' );
+require_once ( COREPATH . 'rProfile.php' );
 
 # initialize profile color
 $getProfileId = 0;

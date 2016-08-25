@@ -1,7 +1,7 @@
 <?php
-require_once ( __DIR__ . '/../core/rGroup.php' );
-require_once ( __DIR__ . '/../core/rProfile.php' );
-require_once ( __DIR__ . '/../core/rThreshold.php' );
+require_once ( COREPATH . 'rGroup.php' );
+require_once ( COREPATH . 'rProfile.php' );
+require_once ( COREPATH . 'rThreshold.php' );
 
 auth_reauthenticate ();
 

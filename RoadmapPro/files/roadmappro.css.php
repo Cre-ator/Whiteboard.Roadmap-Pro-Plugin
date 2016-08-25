@@ -40,7 +40,7 @@ hr.version-separator {
 .progress9002 {
    position: relative;
    background: #fff;
-   width: 400px;
+   width: 300px;
    height: 19px;
    border: 1px solid #d7d7d7;
    -moz-border-radius: 6px;

@@ -154,8 +154,9 @@ function delRow(initialRowCount, tableId) {
  * @param versionReleaseDate
  * @param versionReleaseString
  * @param versionDate
+ * @param $textProgress
  */
-function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, versionDate) {
+function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, versionDate, textProgress) {
     var trdiv = document.getElementById('d' + projectId + versionId);
 
     var tddiv = document.createElement("div");
@@ -168,6 +169,10 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
 
     tddiv.appendChild(p9001div);
 
+    var textProgressDiv = document.createElement("div");
+    textProgressDiv.className = 'tddir';
+    textProgressDiv.innerHTML = textProgress;
+    trdiv.appendChild(textProgressDiv);
 
     var dateNow = Math.floor(Date.now() / 1000);
     var dif = dateNow - versionDate;

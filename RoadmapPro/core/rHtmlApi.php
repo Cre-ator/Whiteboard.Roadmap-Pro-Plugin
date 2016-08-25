@@ -495,11 +495,11 @@ class rHtmlApi
    {
       if ( $categoryId == 0 )
       {
-         echo '[' . plugin_lang_get ( 'roadmap_page_no_cat' ) . ']&nbsp;';
+         echo '[<b>' . plugin_lang_get ( 'roadmap_page_no_cat' ) . '</b>]&nbsp;';
       }
       else
       {
-         echo '[' . category_get_field ( $categoryId, 'name' ) . ']&nbsp;';
+         echo '[<b>' . category_get_field ( $categoryId, 'name' ) . '</b>]&nbsp;';
       }
    }
 

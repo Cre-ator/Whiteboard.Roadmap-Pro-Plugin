@@ -11,13 +11,13 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.1.34';
+      $this->version = '1.1.35';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
       );
 
-      $this->author = 'cbb software GmbH, Rainer Dierck, Stefan Schwarz';
+      $this->author = 'cbb software GmbH (Rainer Dierck, Stefan Schwarz)';
       $this->contact = '';
       $this->url = 'https://github.com/Cre-ator';
    }

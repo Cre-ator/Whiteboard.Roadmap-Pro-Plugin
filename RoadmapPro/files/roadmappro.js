@@ -201,7 +201,7 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
  * @param progressHtmlString
  */
 function addVersionEntryToDirectory(projectName, projectId, versionId, versionName) {
-    var table = document.getElementById(projectName);
+    var table = document.getElementById(projectName).parentNode.parentNode;
 
     var trdiv = document.createElement("div");
     trdiv.className = 'tr';
@@ -209,7 +209,7 @@ function addVersionEntryToDirectory(projectName, projectId, versionId, versionNa
     table.appendChild(trdiv);
 
     var tddiv = document.createElement("div");
-    tddiv.className = 'tddir wd300';
+    tddiv.className = 'tddir';
     tddiv.innerHTML = '<a class="directory version" href="#v' + projectId + '_' + versionId + '">' + versionName + '</a>';
 
     trdiv.appendChild(tddiv);

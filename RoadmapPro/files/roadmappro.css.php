@@ -219,10 +219,6 @@ div.tddir {
    padding-left: 10px;
 }
 
-.wd300 {
-   width: 300px;
-}
-
 div.spacer {
    border: none;
    padding: 5px;

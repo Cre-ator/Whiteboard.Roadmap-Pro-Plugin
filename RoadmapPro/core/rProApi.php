@@ -187,6 +187,8 @@ class rProApi
       {
          return lang_get ( 'description' ) . ':&nbsp;' . $description;
       }
+
+      return null;
    }
 
    /**

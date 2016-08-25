@@ -163,7 +163,7 @@ class rHtmlApi
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         echo '&nbsp;(' . $sumPercentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         echo '&nbsp;(' . round ( $sumPercentDone, 1 ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
       echo ')';
       echo '</div>';

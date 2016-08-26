@@ -113,13 +113,13 @@ class rProApi
          }
       }
 
-      if ( empty( $etaString ) == false )
+      if ( empty( $etaString ) )
       {
-         return $etaString;
+         return $backupString;
       }
       else
       {
-         return $backupString;
+         return $etaString;
       }
    }
 
@@ -698,5 +698,44 @@ class rProApi
       }
 
       return $doneIssuesForAllProfiles;
+   }
+
+   /**
+    * calculate time difference and expected finished date. returns formatted output string
+    *
+    * @param $versionId
+    * @param $fullEta
+    * @param $doneEta
+    * @return string
+    */
+   public static function getExpectedFinishedDateString ( $versionId, $fullEta, $doneEta )
+   {
+      # time difference
+      $etaDifferenceInSec = ( $fullEta - $doneEta ) * 3600;
+      # time version date order
+      $versionDateInSec = version_get_field ( $versionId, 'date_order' );
+      # actual time
+      $dateNowInSec = time ();
+      # expected time
+      $dateFinishedExpectedInSec = $dateNowInSec + $etaDifferenceInSec;
+
+      # formatted date string for expected finished date
+      $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $dateFinishedExpectedInSec ) );
+      # deviation in days
+      $deviationInDay = ceil ( ( abs ( $versionDateInSec - $dateFinishedExpectedInSec ) ) / 86400 );
+
+      if ( ( $versionDateInSec - $dateFinishedExpectedInSec ) >= 0 )
+      {
+         $operator = '-';
+      }
+      else
+      {
+         $operator = '+';
+      }
+
+      $expectedFinishedDateString = plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' .
+         $dateFinishedExpectedFormat . '&nbsp;[' . $operator . $deviationInDay . 'd]';
+
+      return $expectedFinishedDateString;
    }
 }

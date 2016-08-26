@@ -165,10 +165,10 @@ function addRoadmapDirectoryBox(directoryTitle) {
  * @param progressHtmlString
  * @param versionReleaseDate
  * @param versionReleaseString
- * @param versionDate
- * @param $textProgress
+ * @param textProgress
+ * @param expectedFinishedDateString
  */
-function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, versionDate, textProgress) {
+function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, textProgress, expectedFinishedDateString) {
     var trdiv = document.getElementById('d' + projectId + versionId);
 
     var tddiv = document.createElement("div");
@@ -186,23 +186,9 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
     textProgressDiv.innerHTML = textProgress;
     trdiv.appendChild(textProgressDiv);
 
-    var dateNow = Math.floor(Date.now() / 1000);
-    var dif = dateNow - versionDate;
-    var dateDifSec = Math.abs(dif);
-
-    var operator = '';
-    if (dif > 0) {
-        operator = '+';
-    }
-    else {
-        operator = '-';
-    }
-
-    var dateDifDay = Math.ceil(dateDifSec / 86400);
-
     var datediv = document.createElement("div");
     datediv.className = 'tddir';
-    datediv.innerHTML = versionReleaseString + ':&nbsp;' + versionReleaseDate + '&nbsp;[' + operator + '&nbsp;' + dateDifDay + 'd&nbsp;' + ']';
+    datediv.innerHTML = versionReleaseString + versionReleaseDate + ',&nbsp;' + expectedFinishedDateString;
     trdiv.appendChild(datediv);
 }
 
@@ -213,7 +199,6 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
  * @param projectId
  * @param versionId
  * @param versionName
- * @param progressHtmlString
  */
 function addVersionEntryToDirectory(projectName, projectId, versionId, versionName) {
     var table = document.getElementById(projectName).parentNode.parentNode;

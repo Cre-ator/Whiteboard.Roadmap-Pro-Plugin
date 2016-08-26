@@ -48,3 +48,5 @@ $s_plugin_RoadmapPro_roadmap_page_no_eta = 'Aufwand nicht definiert.';
 $s_plugin_RoadmapPro_roadmap_page_directory = 'Übersicht';
 $s_plugin_RoadmapPro_roadmap_page_no_cat = 'Keine Kategorie';
 $s_plugin_RoadmapPro_roadmap_page_release_date = 'Veröffentlichung';
+$s_plugin_RoadmapPro_roadmap_page_release_date_planned = 'geplant';
+$s_plugin_RoadmapPro_roadmap_page_release_date_expected = 'erwartet';

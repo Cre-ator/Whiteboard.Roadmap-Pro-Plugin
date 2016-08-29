@@ -1,0 +1,52 @@
+<?php
+$s_plugin_RoadmapPro_menu_title = 'Roadmap Pro';
+
+$s_plugin_RoadmapPro_config_page_title = 'Einstellung Roadmap Pro';
+$s_plugin_RoadmapPro_config_page_general = 'Allgemeine Einstellungen';
+$s_plugin_RoadmapPro_config_page_access_level = 'Plugin Zugriffslevel';
+$s_plugin_RoadmapPro_config_page_show_menu = 'Menü anzeigen';
+$s_plugin_RoadmapPro_config_page_show_footer = 'Plugin Informationen in Fußzeile anzeigen';
+$s_plugin_RoadmapPro_config_page_roadmap_profile_management = 'Roadmap Profilverwaltung';
+$s_plugin_RoadmapPro_config_page_roadmap_eta_threshold_management = 'ETA Schwellenverwaltung';
+$s_plugin_RoadmapPro_config_page_eta_name = 'Bezeichnung';
+$s_plugin_RoadmapPro_config_page_eta_value = 'Wert';
+$s_plugin_RoadmapPro_config_page_eta_unit_title = 'Einheit';
+$s_plugin_RoadmapPro_config_page_eta_threshold_from = 'von (h)';
+$s_plugin_RoadmapPro_config_page_eta_threshold_to = 'bis (h)';
+$s_plugin_RoadmapPro_config_page_eta_threshold_factor = 'Einheit in h';
+
+$s_plugin_RoadmapPro_config_page_profile_name = 'Name';
+$s_plugin_RoadmapPro_config_page_profile_status = 'Status';
+$s_plugin_RoadmapPro_config_page_profile_color = 'Farbe';
+$s_plugin_RoadmapPro_config_page_profile_prio = 'Priorität';
+$s_plugin_RoadmapPro_config_page_profile_effort = 'Gewichtung';
+$s_plugin_RoadmapPro_config_page_profile_action = 'Aktion';
+$s_plugin_RoadmapPro_config_page_eta_unit = 'h';
+$s_plugin_RoadmapPro_config_page_add_profile = 'Profil hinzufügen';
+$s_plugin_RoadmapPro_config_page_profile_list = 'Angelegte Profile';
+$s_plugin_RoadmapPro_config_page_delete_profile = 'Entfernen';
+
+$s_plugin_RoadmapPro_config_page_prfgr_management = 'Profil-Gruppenverwaltung';
+$s_plugin_RoadmapPro_config_page_prfgr_profiles = 'beinhaltet Profile';
+
+$s_plugin_RoadmapPro_config_page_eta_management = 'Verwaltung Aufwand';
+$s_plugin_RoadmapPro_config_page_prio_decription = 'Die Priorität repräsentiert den Zeitpunkt im Workflow';
+
+$s_plugin_RoadmapPro_config_reset_ensure_title = 'Plugin-Einstellungen zurücksetzen';
+$s_plugin_RoadmapPro_config_reset_ensure_expl = 'Achtung, wenn Sie fortfahren werden alle im Plugin hinterlegten Daten unwiderruflich gelöscht. Fortfahren?';
+$s_plugin_RoadmapPro_config_reset_ensure_conf = 'Fortfahren';
+$s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abbrechen';
+
+$s_plugin_RoadmapPro_roadmap_page_content_title = 'Roadmaps';
+$s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d von %2$d Einträgen erledigt.';
+$s_plugin_RoadmapPro_roadmap_page_version_title = '%1$s - Roadmap für %2$s';
+$s_plugin_RoadmapPro_roadmap_page_bar_time = 'Dauer';
+$s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Anzahl';
+$s_plugin_RoadmapPro_roadmap_page_bar_from = 'von';
+$s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Gesamt-Fortschritt';
+$s_plugin_RoadmapPro_roadmap_page_no_eta = 'Aufwand nicht definiert.';
+$s_plugin_RoadmapPro_roadmap_page_directory = 'Übersicht';
+$s_plugin_RoadmapPro_roadmap_page_no_cat = 'Keine Kategorie';
+$s_plugin_RoadmapPro_roadmap_page_release_date = 'Veröffentlichung';
+$s_plugin_RoadmapPro_roadmap_page_release_date_planned = 'geplant';
+$s_plugin_RoadmapPro_roadmap_page_release_date_expected = 'erwartet';

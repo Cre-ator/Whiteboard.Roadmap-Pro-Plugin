@@ -1,6 +1,6 @@
 # RoadmapPro
 
-Plugin for MantisBT to manage raodmaps
+Plugin for MantisBT to manage roadmaps
 
 Features
 
@@ -15,9 +15,9 @@ Requirements
 
 Installation
 
-  Copy the 'RoadmapPro' plugin just in the plugins directory of Mantis. After installing a new menu entry "RoadmapPro" is added.
+  Copy the 'RoadmapPro' plugin just in the plugins directory of MantisBT. After installing a new menu entry "RoadmapPro" is added.
 
-  If you want to disable the standard mantis roadmap, please add the following code into the html_api.php in  
+  If you want to disable the standard MantisBT roadmap, please add the following code into the html_api.php in  
   mantisRoot/core/html_api.php:  
  
   -> function print_menu -> go to # Roadmap Page  

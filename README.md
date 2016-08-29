@@ -27,11 +27,12 @@ Installation
   The Code should look like
 
   # Roadmap Page
+```
   if ( access_has_project_level( config_get( 'roadmap_view_threshold' ) ) 
        && !plugin_is_installed ( 'RoadmapPro' )  // new code snippet
      ) 
   {
      $t_menu_options[] = '' . helper_mantis_url( 'roadmap_page.php';
   }
- 
+```
   Then the standard roadmap menu field is disabled when the RoadmapPro-Plugin is installed. 

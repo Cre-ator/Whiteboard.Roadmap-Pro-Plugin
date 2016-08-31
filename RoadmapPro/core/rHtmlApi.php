@@ -157,7 +157,7 @@ class rHtmlApi
          $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
          $textProgress = '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-         $expectedFinishedDateString = ', ' . rProApi::getExpectedFinishedDateString ( $versionId, $fullEta, $doneEta );
+         $expectedFinishedDateString = ', ' . rProApi::getExpectedFinishedDateString ( $fullEta, $doneEta );
       }
       else
       {

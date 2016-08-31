@@ -736,38 +736,36 @@ class rProApi
    /**
     * calculate time difference and expected finished date. returns formatted output string
     *
-    * @param $versionId
     * @param $fullEta
     * @param $doneEta
     * @return string
     */
-   public static function getExpectedFinishedDateString ( $versionId, $fullEta, $doneEta )
+   public static function getExpectedFinishedDateString ( $fullEta, $doneEta )
    {
-      # time difference
-      $etaDifferenceInSec = ( $fullEta - $doneEta ) * 3600;
-      # time version date order
-      $versionDateInSec = version_get_field ( $versionId, 'date_order' );
-      # actual time
-      $dateNowInSec = time ();
-      # expected time
-      $dateFinishedExpectedInSec = $dateNowInSec + $etaDifferenceInSec;
+      # time difference in seconds
+      # 1/5 * 7 * 1.3 = 1.82
+      $etaDifferenceInSec = ( ( ( $fullEta - $doneEta ) * HOURINSEC ) * ( HOURSPERDAY / WORKHOURSPERDAY ) ) * 1.82;
+      # expected time => now + difference
+      $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
+      # day of finished date
+      $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );
+      #
+      switch ( $finishedExpectedDay )
+      {
+         # +2 days till monday
+         case 'Sat':
+            $dateFinishedExpectedInSec += ( DAYINSEC * 2 );
+            break;
+         # +1 days till monday
+         case 'Sun':
+            $dateFinishedExpectedInSec += DAYINSEC;
+            break;
+      }
 
       # formatted date string for expected finished date
       $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $dateFinishedExpectedInSec ) );
-      # deviation in days
-      $deviationInDay = ceil ( ( abs ( $versionDateInSec - $dateFinishedExpectedInSec ) ) / 86400 );
 
-      if ( ( $versionDateInSec - $dateFinishedExpectedInSec ) >= 0 )
-      {
-         $operator = '-';
-      }
-      else
-      {
-         $operator = '+';
-      }
-
-      $expectedFinishedDateString = plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' .
-         $dateFinishedExpectedFormat . '&nbsp;[' . $operator . $deviationInDay . 'd]';
+      $expectedFinishedDateString = plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat;
 
       return $expectedFinishedDateString;
    }

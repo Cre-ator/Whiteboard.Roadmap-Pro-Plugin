@@ -738,16 +738,4 @@ class rProApi
 
       return $expectedFinishedDateString;
    }
-
-   /**
-    * returns true, if project id is linked to version
-    *
-    * @param $versionId
-    * @param $projectId
-    * @return bool
-    */
-   public static function checkVersionIsLinkedToProject ( $versionId, $projectId )
-   {
-      return ( version_get_field ( $versionId, 'project_id' ) == $projectId );
-   }
 }

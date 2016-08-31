@@ -87,11 +87,6 @@ function processTable ( $profileId )
       $projectTitlePrinted = false;
       foreach ( $versions as $version )
       {
-         if ( !rProApi::checkVersionIsLinkedToProject ( $version[ 'id' ], $projectId ) )
-         {
-            continue;
-         }
-
          $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
          if ( count ( $bugIds ) > 0 )
          {

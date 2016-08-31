@@ -80,7 +80,7 @@ class rHtmlApi
       echo $progressHtmlString;
       echo '</div>';
 
-      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $progressHtmlString, '' );
+      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $progressHtmlString );
    }
 
    /**
@@ -152,12 +152,13 @@ class rHtmlApi
       }
       echo '</div>';
 
+      $expectedFinishedDateString = null;
       if ( $useEta )
       {
          $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
          $textProgress = '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-         $expectedFinishedDateString = rProApi::getExpectedFinishedDateString ( $versionId, $fullEta, $doneEta );
+         $expectedFinishedDateString = ', ' . rProApi::getExpectedFinishedDateString ( $versionId, $fullEta, $doneEta );
       }
       else
       {
@@ -603,7 +604,7 @@ class rHtmlApi
     * @param $textProgress
     * @param $expectedFinishedDateString
     */
-   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $htmlString, $textProgress, $expectedFinishedDateString )
+   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $htmlString, $textProgress = null, $expectedFinishedDateString = null )
    {
       $versionDate = version_get_field ( $versionId, 'date_order' );
       $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );

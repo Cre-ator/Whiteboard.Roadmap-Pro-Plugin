@@ -188,7 +188,7 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
 
     var datediv = document.createElement("div");
     datediv.className = 'tddir';
-    datediv.innerHTML = versionReleaseString + versionReleaseDate + ',&nbsp;' + expectedFinishedDateString;
+    datediv.innerHTML = versionReleaseString + versionReleaseDate + expectedFinishedDateString;
     trdiv.appendChild(datediv);
 }
 

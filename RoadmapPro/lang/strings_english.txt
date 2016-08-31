@@ -30,6 +30,7 @@ $s_plugin_RoadmapPro_config_page_prfgr_management = 'Roadmap Groups';
 $s_plugin_RoadmapPro_config_page_prfgr_profiles = 'Contains Profiles';
 
 $s_plugin_RoadmapPro_config_page_eta_management = 'Effort Management';
+$s_plugin_RoadmapPro_config_page_eta_none_value = 'unused Effort';
 $s_plugin_RoadmapPro_config_page_prio_decription = 'The priority represents the time in the workflow';
 
 $s_plugin_RoadmapPro_config_reset_ensure_title = 'Reset Plugin Configuration';

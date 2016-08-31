@@ -11,7 +11,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.1.39';
+      $this->version = '1.1.40';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -76,7 +76,7 @@ class RoadmapProPlugin extends MantisPlugin
             'CreateTableSQL', array ( plugin_table ( 'eta' ), "
             id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             eta_config_value   C(250)  DEFAULT '',
-            eta_user_value     C(250)  DEFAULT ''
+            eta_user_value     C(250)  DEFAULT 0
             " )
          ),
          array

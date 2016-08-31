@@ -58,7 +58,19 @@ if ( config_get ( 'enable_eta' ) )
       $eta = new rEta( $etaEnumValue );
       echo '<tr>';
       echo '<td>' . string_display_line ( get_enum_element ( 'eta', $etaEnumValue ) ) . '</td>';
-      echo '<td><input type="text" name="eta_value[]" value="' . $eta->getEtaUser () . '"/></td>';
+      if ( $eta->getEtaUser () == null )
+      {
+         $eta->setEtaUser ( 0 );
+         $eta->triggerInsertIntoDb ();
+      }
+      if ( $eta->getEtaConfig () == ETA_NONE )
+      {
+         echo '<td>' . plugin_lang_get ( 'config_page_eta_none_value' ) . '</td>';
+      }
+      else
+      {
+         echo '<td><input type="text" name="eta_value[]" value="' . $eta->getEtaUser () . '"/></td>';
+      }
       echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
    }

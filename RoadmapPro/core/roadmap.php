@@ -437,7 +437,11 @@ class roadmap
             {
                $doneEta += $this->getSingleEta ( $doneBugId );
             }
-            $doneEtaPercent = ( ( $doneEta / ( $fullEta ) ) * 100 );
+            $doneEtaPercent = 0;
+            if ( $fullEta > 0 )
+            {
+               $doneEtaPercent = ( ( $doneEta / $fullEta ) * 100 );
+            }
             $doneEtaPercent = $doneEtaPercent * $profileCount * $tProfileEffortFactor;
             $wholeProgress += $doneEtaPercent;
             $profileHash = $tProfileId . ';' . $doneEtaPercent;

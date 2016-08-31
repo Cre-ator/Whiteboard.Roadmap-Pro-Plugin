@@ -57,6 +57,14 @@ class rEta
    /**
     * @return int
     */
+   public function getEtaConfig ()
+   {
+      return $this->etaConfig;
+   }
+
+   /**
+    * @return int
+    */
    public function getEtaUser ()
    {
       return $this->etaUser;
@@ -84,17 +92,7 @@ class rEta
     */
    public function triggerInsertIntoDb ()
    {
-      if ( $this->etaConfig != ETA_NONE )
-      {
-         if (
-            ( $this->etaUser != null ) &&
-            is_numeric ( $this->etaUser )
-         )
-         {
-            $this->dbInsertEta ();
-         }
-      }
-      else
+      if ( is_numeric ( $this->etaUser ) )
       {
          $this->dbInsertEta ();
       }
@@ -107,10 +105,7 @@ class rEta
    {
       if ( $this->etaConfig != ETA_NONE )
       {
-         if (
-            ( $this->etaUser != null ) &&
-            is_numeric ( $this->etaUser )
-         )
+         if ( is_numeric ( $this->etaUser ) )
          {
             $this->dbUpdateEta ();
          }

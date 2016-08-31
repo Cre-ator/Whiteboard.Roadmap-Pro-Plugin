@@ -211,6 +211,12 @@ div.td {
    float: left;
 }
 
+.h25 {
+   height: 25px;
+   margin-top: 1em;
+   margin-bottom: 1em;
+}
+
 div.tddir {
    display: table-cell;
    border: none;

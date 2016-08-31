@@ -97,7 +97,7 @@ class rHtmlApi
       $doneEta = 0;
       $sumPercentDone = 0;
       $sumProgressHtmlString = '';
-      echo '<div class="progress9001">';
+      echo '<div class="td"><div class="progress9001">';
       if ( !empty( $profileHashMap ) )
       {
          $profileHashCount = count ( $profileHashMap );
@@ -149,27 +149,32 @@ class rHtmlApi
             $doneEta += $tempEta;
          }
       }
-      echo '</div>';
+      echo '</div></div>';
 
+      $percentDone = round ( $sumPercentDone );
       $expectedFinishedDateString = null;
       if ( $useEta )
       {
          $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
          $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
-         $textProgress = '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+         $textProgressDir = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+         $textProgress = '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;(' . $percentDone . '%)';
          $expectedFinishedDateString = ', ' . rProApi::getExpectedFinishedDateString ( $fullEta, $doneEta );
       }
       else
       {
          $bugCount = count ( $roadmap->getBugIds () );
-         $textProgress = '&nbsp;' . round ( $sumPercentDone ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         $textProgressDir = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+         $textProgress = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
       }
 
-      echo '<div class="progress-suffix">';
-      echo $textProgress;
-      echo '</div>';
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), version_get_field ( $versionId, 'date_order' ) ) );
+      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . $expectedFinishedDateString;
 
-      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $sumProgressHtmlString, $textProgress, $expectedFinishedDateString );
+      echo '<div class="td h25">' . $textProgress . '&nbsp;</div>';
+      echo '<div class="td h25">&nbsp;' . $versionReleaseString . '</div>';
+
+      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $sumProgressHtmlString, $textProgressDir, $expectedFinishedDateString );
    }
 
    /**
@@ -425,7 +430,7 @@ class rHtmlApi
     */
    public static function printVersionProgress ( roadmap $roadmap, $projectId )
    {
-      echo '<div class="tr"><div class="td">';
+      echo '<div class="tr">';
       $profileId = $roadmap->getProfileId ();
       if ( $profileId == -1 )
       {
@@ -433,6 +438,7 @@ class rHtmlApi
       }
       else
       {
+         echo '<div class="td">';
          $useEta = $roadmap->getEtaIsSet ();
          $doneEta = $roadmap->getDoneEta ();
          $fullEta = $roadmap->getFullEta ();
@@ -453,8 +459,9 @@ class rHtmlApi
             $progressString = $progressPercent . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
          }
+         echo '</div>';
       }
-      echo '</div></div>' . PHP_EOL;
+      echo '</div>' . PHP_EOL;
    }
 
    /**

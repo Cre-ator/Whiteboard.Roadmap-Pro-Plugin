@@ -108,7 +108,10 @@ function processTable ( $profileId )
             $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
             rHtmlApi::printWrapperInHTML ( $releaseTitleString );
             # define and print realease date
-            rHtmlApi::printWrapperInHTML ( rProApi::getReleasedDateString ( $version ) );
+            if ( $profileId != -1 )
+            {
+               rHtmlApi::printWrapperInHTML ( rProApi::getReleasedDateString ( $version ) );
+            }
             # print version description
             rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
             # print version progress bar

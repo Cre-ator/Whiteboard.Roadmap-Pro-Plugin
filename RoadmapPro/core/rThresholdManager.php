@@ -19,7 +19,7 @@ class rThresholdManager
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT id FROM mantis_plugin_roadmappro_etathreshold_table';
+         'SELECT id FROM mantis_plugin_RoadmapPro_etathreshold_table';
 
       $result = $mysqli->query ( $query );
 

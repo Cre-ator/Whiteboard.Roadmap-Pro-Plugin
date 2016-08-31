@@ -124,7 +124,7 @@ class rEta
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT * FROM mantis_plugin_roadmappro_eta_table WHERE eta_config_value=' . $this->etaConfig;
+         'SELECT * FROM mantis_plugin_RoadmapPro_eta_table WHERE eta_config_value=' . $this->etaConfig;
 
       $result = $mysqli->query ( $query );
       if ( $result->num_rows != 0 )

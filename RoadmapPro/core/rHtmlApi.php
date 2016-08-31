@@ -42,7 +42,6 @@ class rHtmlApi
     * @param $class
     * @param $colspan
     * @param $lang_string
-    * @return string
     */
    public static function htmlPluginConfigOutputCol ( $class, $lang_string, $colspan = 1 )
    {

@@ -206,7 +206,7 @@ class rProApi
       $forbiddenFlag = false;
       $warningFlag = false;
       $bugEta = bug_get_field ( $bugId, 'eta' );
-      $useEta = ( $bugEta > 10 ) && config_get ( 'enable_eta' );
+      $useEta = ( $bugEta != ETA_NONE ) && config_get ( 'enable_eta' );
       $stopAltText = "";
       $forbiddenAltText = "";
       $warningAltText = "";
@@ -399,12 +399,17 @@ class rProApi
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
+         "DROP TABLE mantis_plugin_RoadmapPro_profilegroup_table";
+
+      $mysqli->query ( $query );
+
+      $query = /** @lang sql */
          "DROP TABLE mantis_plugin_RoadmapPro_eta_table";
 
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
-         "DROP TABLE mantis_plugin_RoadmapPro_unit_table";
+         "DROP TABLE mantis_plugin_RoadmapPro_etathreshold_table";
 
       $mysqli->query ( $query );
 
@@ -417,6 +422,34 @@ class rProApi
       $mysqli->close ();
 
       print_successful_redirect ( 'manage_plugin_page.php' );
+   }
+
+   public static function setDefault ()
+   {
+      if ( count ( rProfileManager::getRProfileIds () ) == 0 )
+      {
+         $mysqli = self::initializeDbConnection ();
+
+         $query = /** @lang sql */
+            'INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio, profile_effort )
+            SELECT null,\'Resolved\',\'D2F5B0\',\'80;90\',\'1\',\'75\'
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
+            WHERE profile_name=\'Resolved\')';
+
+         $mysqli->query ( $query );
+
+         $query = /** @lang sql */
+            'INSERT INTO mantis_plugin_RoadmapPro_profile_table ( id, profile_name, profile_color, profile_status, profile_prio, profile_effort )
+            SELECT null,\'Verified\',\'C9CCC4\',\'90\',\'2\',\'25\'
+            FROM DUAL WHERE NOT EXISTS (
+            SELECT 1 FROM mantis_plugin_RoadmapPro_profile_table
+            WHERE profile_name=\'Verified\')';
+
+         $mysqli->query ( $query );
+
+         $mysqli->close ();
+      }
    }
 
    /**

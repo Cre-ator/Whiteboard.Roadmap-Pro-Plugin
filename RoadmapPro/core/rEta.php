@@ -84,10 +84,17 @@ class rEta
     */
    public function triggerInsertIntoDb ()
    {
-      if (
-         ( $this->etaUser != null ) &&
-         is_numeric ( $this->etaUser )
-      )
+      if ( $this->etaConfig != ETA_NONE )
+      {
+         if (
+            ( $this->etaUser != null ) &&
+            is_numeric ( $this->etaUser )
+         )
+         {
+            $this->dbInsertEta ();
+         }
+      }
+      else
       {
          $this->dbInsertEta ();
       }
@@ -98,10 +105,17 @@ class rEta
     */
    public function triggerUpdateInDb ()
    {
-      if (
-         ( $this->etaUser != null ) &&
-         is_numeric ( $this->etaUser )
-      )
+      if ( $this->etaConfig != ETA_NONE )
+      {
+         if (
+            ( $this->etaUser != null ) &&
+            is_numeric ( $this->etaUser )
+         )
+         {
+            $this->dbUpdateEta ();
+         }
+      }
+      else
       {
          $this->dbUpdateEta ();
       }

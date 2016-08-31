@@ -227,7 +227,7 @@ class roadmap
          foreach ( $this->bugIds as $bugId )
          {
             $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-            if ( ( $bugEtaValue == null ) || ( $bugEtaValue == 10 ) )
+            if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
             {
                $this->etaIsSet = false;
             }

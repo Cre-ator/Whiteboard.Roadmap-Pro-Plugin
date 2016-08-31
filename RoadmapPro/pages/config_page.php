@@ -132,91 +132,6 @@ if ( config_get ( 'enable_eta' ) )
    echo '</table>';
 }
 
-# profile groups
-rHtmlApi::htmlPluginConfigOpenTable ( 'profilegroups' );
-echo '<tr>';
-rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
-echo '</tr>';
-echo '<tr>';
-rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
-rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_prfgr_profiles' );
-rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
-echo '</tr>';
-
-# iterate through groups
-$groupIds = rGroupManager::getRGroupIds ();
-$groupCount = count ( $groupIds );
-if ( $groupCount > 0 )
-{
-   for ( $index = 0; $index < $groupCount; $index++ )
-   {
-      $groupId = $groupIds[ $index ];
-      $group = new rGroup( $groupId );
-      $dbGroudName = $group->getGroupName ();
-      $dbGroupProfiles = $group->getGroupProfiles ();
-
-      $groupProfileEnumNames = array ();
-      $profileEnumIds = rProApi::getProfileEnumIds ();
-      $profileEnumNames = rProApi::getProfileEnumNames ();
-      $profileEnumCount = count ( $profileEnumIds );
-      $groupProfileArray = explode ( ';', $dbGroupProfiles );
-      foreach ( $groupProfileArray as $profileId )
-      {
-         $profile = new rProfile( $profileId );
-         $profileName = $profile->getProfileName ();
-
-         array_push ( $groupProfileEnumNames, $profileName );
-      }
-
-      echo '<tr>';
-      # group name
-      echo '<td>';
-      echo '<input type="hidden" name="group-id[]" value="' . $groupId . '" />';
-      echo '<input type="text" name="group-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbGroudName ) . '" />';
-      echo '</td>';
-      # group profiles
-      echo '<td><select name="group-profile-' . $index . '[]" multiple="multiple">';
-      for ( $pindex = 0; $pindex < $profileEnumCount; $pindex++ )
-      {
-         $profileId = $profileEnumIds[ $pindex ];
-         $profileName = $profileEnumNames[ $pindex ];
-         echo '<option value="' . $profileId . '"';
-         check_selected ( $groupProfileEnumNames, $profileName );
-         echo '>' . $profileName . '</option>';
-      }
-      echo '</select></td>';
-
-      # delete group button
-      echo '<td>';
-      echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .
-         '&amp;group_id=' . $groupId . '">';
-      echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
-      echo '</a>';
-      echo '</td>';
-
-      echo '</tr>';
-   }
-}
-echo '</table>';
-
-rHtmlApi::htmlPluginConfigOpenTable ();
-echo '<tbody>';
-echo '<tr class="foot-row">';
-$profileEnumIds = rProApi::getProfileEnumIds ();
-$profileEnumNames = rProApi::getProfileEnumNames ();
-
-$jsProfileEnumIdArray = json_encode ( $profileEnumIds );
-$jsProfileEnumNameArray = json_encode ( $profileEnumNames );
-echo '<script type="text/javascript">var profileIds =' . $jsProfileEnumIdArray . ';var profileNames =' . $jsProfileEnumNameArray . ';</script>';
-echo '<td class="left">';
-echo '<input type="button" value="+" onclick="addGroupRow(profileIds,profileNames)" />&nbsp;';
-echo '<input type="button" value="-" onclick="delRow(' . $groupCount . ', \'profilegroups\')" />&nbsp;';
-echo '</td>';
-
-echo '</tr>';
-echo '</tbody>';
-echo '</table>';
-
 # show profiles
 rHtmlApi::htmlPluginConfigOpenTable ( 'profiles' );
 echo '<tr>';
@@ -295,6 +210,97 @@ echo '<td class="left">';
 echo '<input type="button" value="+" onclick="addProfileRow(statusValues,statusStrings)" />&nbsp;';
 echo '<input type="button" value="-" onclick="delRow(' . $profileCount . ', \'profiles\')" />&nbsp;';
 echo '</td>';
+
+echo '</tr>';
+echo '</tbody>';
+echo '</table>';
+
+if ( $profileCount > 1 )
+{
+# profile groups
+   rHtmlApi::htmlPluginConfigOpenTable ( 'profilegroups' );
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
+   echo '</tr>';
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_prfgr_profiles' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_action' );
+   echo '</tr>';
+
+# iterate through groups
+   $groupIds = rGroupManager::getRGroupIds ();
+   $groupCount = count ( $groupIds );
+   if ( $groupCount > 0 )
+   {
+      for ( $index = 0; $index < $groupCount; $index++ )
+      {
+         $groupId = $groupIds[ $index ];
+         $group = new rGroup( $groupId );
+         $dbGroudName = $group->getGroupName ();
+         $dbGroupProfiles = $group->getGroupProfiles ();
+
+         $groupProfileEnumNames = array ();
+         $profileEnumIds = rProApi::getProfileEnumIds ();
+         $profileEnumNames = rProApi::getProfileEnumNames ();
+         $profileEnumCount = count ( $profileEnumIds );
+         $groupProfileArray = explode ( ';', $dbGroupProfiles );
+         foreach ( $groupProfileArray as $profileId )
+         {
+            $profile = new rProfile( $profileId );
+            $profileName = $profile->getProfileName ();
+
+            array_push ( $groupProfileEnumNames, $profileName );
+         }
+
+         echo '<tr>';
+         # group name
+         echo '<td>';
+         echo '<input type="hidden" name="group-id[]" value="' . $groupId . '" />';
+         echo '<input type="text" name="group-name[]" size="15" maxlength="128" value="' . string_display_line ( $dbGroudName ) . '" />';
+         echo '</td>';
+         # group profiles
+         echo '<td><select name="group-profile-' . $index . '[]" multiple="multiple">';
+         for ( $pindex = 0; $pindex < $profileEnumCount; $pindex++ )
+         {
+            $profileId = $profileEnumIds[ $pindex ];
+            $profileName = $profileEnumNames[ $pindex ];
+            echo '<option value="' . $profileId . '"';
+            check_selected ( $groupProfileEnumNames, $profileName );
+            echo '>' . $profileName . '</option>';
+         }
+         echo '</select></td>';
+
+         # delete group button
+         echo '<td>';
+         echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .
+            '&amp;group_id=' . $groupId . '">';
+         echo '<input type="button" value="' . plugin_lang_get ( 'config_page_delete_profile' ) . '" />';
+         echo '</a>';
+         echo '</td>';
+
+         echo '</tr>';
+      }
+   }
+   echo '</table>';
+}
+
+rHtmlApi::htmlPluginConfigOpenTable ();
+echo '<tbody>';
+echo '<tr class="foot-row">';
+if ( $profileCount > 1 )
+{
+   $profileEnumIds = rProApi::getProfileEnumIds ();
+   $profileEnumNames = rProApi::getProfileEnumNames ();
+
+   $jsProfileEnumIdArray = json_encode ( $profileEnumIds );
+   $jsProfileEnumNameArray = json_encode ( $profileEnumNames );
+   echo '<script type="text/javascript">var profileIds =' . $jsProfileEnumIdArray . ';var profileNames =' . $jsProfileEnumNameArray . ';</script>';
+   echo '<td class="left">';
+   echo '<input type="button" value="+" onclick="addGroupRow(profileIds,profileNames)" />&nbsp;';
+   echo '<input type="button" value="-" onclick="delRow(' . $groupCount . ', \'profilegroups\')" />&nbsp;';
+   echo '</td>';
+}
 
 echo '<td class="center" colspan="5">';
 echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>&nbsp';

@@ -167,9 +167,8 @@ class rProApi
     * @param $version
     * @return string
     */
-   public static function getReleasedDateString ( $version )
+   public static function getReleasedDateString ( $versionReleaseDate )
    {
-      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $version[ 'date_order' ] ) );
       return plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate;
    }
 

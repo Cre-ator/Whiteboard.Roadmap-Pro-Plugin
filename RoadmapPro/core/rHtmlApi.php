@@ -77,13 +77,16 @@ class rHtmlApi
     */
    private static function printSingleProgressbar ( $progress, $progressString, $versionId, $projectId )
    {
-      echo '<div class="progress9001">';
+      $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDesiredDate ) );
+      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate;
       $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
-      echo $progressHtmlString;
-      echo '</div>';
+
+      echo '<div class="progress9001">' . $progressHtmlString . '</div>';
+      echo '<div class="td h25">&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . '</div>';
 
       echo '<script type="text/javascript">';
-      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $progressHtmlString . '\',\'' . '' . '\',\'' . '' . '\');';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $progressHtmlString . '\',\'' . $versionReleaseString . '\',\'' . '' . '\');';
       echo '</script>';
    }
 

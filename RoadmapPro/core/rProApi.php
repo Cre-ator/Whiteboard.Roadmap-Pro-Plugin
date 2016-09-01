@@ -731,41 +731,4 @@ class rProApi
 
       return $doneIssuesForAllProfiles;
    }
-
-   /**
-    * calculate time difference and expected finished date. returns formatted output string
-    *
-    * @param $fullEta
-    * @param $doneEta
-    * @return string
-    */
-   public static function getExpectedFinishedDateString ( $fullEta, $doneEta )
-   {
-      # time difference in seconds
-      # 1/5 * 7 * 1.3 = 1.82
-      $etaDifferenceInSec = ( ( ( $fullEta - $doneEta ) * HOURINSEC ) * ( HOURSPERDAY / WORKHOURSPERDAY ) ) * 1.82;
-      # expected time => now + difference
-      $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
-      # day of finished date
-      $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );
-      #
-      switch ( $finishedExpectedDay )
-      {
-         # +2 days till monday
-         case 'Sat':
-            $dateFinishedExpectedInSec += ( DAYINSEC * 2 );
-            break;
-         # +1 days till monday
-         case 'Sun':
-            $dateFinishedExpectedInSec += DAYINSEC;
-            break;
-      }
-
-      # formatted date string for expected finished date
-      $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $dateFinishedExpectedInSec ) );
-
-      $expectedFinishedDateString = plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat;
-
-      return $expectedFinishedDateString;
-   }
 }

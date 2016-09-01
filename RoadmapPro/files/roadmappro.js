@@ -163,12 +163,10 @@ function addRoadmapDirectoryBox(directoryTitle) {
  * @param versionId
  * @param projectId
  * @param progressHtmlString
- * @param versionReleaseDate
- * @param versionReleaseString
  * @param textProgress
- * @param expectedFinishedDateString
+ * @param versionReleaseString
  */
-function addProgressBarToDirectory(versionId, projectId, progressHtmlString, versionReleaseDate, versionReleaseString, textProgress, expectedFinishedDateString) {
+function addProgressBarToDirectory(versionId, projectId, progressHtmlString, textProgress, versionReleaseString) {
     var trdiv = document.getElementById('d' + projectId + versionId);
 
     var tddiv = document.createElement("div");
@@ -188,7 +186,7 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, ver
 
     var datediv = document.createElement("div");
     datediv.className = 'tddir';
-    datediv.innerHTML = versionReleaseString + versionReleaseDate + expectedFinishedDateString;
+    datediv.innerHTML = versionReleaseString;
     trdiv.appendChild(datediv);
 }
 

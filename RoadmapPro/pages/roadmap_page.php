@@ -101,7 +101,7 @@ function processTable ( $profileId )
             }
             #roadmap object
             $getGroupId = $_GET[ 'group_id' ];
-            $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $version[ 'id' ] );
+            $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
             # add version to directory
             rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $projectId, $version[ 'id' ], $version[ 'version' ] );
             # define and print title
@@ -115,7 +115,7 @@ function processTable ( $profileId )
             # print version description
             rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
             # print version progress bar
-            rHtmlApi::printVersionProgress ( $roadmap, $projectId );
+            rHtmlApi::printVersionProgress ( $roadmap );
             # print bug list
             if ( $profileId == -1 )
             {
@@ -130,7 +130,7 @@ function processTable ( $profileId )
                rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
             }
             # print text progress
-            ( $profileId >= 0 ) ? rHtmlApi::printVersionProgressAsText ( $roadmap ) : null;
+            ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
             # print spacer
             rHtmlApi::htmlPluginSpacer ();
          }

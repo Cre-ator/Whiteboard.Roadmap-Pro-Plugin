@@ -222,6 +222,7 @@ div.tddir {
    border: none;
    height: 20px;
    vertical-align: top;
+   font-size: smaller;
    padding-left: 10px;
 }
 

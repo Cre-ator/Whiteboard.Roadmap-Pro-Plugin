@@ -13,6 +13,10 @@ class roadmap
    /**
     * @var integer
     */
+   private $projectId;
+   /**
+    * @var integer
+    */
    private $versionId;
    /**
     * @var array
@@ -62,23 +66,37 @@ class roadmap
     * @var boolean
     */
    private $issueIsDone;
+   /**
+    * @var integer
+    */
+   private $expectedFinishedDate;
 
    /**
     * roadmap constructor.
     * @param $bugIds
     * @param $profileId
     * @param $groupId
+    * @param $projectId
     * @param $versionId
     */
-   function __construct ( $bugIds, $profileId, $groupId, $versionId )
+   function __construct ( $bugIds, $profileId, $groupId, $projectId, $versionId )
    {
       $this->bugIds = $bugIds;
       $this->profileId = $profileId;
       $this->groupId = $groupId;
+      $this->projectId = $projectId;
       $this->versionId = $versionId;
       $this->doneBugIds = array ();
       $this->doingBugIds = array ();
       $this->profileHashArray = array ();
+   }
+
+   /**
+    * @return int
+    */
+   public function getProjectId ()
+   {
+      return $this->projectId;
    }
 
    /**
@@ -134,6 +152,14 @@ class roadmap
    {
       $this->calcDoneEta ();
       return $this->doneEta;
+   }
+
+   /**
+    * @param int $doneEta
+    */
+   public function setDoneEta ( $doneEta )
+   {
+      $this->doneEta = $doneEta;
    }
 
    /**
@@ -210,6 +236,66 @@ class roadmap
    {
       $this->calcScaledData ();
       return $this->profileHashArray;
+   }
+
+   /**
+    * @return string
+    */
+   public function getTextProgressMain ()
+   {
+      if ( $this->etaIsSet )
+      {
+         return $this->generateEtaTextProgressMain ();
+      }
+      else
+      {
+         return $this->generatePercentTextProgress ();
+      }
+   }
+
+   /**
+    * @return string
+    */
+   public function getTextProgressDir ()
+   {
+      if ( $this->etaIsSet )
+      {
+         return $this->generateEtaTextProgressDir ();
+      }
+      else
+      {
+         return $this->generatePercentTextProgress ();
+      }
+   }
+
+   /**
+    * @return string
+    */
+   public function getExpectedFinishedDateString ()
+   {
+      if ( $this->etaIsSet )
+      {
+         $this->calcExpectedFinishedDate ();
+         $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );
+         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat;
+      }
+      else
+      {
+         return '';
+      }
+   }
+
+   public function getActualDesiredDeviation ( $versonDesiredDate )
+   {
+      if ( $this->etaIsSet )
+      {
+         $this->calcExpectedFinishedDate ();
+         return $this->calcDifferenceActualDesiredFinishedDate ( $versonDesiredDate );
+      }
+      else
+      {
+         return '';
+      }
    }
 
    /**
@@ -460,5 +546,92 @@ class roadmap
       }
 
       $this->progressPercent = $wholeProgress;
+   }
+
+   /**
+    * generate and return text progress string for eta-calculated progress for main roadmap
+    *
+    * @return string
+    */
+   private function generateEtaTextProgressMain ()
+   {
+      $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
+      $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
+      return '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] .
+      '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] .
+      '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
+   }
+
+   /**
+    * generate and return text progress string for eta-calculated progress for directory
+    *
+    * @return string
+    */
+   private function generateEtaTextProgressDir ()
+   {
+      $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
+      return '&nbsp;' . round ( $this->progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
+      '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+   }
+
+   /**
+    * generate and return text progress string for percentage-calculated progress for main roadmap and directory
+    *
+    * @return string
+    */
+   private function generatePercentTextProgress ()
+   {
+      return '&nbsp;' . round ( $this->progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
+      '&nbsp;' . count ( $this->bugIds ) . '&nbsp;' . lang_get ( 'issues' );
+   }
+
+   /**
+    * calculate the expected finishing date for a roadmap
+    */
+   private function calcExpectedFinishedDate ()
+   {
+      # time difference in seconds
+      # 1/5 * 7 * 1.3 = 1.82
+      $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / WORKHOURSPERDAY ) ) * 1.82;
+      # expected time => now + difference
+      $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
+      # day of finished date
+      $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );
+      #
+      switch ( $finishedExpectedDay )
+      {
+         # +2 days till monday
+         case 'Sat':
+            $dateFinishedExpectedInSec += ( DAYINSEC * 2 );
+            break;
+         # +1 days till monday
+         case 'Sun':
+            $dateFinishedExpectedInSec += DAYINSEC;
+            break;
+      }
+
+      $this->expectedFinishedDate = $dateFinishedExpectedInSec;
+   }
+
+   /**
+    * calculate the difference between actual and desired finished date in days
+    *
+    * @param $versonDesiredDate
+    * @return string
+    */
+   private function calcDifferenceActualDesiredFinishedDate ( $versonDesiredDate )
+   {
+      $difference = $this->expectedFinishedDate - $versonDesiredDate;
+      if ( $difference >= 0 )
+      {
+         $operator = '+';
+      }
+      else
+      {
+         $operator = '-';
+      }
+      $differenceInDay = ceil ( abs ( $difference ) / 86400 );
+
+      return $operator . $differenceInDay . 'd';
    }
 }

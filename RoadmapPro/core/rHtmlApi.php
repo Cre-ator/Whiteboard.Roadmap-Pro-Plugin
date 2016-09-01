@@ -79,20 +79,20 @@ class rHtmlApi
       echo $progressHtmlString;
       echo '</div>';
 
-      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $progressHtmlString );
+      echo '<script type="text/javascript">';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $progressHtmlString . '\',\'' . '' . '\',\'' . '' . '\');';
+      echo '</script>';
    }
 
    /**
     * print progress bar for a progress group
     *
     * @param roadmap $roadmap
-    * @param $projectId
     */
-   private static function printScaledProgressbar ( roadmap $roadmap, $projectId )
+   private static function printScaledProgressbar ( roadmap $roadmap )
    {
       $useEta = $roadmap->getEtaIsSet ();
       $profileHashMap = $roadmap->getProfileHashArray ();
-      $versionId = $roadmap->getVersionId ();
       $fullEta = $roadmap->getFullEta ();
       $doneEta = 0;
       $sumPercentDone = 0;
@@ -111,9 +111,7 @@ class rHtmlApi
             # get profile color
             $profile = new rProfile( $hashProfileId );
             $profileColor = '#' . $profile->getProfileColor ();
-
             $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
-
             $progressHtmlString = '';
 
             # first bar
@@ -148,33 +146,39 @@ class rHtmlApi
             $sumPercentDone += $hashProgress;
             $doneEta += $tempEta;
          }
+         $roadmap->setDoneEta ( $doneEta );
       }
       echo '</div></div>';
 
-      $percentDone = round ( $sumPercentDone );
-      $expectedFinishedDateString = null;
-      if ( $useEta )
-      {
-         $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
-         $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
-         $textProgressDir = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-         $textProgress = '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;(' . $percentDone . '%)';
-         $expectedFinishedDateString = ', ' . rProApi::getExpectedFinishedDateString ( $fullEta, $doneEta );
-      }
-      else
-      {
-         $bugCount = count ( $roadmap->getBugIds () );
-         $textProgressDir = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
-         $textProgress = '&nbsp;' . $percentDone . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
-      }
+      self::printScaledTextProgress ( $roadmap, $sumProgressHtmlString );
+   }
 
-      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), version_get_field ( $versionId, 'date_order' ) ) );
+   /**
+    * print progress for scaled roadmap as text
+    *
+    * @param roadmap $roadmap
+    * @param $sumProgressHtmlString
+    */
+   private static function printScaledTextProgress ( roadmap $roadmap, $sumProgressHtmlString )
+   {
+      $versionId = $roadmap->getVersionId ();
+      $textProgressDir = $roadmap->getTextProgressDir ();
+      $textProgressMain = $roadmap->getTextProgressMain ();
+      $expectedFinishedDateString = $roadmap->getExpectedFinishedDateString ();
+      $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
+      $actualDesiredFinishedDateDeviation = $roadmap->getActualDesiredDeviation ( $versionDesiredDate );
+      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDesiredDate ) );
       $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . $expectedFinishedDateString;
 
-      echo '<div class="td h25">' . $textProgress . '&nbsp;</div>';
+      echo '<div class="td h25">' . $textProgressMain . '&nbsp;</div>';
       echo '<div class="td h25">&nbsp;' . $versionReleaseString . '</div>';
+      echo '<div class="td h25">&nbsp;' . $actualDesiredFinishedDateDeviation . '</div>';
 
-      self::htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $sumProgressHtmlString, $textProgressDir, $expectedFinishedDateString );
+      $versionReleaseString .= '&nbsp;' . $actualDesiredFinishedDateDeviation;
+
+      echo '<script type="text/javascript">';
+      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $roadmap->getProjectId () . '\',\'' . $sumProgressHtmlString . '\',\'' . $textProgressDir . '\',\'' . $versionReleaseString . '\');';
+      echo '</script>';
    }
 
    /**
@@ -182,7 +186,7 @@ class rHtmlApi
     *
     * @param roadmap $roadmap
     */
-   public static function printVersionProgressAsText ( roadmap $roadmap )
+   public static function printSingleTextProgress ( roadmap $roadmap )
    {
       $overallBugAmount = count ( $roadmap->getBugIds () );
       $doneBugAmount = count ( $roadmap->getDoneBugIds () );
@@ -426,15 +430,14 @@ class rHtmlApi
     * print the progress of a roadmap
     *
     * @param roadmap $roadmap
-    * @param $projectId
     */
-   public static function printVersionProgress ( roadmap $roadmap, $projectId )
+   public static function printVersionProgress ( roadmap $roadmap )
    {
       echo '<div class="tr">';
       $profileId = $roadmap->getProfileId ();
       if ( $profileId == -1 )
       {
-         self::printScaledProgressbar ( $roadmap, $projectId );
+         self::printScaledProgressbar ( $roadmap );
       }
       else
       {
@@ -450,14 +453,14 @@ class rHtmlApi
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
                '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
-            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          else
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
             $progressString = $progressPercent . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
-            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $projectId );
+            self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          echo '</div>';
       }
@@ -598,25 +601,6 @@ class rHtmlApi
       $projectName = project_get_name ( $projectId );
       echo '<script type="text/javascript">';
       echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\');';
-      echo '</script>';
-   }
-
-   /**
-    * add progress bar to directory
-    *
-    * @param $versionId
-    * @param $projectId
-    * @param $htmlString
-    * @param $textProgress
-    * @param $expectedFinishedDateString
-    */
-   public static function htmlPluginAddDirectoryProgressBar ( $versionId, $projectId, $htmlString, $textProgress = null, $expectedFinishedDateString = null )
-   {
-      $versionDate = version_get_field ( $versionId, 'date_order' );
-      $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDate ) );
-      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;';
-      echo '<script type="text/javascript">';
-      echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $htmlString . '\',\'' . $versionReleaseDate . '\',\'' . $versionReleaseString . '\',\'' . $textProgress . '\',\'' . $expectedFinishedDateString . '\');';
       echo '</script>';
    }
 

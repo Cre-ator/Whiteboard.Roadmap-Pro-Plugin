@@ -249,7 +249,7 @@ class roadmap
       }
       else
       {
-         return $this->generatePercentTextProgress ();
+         return $this->generatePercentTextProgressMain ();
       }
    }
 
@@ -264,7 +264,7 @@ class roadmap
       }
       else
       {
-         return $this->generatePercentTextProgress ();
+         return $this->generatePercentTextProgressDir ();
       }
    }
 
@@ -557,9 +557,9 @@ class roadmap
    {
       $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
-      return '&nbsp;' . $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ] .
+      return '&nbsp;' . $calculatedDoneEta[ 0 ] . $calculatedFullEta[ 1 ] .
       '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] .
-      '&nbsp;' . $calculatedFullEta[ 1 ] . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
+      $calculatedFullEta[ 1 ] . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
    }
 
    /**
@@ -571,7 +571,7 @@ class roadmap
    {
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
       return '&nbsp;' . round ( $this->progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
-      '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+      '&nbsp;' . $calculatedFullEta[ 0 ] . $calculatedFullEta[ 1 ];
    }
 
    /**
@@ -579,7 +579,19 @@ class roadmap
     *
     * @return string
     */
-   private function generatePercentTextProgress ()
+   private function generatePercentTextProgressMain ()
+   {
+      $doneBugCount = count ( rProApi::getDoneIssueIdsForAllProfiles ( $this->bugIds, $this->groupId ) );
+      return '&nbsp;' . $doneBugCount . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
+      '&nbsp;' . count ( $this->bugIds ) . '&nbsp;' . lang_get ( 'issues' ) . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
+   }
+
+   /**
+    * generate and return text progress string for percentage-calculated progress for main roadmap and directory
+    *
+    * @return string
+    */
+   private function generatePercentTextProgressDir ()
    {
       return '&nbsp;' . round ( $this->progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
       '&nbsp;' . count ( $this->bugIds ) . '&nbsp;' . lang_get ( 'issues' );

@@ -465,7 +465,7 @@ class rProApi
       if ( $useEta == true )
       {
          $calculatedEta = self::calculateEtaUnit ( $tempEta );
-         $pageProgress .= $calculatedEta[ 0 ] . '&nbsp;' . $calculatedEta[ 1 ];
+         $pageProgress .= $calculatedEta[ 0 ] . $calculatedEta[ 1 ];
       }
       else
       {

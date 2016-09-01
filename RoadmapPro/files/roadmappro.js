@@ -154,7 +154,7 @@ function delRow(initialRowCount, tableId) {
 function addRoadmapDirectoryBox(directoryTitle) {
     document.write('<div class="tr"><span class="pagetitle">' + directoryTitle + '</span></div>' +
         '<div class="tr"><hr /></div><div class="table" id="directory"></div>' +
-        '<div class="tr"><div class="td"><div class="spacer"></div></div></div>');
+        '<div class="tr"><div class="td"></div></div>');
 }
 
 /**
@@ -232,6 +232,19 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     tddiv.id = projectName;
     tddiv.innerHTML = '<div class="tr"><div class="td"><a class="directory project" href="#p' + projectId + '">' + projectName + '</a></div></div>';
 
+    trdiv.appendChild(tddiv);
+}
+
+function addFooterToDirectory(tableId, langString) {
+    var table = document.getElementById(tableId).parentNode;
+
+    var trdiv = document.createElement("div");
+    trdiv.className = 'tr';
+    table.appendChild(trdiv);
+
+    var tddiv = document.createElement("div");
+    tddiv.className = 'tdfoot';
+    tddiv.innerHTML = '<sup>*</sup>' + langString;
     trdiv.appendChild(tddiv);
 }
 

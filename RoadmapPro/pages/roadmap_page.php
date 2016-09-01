@@ -61,7 +61,7 @@ function processTable ( $profileId )
    $versions = $roadmapManager->getVersions ();
 
    # initialize directory
-   rHtmlApi::htmlPluginDirectory ();
+   rHtmlApi::htmlPluginDirectory ($profileId);
 
    # print content title
    rHtmlApi::htmlPluginContentTitle ();

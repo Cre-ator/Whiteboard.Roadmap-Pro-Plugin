@@ -52,20 +52,16 @@ hr.version-separator {
 }
 
 .progress9001 .bar {
-   padding: 3px;
    display: inline-block;
    font-weight: normal;
-   vertical-align: middle;
    height: 100%;
    color: #111;
 }
 
 .progress9002 .bar {
-   padding: 3px;
    display: inline-block;
    font-weight: normal;
    font-size: smaller;
-   vertical-align: middle;
    height: 100%;
    color: #111;
 }
@@ -224,6 +220,11 @@ div.tddir {
    vertical-align: top;
    font-size: smaller;
    padding-left: 10px;
+}
+
+div.tdfoot {
+   display: table-cell;
+   clear: both;
 }
 
 div.spacer {

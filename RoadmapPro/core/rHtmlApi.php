@@ -80,7 +80,7 @@ class rHtmlApi
       $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
       $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDesiredDate ) );
       $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate;
-      $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;">' . $progressString . '</span>';
+      $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;"><div>' . $progressString . '</div></span>';
 
       echo '<div class="progress9001">' . $progressHtmlString . '</div>';
       echo '<div class="td h25">&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . '</div>';
@@ -113,44 +113,46 @@ class rHtmlApi
             $profileHash = explode ( ';', $profileHashMap[ $index ] );
             $hashProfileId = $profileHash[ 0 ];
             $hashProgress = $profileHash[ 1 ];
-
-            # get profile color
-            $profile = new rProfile( $hashProfileId );
-            $profileColor = '#' . $profile->getProfileColor ();
-            $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
             $progressHtmlString = '';
+            $tempEta = 0;
+            if ( $hashProgress > 0 )
+            {
+               # get profile color
+               $profile = new rProfile( $hashProfileId );
+               $profileColor = '#' . $profile->getProfileColor ();
+               $tempEta = round ( ( ( $hashProgress / 100 ) * $fullEta ), 1 );
+               $direction = 'middle';
 
-            # first bar
-            if ( $index == 0 )
-            {
-               $progressHtmlString .= '<div class="bar left" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
-               $progressHtmlString .= '</div><!--';
-            }
-            # last bar
-            elseif ( $index == ( $profileHashCount - 1 ) )
-            {
-               if ( ( $sumPercentDone + $hashProgress ) >= 99 )
+               if ( $index == 0 ) # first bar
                {
-                  $hashProgress = ( 100 - $sumPercentDone );
+                  $direction = 'left';
                }
 
-               $progressHtmlString .= '--><div class="bar right" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
-               $progressHtmlString .= '</div>';
-            }
-            # n - 2 (first, last) following
-            else
-            {
-               $progressHtmlString .= '--><div class="bar middle" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
-               $progressHtmlString .= '</div><!--';
-            }
-            echo $progressHtmlString;
+               if ( $index == ( $profileHashCount - 1 ) ) # last bar
+               {
+                  if ( ( $sumPercentDone + $hashProgress ) >= 99 )
+                  {
+                     $hashProgress = ( 100 - $sumPercentDone );
+                  }
+                  $direction = 'right';
+               }
 
-            $sumProgressHtmlString .= $progressHtmlString;
+               $progressHtmlString .= '<div class="bar ' . $direction . '" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
+               $progressHtmlString .= '<div>' . rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress ) . '</div>';
+               $progressHtmlString .= '</div>';
+               echo $progressHtmlString;
+
+               $sumProgressHtmlString .= $progressHtmlString;
+            }
+            echo '<!---->';
             $sumPercentDone += $hashProgress;
             $doneEta += $tempEta;
+         }
+
+         if ( strlen ( $sumProgressHtmlString ) == 0 )
+         {
+            $sumProgressHtmlString .= '<div>0%</div>';
+            echo $sumProgressHtmlString;
          }
          $roadmap->setDoneEta ( $doneEta );
       }
@@ -178,9 +180,14 @@ class rHtmlApi
 
       echo '<div class="td h25">' . $textProgressMain . '&nbsp;</div>';
       echo '<div class="td h25">&nbsp;' . $versionReleaseString . '</div>';
-      echo '<div class="td h25">&nbsp;' . $actualDesiredFinishedDateDeviation . '</div>';
 
-      $versionReleaseString .= '&nbsp;' . $actualDesiredFinishedDateDeviation;
+      if ( strlen ( $actualDesiredFinishedDateDeviation ) > 0 )
+      {
+         $actualDesiredFinishedDateDeviationString = ',&nbsp;' . plugin_lang_get ( 'roadmap_page_delay' ) .
+            ':&nbsp;' . $actualDesiredFinishedDateDeviation;
+         echo '<div class="td h25">' . $actualDesiredFinishedDateDeviationString . '</div>';
+         $versionReleaseString .= $actualDesiredFinishedDateDeviationString;
+      }
 
       echo '<script type="text/javascript">';
       echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $roadmap->getProjectId () . '\',\'' . $sumProgressHtmlString . '\',\'' . $textProgressDir . '\',\'' . $versionReleaseString . '\');';
@@ -222,12 +229,22 @@ class rHtmlApi
 
    /**
     * print the initial html content for the directory
+    * @param $profileId
     */
-   public static function htmlPluginDirectory ()
+   public static function htmlPluginDirectory ( $profileId )
    {
       echo '<script type="text/javascript">';
       echo 'addRoadmapDirectoryBox (\'' . plugin_lang_get ( 'roadmap_page_directory' ) . '\');';
       echo '</script>';
+
+      if ( $profileId == -1 )
+      {
+         echo '<script type="text/javascript">';
+         echo 'addFooterToDirectory (\'directory\',\'' . plugin_lang_get ( 'roadmap_page_dateinfo' ) . '\');';
+         echo '</script>';
+      }
+
+      echo '<div class="spacer"></div>';
    }
 
    public static function htmlPluginContentTitle ()

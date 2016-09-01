@@ -277,7 +277,7 @@ class roadmap
       {
          $this->calcExpectedFinishedDate ();
          $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );
-         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat;
+         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat . '<sup>*</sup>';
       }
       else
       {
@@ -557,9 +557,10 @@ class roadmap
    {
       $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
-      return '&nbsp;' . $calculatedDoneEta[ 0 ] . $calculatedFullEta[ 1 ] .
-      '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] .
-      $calculatedFullEta[ 1 ] . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
+      return '&nbsp;' . round ( $this->progressPercent ) .
+      '%&nbsp;(' . $calculatedDoneEta[ 0 ] . $calculatedFullEta[ 1 ] .
+      '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
+      '&nbsp;' . $calculatedFullEta[ 0 ] . $calculatedFullEta[ 1 ] . ')';
    }
 
    /**
@@ -582,8 +583,11 @@ class roadmap
    private function generatePercentTextProgressMain ()
    {
       $doneBugCount = count ( rProApi::getDoneIssueIdsForAllProfiles ( $this->bugIds, $this->groupId ) );
-      return '&nbsp;' . $doneBugCount . '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
-      '&nbsp;' . count ( $this->bugIds ) . '&nbsp;' . lang_get ( 'issues' ) . '&nbsp;(' . round ( $this->progressPercent ) . '%)';
+      return '&nbsp;' . round ( $this->progressPercent ) .
+      '%&nbsp;(' . $doneBugCount .
+      '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
+      '&nbsp;' . count ( $this->bugIds ) .
+      '&nbsp;' . lang_get ( 'issues' ) . ')';
    }
 
    /**

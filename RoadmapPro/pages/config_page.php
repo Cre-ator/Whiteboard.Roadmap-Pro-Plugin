@@ -37,11 +37,15 @@ echo '<tr>';
 rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_show_footer' );
 rHtmlApi::htmlPluginConfigRadio ( 'show_footer', 2 );
 echo '</tr>';
+echo '</table>';
+
+echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
 # eta management
 $thresholdCount = 0;
 if ( config_get ( 'enable_eta' ) )
 {
+   rHtmlApi::htmlPluginConfigOpenTable ();
    echo '<tr>';
    rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_eta_management', 3 );
    echo '</tr>';
@@ -75,6 +79,8 @@ if ( config_get ( 'enable_eta' ) )
       echo '</tr>';
    }
    echo '</table>';
+
+   echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
    # thresholds
    rHtmlApi::htmlPluginConfigOpenTable ( 'thresholds' );
@@ -143,6 +149,8 @@ if ( config_get ( 'enable_eta' ) )
    echo '</tbody>';
    echo '</table>';
 }
+
+echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
 # show profiles
 rHtmlApi::htmlPluginConfigOpenTable ( 'profiles' );
@@ -229,10 +237,11 @@ echo '</table>';
 
 if ( $profileCount > 1 )
 {
+   echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 # profile groups
    rHtmlApi::htmlPluginConfigOpenTable ( 'profilegroups' );
    echo '<tr>';
-   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 2 );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_prfgr_management', 3 );
    echo '</tr>';
    echo '<tr>';
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_profile_name' );

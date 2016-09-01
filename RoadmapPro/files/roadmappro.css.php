@@ -225,6 +225,7 @@ div.tddir {
 div.tdfoot {
    display: table-cell;
    clear: both;
+   font-size: smaller;
 }
 
 div.spacer {

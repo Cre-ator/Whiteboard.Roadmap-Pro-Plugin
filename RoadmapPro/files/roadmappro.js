@@ -45,9 +45,9 @@ function addProfileRow(statusValues, statusStrings) {
     /** color */
     td3.innerHTML = '<label><input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile-color[]" value=""/></label>';
     /** priority */
-    td4.innerHTML = '<input type="text" name="profile-prio[]" size="15" maxlength="3" value="">';
+    td4.innerHTML = '<input type="number" name="profile-prio[]" size="15" maxlength="3" value="">';
     /** effort */
-    td5.innerHTML = '<input type="text" name="profile-effort[]" size="15" maxlength="3" value="">';
+    td5.innerHTML = '<input type="number" name="profile-effort[]" size="15" maxlength="3" value="">';
     /** action */
     td6.innerHTML = '';
 
@@ -114,14 +114,14 @@ function addThresholdRow() {
     var td5 = document.createElement("td");
 
     /** from */
-    td1.innerHTML = '<input type="text" name="threshold-from[]" size="15" maxlength="128" value="">';
+    td1.innerHTML = '<input type="number" step="0.1" name="threshold-from[]" size="15" maxlength="128" value="">';
     /** to */
-    td2.innerHTML = '<input type="text" name="threshold-to[]" size="15" maxlength="128" value="">';
+    td2.innerHTML = '<input type="number" step="0.1" name="threshold-to[]" size="15" maxlength="128" value="">';
     /** unit */
     td3.innerHTML = '<input type="text" name="new-threshold-unit-' + newThresholdCounter + '" size="15" maxlength="128" value="">';
     newThresholdCounter++;
     /** factor */
-    td4.innerHTML = '<input type="text" name="threshold-factor[]" size="15" maxlength="128" value="">';
+    td4.innerHTML = '<input type="number" step="0.1" name="threshold-factor[]" size="15" maxlength="128" value="">';
 
     tr.appendChild(td1);
     tr.appendChild(td2);
@@ -235,6 +235,12 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     trdiv.appendChild(tddiv);
 }
 
+/**
+ * adds the footer row at the bottom of the directory
+ *
+ * @param tableId
+ * @param langString
+ */
 function addFooterToDirectory(tableId, langString) {
     var table = document.getElementById(tableId).parentNode;
 

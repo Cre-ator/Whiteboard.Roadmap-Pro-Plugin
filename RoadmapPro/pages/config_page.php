@@ -41,6 +41,38 @@ echo '</table>';
 
 echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
+# time calculation settings
+if ( config_get ( 'enable_eta' ) )
+{
+   rHtmlApi::htmlPluginConfigOpenTable ();
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_time_calc_title', 3 );
+   echo '</tr>';
+
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_time_calc_day' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_time_calc_worktime' );
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
+   echo '</tr>';
+
+   $weekDayValue = 10;
+   $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+   $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+   for ( $index = 0; $index < 7; $index++ )
+   {
+      echo '<tr>';
+      echo '<td>' . MantisEnum::getLabel ( plugin_lang_get ( 'config_page_time_calc_weekday_enum' ), $weekDayValue ) . '</td>';
+      echo '<td><input type="number" min="0" max="24" step="0.1" name="weekDayValue[]" value="' . $weekDayConfigArray[ $index ] . '" /></td>';
+      echo '<td>' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
+      echo '</tr>';
+      $weekDayValue += 10;
+   }
+
+   echo '</table>';
+}
+
+echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
+
 # eta management
 $thresholdCount = 0;
 if ( config_get ( 'enable_eta' ) )
@@ -69,11 +101,11 @@ if ( config_get ( 'enable_eta' ) )
       }
       if ( $eta->getEtaConfig () == ETA_NONE )
       {
-         echo '<td>' . plugin_lang_get ( 'config_page_eta_none_value' ) . '</td>';
+         echo '<td><input type="hidden" name="eta_value[]" value="0"/>' . plugin_lang_get ( 'config_page_eta_none_value' ) . '</td>';
       }
       else
       {
-         echo '<td><input type="text" name="eta_value[]" value="' . $eta->getEtaUser () . '"/></td>';
+         echo '<td><input type="number" step="0.1" name="eta_value[]" value="' . $eta->getEtaUser () . '"/></td>';
       }
       echo '<td colspan="4">' . plugin_lang_get ( 'config_page_eta_unit' ) . '</td>';
       echo '</tr>';
@@ -111,16 +143,16 @@ if ( config_get ( 'enable_eta' ) )
          # threshold from
          echo '<td>';
          echo '<input type="hidden" name="threshold-id[]" value="' . $thresholdId . '" />';
-         echo '<input type="text" name="threshold-from[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFrom ) . '" />';
+         echo '<input type="number" step="0.1" name="threshold-from[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFrom ) . '" />';
          echo '</td>';
          echo '<td>';
-         echo '<input type="text" name="threshold-to[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdTo ) . '" />';
+         echo '<input type="number" step="0.1" name="threshold-to[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdTo ) . '" />';
          echo '</td>';
          echo '<td>';
          echo '<input type="text" name="threshold-unit[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdUnit ) . '" />';
          echo '</td>';
          echo '<td>';
-         echo '<input type="text" name="threshold-factor[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFactor ) . '" />';
+         echo '<input type="number" step="0.1" name="threshold-factor[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFactor ) . '" />';
          echo '</td>';
 
          echo '<td>';
@@ -197,9 +229,9 @@ if ( $profileCount > 0 )
       echo '<input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile-color[]" value="#' . $dbProfileColor . '" />';
       echo '</label></td>';
       # profile priority
-      echo '<td><input type="text" name="profile-prio[]" size="15" maxlength="3" value="' . $dbProfilePriority . '" /></td>';
+      echo '<td><input type="number" name="profile-prio[]" size="15" maxlength="3" value="' . $dbProfilePriority . '" /></td>';
       # profile effort
-      echo '<td><input type="text" name="profile-effort[]" size="15" maxlength="3" value="' . $dbProfileEffort . '" /></td>';
+      echo '<td><input type="number" name="profile-effort[]" size="15" maxlength="3" value="' . $dbProfileEffort . '" /></td>';
       # delete profile button
       echo '<td>';
       echo '<a class="button" href="' . plugin_page ( 'config_delete' ) .

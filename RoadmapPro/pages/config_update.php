@@ -19,6 +19,7 @@ if ( $optionChange == true )
    if ( config_get ( 'enable_eta' ) )
    {
       rProApi::configProcessEta ();
+      rProApi::configProcessTimeCalc ();
    }
    # change profile values
    rProApi::configProcessProfiles ();

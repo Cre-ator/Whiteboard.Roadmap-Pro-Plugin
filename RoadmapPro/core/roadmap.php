@@ -607,24 +607,103 @@ class roadmap
    private function calcExpectedFinishedDate ()
    {
       # time difference in seconds
-      # 1/5 * 7 * 1.3 = 1.82
-      $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / WORKHOURSPERDAY ) ) * 1.82;
+      $overallLossFactor = ( 1 / rProApi::getWeekWorkDayAmount () ) * ( DAYSPERWEEK ) * LOSSFACTOR;
+      $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / rProApi::getAverageHoursPerDay () ) ) * $overallLossFactor;
+
+      $finishedDayIsValidPassed = false;
+      $counter = 0;
       # expected time => now + difference
       $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
-      # day of finished date
+      var_dump ( date ( 'D', $dateFinishedExpectedInSec ) );
+//      while ( !$finishedDayIsValidPassed )
+//      {
       $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );
-      #
-      switch ( $finishedExpectedDay )
+//         if ( $finishedExpectedDay == 'Mon' )
+//         {
+//            if ( rProApi::checkDayIsValid ( MON ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+//         elseif ( $finishedExpectedDay == 'Tue' )
+//         {
+//            if ( rProApi::checkDayIsValid ( TUE ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+//         elseif ( $finishedExpectedDay == 'Wed' )
+//         {
+//            if ( rProApi::checkDayIsValid ( WED ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+//         elseif ( $finishedExpectedDay == 'Thu' )
+//         {
+//            if ( rProApi::checkDayIsValid ( THU ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+//         elseif ( $finishedExpectedDay == 'Fri' )
+//         {
+//            if ( rProApi::checkDayIsValid ( FRI ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+      if ( $finishedExpectedDay == 'Sat' )
       {
-         # +2 days till monday
-         case 'Sat':
-            $dateFinishedExpectedInSec += ( DAYINSEC * 2 );
-            break;
-         # +1 days till monday
-         case 'Sun':
-            $dateFinishedExpectedInSec += DAYINSEC;
-            break;
+         var_dump ( rProApi::checkDayIsValid ( SAT ) );
+         if ( rProApi::checkDayIsValid ( SAT ) )
+         {
+//               $finishedDayIsValidPassed = true;
+         }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//               $finishedDayIsValidPassed = true;
+//            }
       }
+//         elseif ( $finishedExpectedDay == 'Sun' )
+//         {
+//            if ( rProApi::checkDayIsValid ( SUN ) )
+//            {
+//               $finishedDayIsValidPassed = true;
+//            }
+//            else
+//            {
+//               $dateFinishedExpectedInSec += SECONDS_PER_DAY;
+//            }
+//         }
+//         $counter++;
+//      }
+
+//      var_dump ( $finishedExpectedDay );
+//      var_dump ( $dateFinishedExpectedInSec );
+//      var_dump ( $counter );
+      var_dump ( date ( 'D', $dateFinishedExpectedInSec ) );
 
       $this->expectedFinishedDate = $dateFinishedExpectedInSec;
    }

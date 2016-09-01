@@ -164,7 +164,7 @@ class rProApi
    /**
     * returns version date order string
     *
-    * @param $version
+    * @param $versionReleaseDate
     * @return string
     */
    public static function getReleasedDateString ( $versionReleaseDate )
@@ -475,6 +475,16 @@ class rProApi
    }
 
    /**
+    * change time calc values
+    */
+   public static function configProcessTimeCalc ()
+   {
+      $weekDayValueArray = $_POST[ 'weekDayValue' ];
+      $weekDayConfigString = implode ( ';', $weekDayValueArray );
+      plugin_config_set ( 'weekDayConfig', $weekDayConfigString );
+   }
+
+   /**
     * change eta values when
     */
    public static function configProcessEta ()
@@ -729,5 +739,70 @@ class rProApi
       }
 
       return $doneIssuesForAllProfiles;
+   }
+
+   /**
+    * return work time per week in hour
+    *
+    * @return int
+    */
+   public static function getWeekWorkTime ()
+   {
+      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      $weekWorkTime = 0;
+      foreach ( $weekDayConfigArray as $weekDayWorkTime )
+      {
+         $weekWorkTime += $weekDayWorkTime;
+      }
+
+      return $weekWorkTime;
+   }
+
+   /**
+    * return amount of days per week where someone is working
+    *
+    * @return int
+    */
+   public static function getWeekWorkDayAmount ()
+   {
+      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      $weekWorkDayAmount = 0;
+      foreach ( $weekDayConfigArray as $weekDayWorkTime )
+      {
+         if ( $weekDayWorkTime > 0 )
+         {
+            $weekWorkDayAmount++;
+         }
+      }
+
+      return $weekWorkDayAmount;
+   }
+
+   /**
+    * return average work time per day in hour
+    *
+    * @return float
+    */
+   public static function getAverageHoursPerDay ()
+   {
+      return round ( self::getWeekWorkTime () / self::getWeekWorkDayAmount () );
+   }
+
+   /**
+    * returns true, if given day is valid (work time > 0)
+    *
+    * @param $day
+    * @return bool
+    */
+   public static function checkDayIsValid ( $day )
+   {
+      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      return $weekDayConfigArray[ $day ] > 0;
    }
 }

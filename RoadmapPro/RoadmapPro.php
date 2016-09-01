@@ -45,6 +45,7 @@ class RoadmapProPlugin extends MantisPlugin
       (
          'show_menu' => ON,
          'show_footer' => ON,
+         'weekDayConfig' => '0;0;0;0;0;0;0'
       );
    }
 

@@ -15,6 +15,11 @@ $s_plugin_RoadmapPro_config_page_eta_threshold_from = 'von (h)';
 $s_plugin_RoadmapPro_config_page_eta_threshold_to = 'bis (h)';
 $s_plugin_RoadmapPro_config_page_eta_threshold_factor = 'Einheit in h';
 
+$s_plugin_RoadmapPro_config_page_time_calc_title = 'Zeitmanagement';
+$s_plugin_RoadmapPro_config_page_time_calc_day = 'Wochentag';
+$s_plugin_RoadmapPro_config_page_time_calc_worktime = 'Abeitszeit';
+$s_plugin_RoadmapPro_config_page_time_calc_weekday_enum = '10:Montag,20:Dienstag,30:Mittwoch,40:Donnerstag,50:Freitag,60:Samstag,70:Sonntag';
+
 $s_plugin_RoadmapPro_config_page_profile_name = 'Name';
 $s_plugin_RoadmapPro_config_page_profile_status = 'Status';
 $s_plugin_RoadmapPro_config_page_profile_color = 'Farbe';

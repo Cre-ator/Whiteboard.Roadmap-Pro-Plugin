@@ -757,7 +757,14 @@ class rProApi
          $weekWorkTime += $weekDayWorkTime;
       }
 
-      return $weekWorkTime;
+      if ( $weekWorkTime > 0 )
+      {
+         return $weekWorkTime;
+      }
+      else
+      {
+         return WEEKWORKTIMEDEFAULT;
+      }
    }
 
    /**
@@ -779,7 +786,14 @@ class rProApi
          }
       }
 
-      return $weekWorkDayAmount;
+      if ( $weekWorkDayAmount > 0 )
+      {
+         return $weekWorkDayAmount;
+      }
+      else
+      {
+         return WORKDAYSPERWEEKDEFAULT;
+      }
    }
 
    /**

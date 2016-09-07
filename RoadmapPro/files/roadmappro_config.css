@@ -1,28 +1,21 @@
-table[class="config-table"] > tbody > tr:nth-child(odd) {
+table[class="width75"] > tbody > tr:nth-child(odd) {
     background-color: #e8e8e8;
 }
 
-table[class="config-table"] > tbody > tr:nth-child(even) {
+table[class="width75"] > tbody > tr:nth-child(even) {
     background-color: #d8d8d8;
 }
 
-table[class="top"] > tbody > tr:nth-child(odd) {
+table[class="width75 top"] > tbody > tr:nth-child(odd) {
     background-color: #e8e8e8;
 }
 
-table[class="top"] > tbody > tr:nth-child(even) {
+table[class="width75 top"] > tbody > tr:nth-child(even) {
     background-color: #d8d8d8;
 }
 
-table[class="config-table"] > tbody > tr[class="foot-row"] {
+table[class="width75"] > tbody > tr[class="foot-row"] {
     background-color: #ffffff;
-}
-
-table[class="config-table"] {
-    width: 74%;
-    margin-left: 13%;
-    margin-right: 13%;
-    border: solid 1px #000000;
 }
 
 a[class="button"] {
@@ -30,10 +23,8 @@ a[class="button"] {
 }
 
 table.top {
-    width: 74%;
-    margin-left: 13%;
-    margin-right: 13%;
     border-top: solid 1px #000000;
     border-left: solid 1px #000000;
     border-right: solid 1px #000000;
+    border-bottom: hidden;
 }

@@ -55,14 +55,14 @@ class rHtmlApi
     */
    public static function htmlPluginConfigOpenTable ( $id = null )
    {
-      $htmlString = '<table align="center" cellspacing="1" class="';
+      $htmlString = '<table align="center" cellspacing="1" class="width75';
       if ( $id != null )
       {
-         $htmlString .= 'top" id="' . $id . '">';
+         $htmlString .= ' top" id="' . $id . '">';
       }
       else
       {
-         $htmlString .= 'config-table">';
+         $htmlString .= '">';
       }
       echo $htmlString;
    }

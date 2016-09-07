@@ -285,7 +285,7 @@ class roadmap
       {
          $this->calcExpectedFinishedDate ();
          $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );
-         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat . '<sup>*</sup>';
+         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat . '*';
       }
       else
       {

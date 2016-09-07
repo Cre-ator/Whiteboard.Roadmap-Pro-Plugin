@@ -236,25 +236,6 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
 }
 
 /**
- * adds the footer row at the bottom of the directory
- *
- * @param tableId
- * @param langString
- */
-function addFooterToDirectory(tableId, langString) {
-    var table = document.getElementById(tableId).parentNode;
-
-    var trdiv = document.createElement("div");
-    trdiv.className = 'tr';
-    table.appendChild(trdiv);
-
-    var tddiv = document.createElement("div");
-    tddiv.className = 'tdfoot';
-    tddiv.innerHTML = '<sup>*</sup>' + langString;
-    trdiv.appendChild(tddiv);
-}
-
-/**
  * displays a back-to-top-button in the lower right corner of the page
  */
 function backToTop() {

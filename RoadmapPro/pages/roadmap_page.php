@@ -61,7 +61,7 @@ function processTable ( $profileId )
    $versions = $roadmapManager->getVersions ();
 
    # initialize directory
-   rHtmlApi::htmlPluginDirectory ($profileId);
+   rHtmlApi::htmlPluginDirectory ();
 
    # print content title
    rHtmlApi::htmlPluginContentTitle ();
@@ -130,5 +130,10 @@ function processTable ( $profileId )
             rHtmlApi::htmlPluginSpacer ();
          }
       }
+   }
+
+   if ( $profileId == -1 )
+   {
+      rHtmlApi::htmlInfoFooter ();
    }
 }

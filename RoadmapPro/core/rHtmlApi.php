@@ -164,7 +164,7 @@ class rHtmlApi
 
          if ( strlen ( $sumProgressHtmlString ) == 0 )
          {
-            $sumProgressHtmlString .= '<div>0%</div>';
+            $sumProgressHtmlString .= '<div style="text-align: left">0%</div>';
             echo $sumProgressHtmlString;
          }
          $roadmap->setDoneEta ( $doneEta );
@@ -242,20 +242,12 @@ class rHtmlApi
 
    /**
     * print the initial html content for the directory
-    * @param $profileId
     */
-   public static function htmlPluginDirectory ( $profileId )
+   public static function htmlPluginDirectory ()
    {
       echo '<script type="text/javascript">';
       echo 'addRoadmapDirectoryBox (\'' . plugin_lang_get ( 'roadmap_page_directory' ) . '\');';
       echo '</script>';
-
-      if ( $profileId == -1 )
-      {
-         echo '<script type="text/javascript">';
-         echo 'addFooterToDirectory (\'directory\',\'' . plugin_lang_get ( 'roadmap_page_dateinfo' ) . '\');';
-         echo '</script>';
-      }
 
       echo '<div class="spacer"></div>';
    }
@@ -652,5 +644,10 @@ class rHtmlApi
       echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
       echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
       echo '<script type="text/javascript">backToTop();</script>';
+   }
+
+   public static function htmlInfoFooter ()
+   {
+      echo '<div class="tr"><div class="td" style="font-size: smaller">*' . plugin_lang_get ( 'roadmap_page_dateinfo' ) . '</div></div>';
    }
 }

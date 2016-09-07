@@ -223,12 +223,14 @@ div.tddir {
    vertical-align: top;
    font-size: smaller;
    padding-left: 10px;
+   text-align: left;
 }
 
 div.tdfoot {
    display: table-cell;
    clear: both;
    font-size: smaller;
+   text-align: left;
 }
 
 div.spacer {

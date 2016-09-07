@@ -137,8 +137,21 @@ class rHtmlApi
                   $direction = 'right';
                }
 
+               $nextHashProgress = 0;
+               if ( $index < ( $profileHashCount - 1 ) )
+               {
+                  $nextProfileHash = explode ( ';', $profileHashMap[ $index + 1 ] );
+                  $nextHashProgress = $nextProfileHash[ 1 ];
+               }
+
+               $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
+               $barWidth = ( ( ( $hashProgress / 100 ) * BARINNERWIDTH ) - 2 );
+               $textWidth = strlen ( $roadmapProgress ) * MONOSPACECHARWIDTH;
                $progressHtmlString .= '<div class="bar ' . $direction . '" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
-               $progressHtmlString .= '<div>' . rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress ) . '</div>';
+               if ( ( $textWidth <= $barWidth ) || ( ( $textWidth > $barWidth ) && ( $nextHashProgress == 0 ) ) )
+               {
+                  $progressHtmlString .= '<div>' . $roadmapProgress . '</div>';
+               }
                $progressHtmlString .= '</div>';
                echo $progressHtmlString;
 

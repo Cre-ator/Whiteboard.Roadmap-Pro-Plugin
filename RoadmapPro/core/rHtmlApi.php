@@ -212,7 +212,7 @@ class rHtmlApi
       }
       else
       {
-         echo sprintf ( lang_get ( 'resolved_progress' ), $doneBugAmount, $overallBugAmount, $progressPercent );
+         echo sprintf ( lang_get ( 'resolved_progress' ), $doneBugAmount, $overallBugAmount, round ( $progressPercent ) );
       }
       echo '</div></div>' . PHP_EOL;
    }
@@ -469,20 +469,21 @@ class rHtmlApi
          $doneEta = $roadmap->getDoneEta ();
          $fullEta = $roadmap->getFullEta ();
          $versionId = $roadmap->getVersionId ();
-         $progressPercent = $roadmap->getSingleProgressPercent ();
+         $profileEffortFactor = rProApi::getProfileEffortFactor ( $roadmap );
+         $progressPercent = round ( $roadmap->getSingleProgressPercent () );
          if ( $useEta && config_get ( 'enable_eta' ) )
          {
             $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
-            $progressString = $calculatedDoneEta[ 0 ] . '&nbsp;' . $calculatedDoneEta[ 1 ] .
-               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . '&nbsp;' . $calculatedFullEta[ 1 ];
+            $progressString = ( $calculatedDoneEta[ 0 ] * $profileEffortFactor ) . $calculatedDoneEta[ 1 ] .
+               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $calculatedFullEta[ 0 ] . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          else
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
-            $progressString = $progressPercent . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+            $progressString = round ( $progressPercent * $profileEffortFactor ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          echo '</div>';

@@ -104,4 +104,30 @@ class rProfileManager
 
       return $sumProfileEffort;
    }
+
+   /**
+    * get profile ids for a specific group
+    *
+    * @param $groupId
+    * @return array
+    */
+   public static function getGroupSpecProfileIds ( $groupId )
+   {
+      if ( $groupId == null )
+      {
+         $profileIds = rProfileManager::getRProfileIds ();
+      }
+      else
+      {
+         $profileIds = array ();
+         $group = new rGroup( $groupId );
+         $groupProfileIds = explode ( ';', $group->getGroupProfiles () );
+         foreach ( $groupProfileIds as $groupProfileId )
+         {
+            array_push ( $profileIds, $groupProfileId );
+         }
+      }
+
+      return $profileIds;
+   }
 }

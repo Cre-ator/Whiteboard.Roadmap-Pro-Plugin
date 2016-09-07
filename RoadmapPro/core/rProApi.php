@@ -392,28 +392,27 @@ class rProApi
       $mysqli = self::initializeDbConnection ();
 
       $query = /** @lang sql */
-         "DROP TABLE mantis_plugin_RoadmapPro_profile_table";
+         'DROP TABLE mantis_plugin_RoadmapPro_profile_table';
 
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
-         "DROP TABLE mantis_plugin_RoadmapPro_profilegroup_table";
+         'DROP TABLE mantis_plugin_RoadmapPro_profilegroup_table';
 
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
-         "DROP TABLE mantis_plugin_RoadmapPro_eta_table";
+         'DROP TABLE mantis_plugin_RoadmapPro_eta_table';
 
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
-         "DROP TABLE mantis_plugin_RoadmapPro_etathreshold_table";
+         'DROP TABLE mantis_plugin_RoadmapPro_etathreshold_table';
 
       $mysqli->query ( $query );
 
       $query = /** @lang sql */
-         "DELETE FROM mantis_config_table
-            WHERE config_id LIKE 'plugin_RoadmapPro%'";
+         'DELETE FROM mantis_config_table WHERE config_id LIKE \'plugin_RoadmapPro%\'';
 
       $mysqli->query ( $query );
 
@@ -448,6 +447,26 @@ class rProApi
 
          $mysqli->close ();
       }
+   }
+
+   /**
+    * get timezone from a given user
+    *
+    * @param $userId
+    * @return mixed
+    */
+   public static function getUserPrefTimeZone ( $userId )
+   {
+      $mysqli = self::initializeDbConnection ();
+
+      $query = /** @lang sql */
+         'SELECT timezone FROM mantis_user_pref_table WHERE user_id = ' . $userId;
+
+      $result = $mysqli->query ( $query );
+      $dbResultRow = mysqli_fetch_row ( $result );
+      $mysqli->close ();
+
+      return $dbResultRow[ 0 ];
    }
 
    /**
@@ -818,5 +837,34 @@ class rProApi
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       return $weekDayConfigArray[ $day ] > 0;
+   }
+
+   /**
+    * calculate and return the profile effort factor
+    *
+    * @param roadmap $roadmap
+    * @return float|int
+    */
+   public static function getProfileEffortFactor ( roadmap $roadmap )
+   {
+      $profileId = $roadmap->getProfileId ();
+      $groupId = $roadmap->getGroupId ();
+
+      $profile = new rProfile( $profileId );
+      $profileEffort = $profile->getProfileEffort ();
+      $roadmapProfileIds = rProfileManager::getGroupSpecProfileIds ( $groupId );
+      $profileCount = count ( $roadmapProfileIds );
+      $sumProfileEffort = rProfileManager::getSumRProfileEffort ( $groupId );
+
+      if ( $sumProfileEffort == 0 )
+      {
+         $profileEffortFactor = ( 1 / $profileCount );
+      }
+      else
+      {
+         $profileEffortFactor = round ( ( $profileEffort / $sumProfileEffort ), 2 );
+      }
+
+      return $profileEffortFactor;
    }
 }

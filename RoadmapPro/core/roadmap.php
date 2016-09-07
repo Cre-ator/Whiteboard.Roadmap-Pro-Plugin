@@ -100,6 +100,14 @@ class roadmap
    }
 
    /**
+    * @return int
+    */
+   public function getGroupId ()
+   {
+      return $this->groupId;
+   }
+
+   /**
     * @return bool
     */
    public function getEtaIsSet ()
@@ -463,7 +471,7 @@ class roadmap
          $doneBugAmount = count ( $doneBugIds );
          $allBugCount = count ( $this->bugIds );
          $progress = ( $doneBugAmount / $allBugCount );
-         $this->progressPercent = round ( $progress * 100 );
+         $this->progressPercent = ( $progress * 100 );
       }
    }
 
@@ -473,25 +481,10 @@ class roadmap
    private function calcScaledData ()
    {
       # variables
-      if ( $this->groupId == null )
-      {
-         $roadmapProfileIds = rProfileManager::getRProfileIds ();
-      }
-      else
-      {
-         $roadmapProfileIds = array ();
-         $group = new rGroup( $this->groupId );
-         $groupProfileIds = explode ( ';', $group->getGroupProfiles () );
-         foreach ( $groupProfileIds as $groupProfileId )
-         {
-            array_push ( $roadmapProfileIds, $groupProfileId );
-         }
-      }
+      $roadmapProfileIds = rProfileManager::getGroupSpecProfileIds ( $this->groupId );
+      $profileCount = count ( $roadmapProfileIds );
       $useEta = $this->getEtaIsSet ();
       $allBugCount = count ( $this->bugIds );
-      $profileCount = count ( $roadmapProfileIds );
-      $sumProfileEffort = rProfileManager::getSumRProfileEffort ( $this->groupId );
-
       $wholeProgress = 0;
       # iterate through profiles
       for ( $index = 0; $index < $profileCount; $index++ )
@@ -501,16 +494,7 @@ class roadmap
          $tProfileId = $roadmapProfile->getProfileId ();
          $this->setProfileId ( $tProfileId );
          # effort factor
-         $tProfileEffort = $roadmapProfile->getProfileEffort ();
-         # uniform distribution when no effort is set
-         if ( $sumProfileEffort == 0 )
-         {
-            $tProfileEffortFactor = ( 1 / $profileCount );
-         }
-         else
-         {
-            $tProfileEffortFactor = round ( ( $tProfileEffort / $sumProfileEffort ), 2 );
-         }
+         $profileEffortFactor = rProApi::getProfileEffortFactor ( $this );
          # bug data
          $doneBugIds = $this->getDoneBugIds ();
          $tDoneBugAmount = count ( $doneBugIds );
@@ -528,14 +512,14 @@ class roadmap
             {
                $doneEtaPercent = ( ( $doneEta / $fullEta ) * 100 );
             }
-            $doneEtaPercent = $doneEtaPercent * $profileCount * $tProfileEffortFactor;
+            $doneEtaPercent = $doneEtaPercent * $profileCount * $profileEffortFactor;
             $wholeProgress += $doneEtaPercent;
             $profileHash = $tProfileId . ';' . $doneEtaPercent;
          }
          else
          {
             $tVersionProgress = ( $tDoneBugAmount / $allBugCount );
-            $progessDonePercent = ( $tVersionProgress * 100 * $tProfileEffortFactor );
+            $progessDonePercent = ( $tVersionProgress * 100 * $profileEffortFactor );
             $wholeProgress += $progessDonePercent;
             $profileHash = $tProfileId . ';' . $progessDonePercent;
          }
@@ -610,6 +594,8 @@ class roadmap
       $overallLossFactor = ( 1 / rProApi::getWeekWorkDayAmount () ) * ( DAYSPERWEEK ) * LOSSFACTOR;
       $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / rProApi::getAverageHoursPerDay () ) ) * $overallLossFactor;
 
+      # set user specifiv timezone
+      date_default_timezone_set ( rProApi::getUserPrefTimeZone ( auth_get_current_user_id () ) );
       # expected time => now + difference
       $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
       $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );

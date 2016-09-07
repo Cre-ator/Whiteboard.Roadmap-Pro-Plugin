@@ -55,7 +55,6 @@ hr.version-separator {
    display: inline-block;
    font-weight: normal;
    font-size: 13px;
-   font-family: monospace;
    height: 100%;
    color: #111;
 }
@@ -63,8 +62,7 @@ hr.version-separator {
 .progress9002 .bar {
    display: inline-block;
    font-weight: normal;
-   font-size: 11px;
-   font-family: monospace;
+   font-size: 10px;
    height: 100%;
    color: #111;
 }

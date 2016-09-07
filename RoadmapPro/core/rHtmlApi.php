@@ -146,7 +146,7 @@ class rHtmlApi
 
                $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
                $barWidth = ( ( ( $hashProgress / 100 ) * BARINNERWIDTH ) - 2 );
-               $textWidth = strlen ( $roadmapProgress ) * MONOSPACECHARWIDTH;
+               $textWidth = strlen ( $roadmapProgress ) * CHARWIDTH;
                $progressHtmlString .= '<div class="bar ' . $direction . '" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
                if ( ( $textWidth <= $barWidth ) || ( ( $textWidth > $barWidth ) && ( $nextHashProgress == 0 ) ) )
                {
@@ -474,10 +474,10 @@ class rHtmlApi
          $doneEta = $roadmap->getDoneEta ();
          $fullEta = $roadmap->getFullEta ();
          $versionId = $roadmap->getVersionId ();
-         $profileEffortFactor = rProApi::getProfileEffortFactor ( $roadmap );
          $progressPercent = round ( $roadmap->getSingleProgressPercent () );
          if ( $useEta && config_get ( 'enable_eta' ) )
          {
+            $profileEffortFactor = rProApi::getProfileEffortFactor ( $roadmap );
             $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = ( $calculatedDoneEta[ 0 ] * $profileEffortFactor ) . $calculatedDoneEta[ 1 ] .
@@ -488,7 +488,7 @@ class rHtmlApi
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
-            $progressString = round ( $progressPercent * $profileEffortFactor ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
+            $progressString = round ( $progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          echo '</div>';

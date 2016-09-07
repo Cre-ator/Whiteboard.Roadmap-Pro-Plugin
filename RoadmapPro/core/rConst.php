@@ -20,5 +20,5 @@ define ( 'FRI', 4 );
 define ( 'SAT', 5 );
 define ( 'SUN', 6 );
 
-define ( 'MONOSPACECHARWIDTH', 8 );
+define ( 'CHARWIDTH', 13 );
 define ( 'BARINNERWIDTH', 398 );

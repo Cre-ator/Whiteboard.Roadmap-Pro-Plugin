@@ -1,7 +1,7 @@
 <?php
-require_once ( COREPATH . 'rGroup.php' );
-require_once ( COREPATH . 'rProfile.php' );
-require_once ( COREPATH . 'rThreshold.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rGroup.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rProfile.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rThreshold.php' );
 
 auth_reauthenticate ();
 

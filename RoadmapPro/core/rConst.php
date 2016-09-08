@@ -1,7 +1,4 @@
 <?php
-define ( 'PLUGINPATH', config_get_global ( 'plugin_path' ) . plugin_get_current () . DIRECTORY_SEPARATOR );
-define ( 'COREPATH', PLUGINPATH . 'core' . DIRECTORY_SEPARATOR );
-
 define ( 'HOURSPERDAY', 24 );
 define ( 'WORKHOURSPERDAYDEFAULT', 8 );
 define ( 'WEEKWORKTIMEDEFAULT', 40 );

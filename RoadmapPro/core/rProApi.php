@@ -88,7 +88,7 @@ class rProApi
       $etaString = array ();
       $thresholdIds = rThresholdManager::getRThresholdIds ();
       $thresholdCount = count ( $thresholdIds );
-      if ( $thresholdCount < 1 )
+      if ( $thresholdCount == 0 )
       {
          $etaString = $backupString;
       }
@@ -106,7 +106,7 @@ class rProApi
                $thresholdUnit = $threshold->getThresholdUnit ();
                $thresholdFactor = $threshold->getThresholdFactor ();
 
-               $newEta = round ( ( $eta / $thresholdFactor ), 2 );
+               $newEta = ( $eta / $thresholdFactor );
                $etaString[ 0 ] = $newEta;
                $etaString[ 1 ] = $thresholdUnit;
             }

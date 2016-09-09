@@ -11,7 +11,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.2.0';
+      $this->version = '1.2.1';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -77,7 +77,7 @@ class RoadmapProPlugin extends MantisPlugin
 
       $etaThresholdTable = array
       (
-         'CreateTableSQL', array ( plugin_table ( 'etathreshold' ), "
+         'CreateTableSQL', array ( plugin_table ( 'etathreshold', 'whiteboard' ), "
             id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             eta_thr_from       C(250)  DEFAULT '',
             eta_thr_to         C(250)  DEFAULT '',
@@ -95,6 +95,14 @@ class RoadmapProPlugin extends MantisPlugin
             " )
       );
 
+      $workDayTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'workday', 'whiteboard' ), "
+            id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            workday_values     C(250)  DEFAULT ''
+            " )
+      );
+
       $whiteboardMenuTable = array
       (
          'CreateTableSQL', array ( plugin_table ( 'menu', 'whiteboard' ), "
@@ -108,9 +116,19 @@ class RoadmapProPlugin extends MantisPlugin
 
       array_push ( $tableArray, $profileTable );
       array_push ( $tableArray, $profileGroupTable );
-      array_push ( $tableArray, $etaThresholdTable );
-      # add eta table if it does not exist
+
       $boolArray = rProApi::checkWhiteboardTablesExist ();
+      # add workday table if it does not exist
+      if ( !$boolArray[ 3 ] )
+      {
+         array_push ( $tableArray, $workDayTable );
+      }
+      # add eta threshold table if it does not exist
+      if ( !$boolArray[ 2 ] )
+      {
+         array_push ( $tableArray, $etaThresholdTable );
+      }
+      # add eta table if it does not exist
       if ( !$boolArray[ 1 ] )
       {
          array_push ( $tableArray, $etaTable );

@@ -184,7 +184,7 @@ class rThreshold
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT * FROM mantis_plugin_RoadmapPro_etathreshold_table WHERE id=' . $this->thresholdId;
+         'SELECT * FROM mantis_plugin_whiteboard_etathreshold_table WHERE id=' . $this->thresholdId;
 
       $result = $mysqli->query ( $query );
       $dbThresholdRow = mysqli_fetch_row ( $result );
@@ -204,10 +204,10 @@ class rThreshold
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'INSERT INTO mantis_plugin_RoadmapPro_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
+         'INSERT INTO mantis_plugin_whiteboard_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
          SELECT null,' . (int)$this->thresholdFrom . ',' . (int)$this->thresholdTo . ',\'' . $this->thresholdUnit . '\',' . (int)$this->thresholdFactor . '
          FROM DUAL WHERE NOT EXISTS (
-         SELECT 1 FROM mantis_plugin_RoadmapPro_etathreshold_table
+         SELECT 1 FROM mantis_plugin_whiteboard_etathreshold_table
          WHERE eta_thr_unit=\'' . $this->thresholdUnit . '\')';
 
       $mysqli->query ( $query );
@@ -223,7 +223,7 @@ class rThreshold
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'UPDATE mantis_plugin_RoadmapPro_etathreshold_table
+         'UPDATE mantis_plugin_whiteboard_etathreshold_table
          SET eta_thr_from=' . (int)$this->thresholdFrom . ',eta_thr_to=' . (int)$this->thresholdTo . ',eta_thr_unit=\'' . $this->thresholdUnit . '\',eta_thr_factor=' . (int)$this->thresholdFactor . '
          WHERE id=' . $this->thresholdId;
 
@@ -239,7 +239,7 @@ class rThreshold
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'DELETE FROM mantis_plugin_RoadmapPro_etathreshold_table WHERE id=' . $this->thresholdId;
+         'DELETE FROM mantis_plugin_whiteboard_etathreshold_table WHERE id=' . $this->thresholdId;
 
       $mysqli->query ( $query );
       $mysqli->close ();

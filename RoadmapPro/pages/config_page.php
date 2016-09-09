@@ -8,6 +8,7 @@ require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'cor
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rThresholdManager.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rThreshold.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rEta.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rWeekDayManager.php' );
 
 auth_reauthenticate ();
 
@@ -56,7 +57,7 @@ if ( config_get ( 'enable_eta' ) )
    echo '</tr>';
 
    $weekDayValue = 10;
-   $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+   $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
    $weekDayConfigArray = explode ( ';', $weekDayConfigString );
    for ( $index = 0; $index < 7; $index++ )
    {

@@ -9,6 +9,7 @@ require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfile.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThresholdManager.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThreshold.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rEta.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rWeekDayManager.php' );
 
 /**
  * Class roadmap_pro_api
@@ -448,6 +449,12 @@ class rProApi
 
          $mysqli->query ( $query );
 
+         $query = /** @lang sql */
+            'INSERT INTO mantis_plugin_whiteboard_workday_table ( id, workday_values )
+            SELECT null,\'0;0;0;0;0;0;0\'';
+
+         $mysqli->query ( $query );
+
          $mysqli->close ();
       }
    }
@@ -461,35 +468,30 @@ class rProApi
    {
       $boolArray = array ();
 
+      $boolArray[ 0 ] = self::checkTable ( 'menu' );
+      $boolArray[ 1 ] = self::checkTable ( 'eta' );
+      $boolArray[ 2 ] = self::checkTable ( 'etathreshold' );
+      $boolArray[ 3 ] = self::checkTable ( 'workday' );
+
+      return $boolArray;
+   }
+
+   private static function checkTable ( $tableName )
+   {
       $mysqli = self::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT COUNT(id) FROM mantis_plugin_whiteboard_eta_table';
+         'SELECT COUNT(id) FROM mantis_plugin_whiteboard_' . $tableName . '_table';
       $result = $mysqli->query ( $query );
-      if ( $result->num_rows != 0 )
-      {
-         $boolArray[ 1 ] = true;
-      }
-      else
-      {
-         $boolArray[ 1 ] = false;
-      }
-
-      $query = /** @lang sql */
-         'SELECT COUNT(id) FROM mantis_plugin_whiteboard_menu_table';
-      $result = $mysqli->query ( $query );
-      if ( $result->num_rows != 0 )
-      {
-         $boolArray[ 0 ] = true;
-      }
-      else
-      {
-         $boolArray[ 0 ] = false;
-      }
-
       $mysqli->close ();
-
-      return $boolArray;
+      if ( $result->num_rows != 0 )
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
    }
 
    /**
@@ -543,7 +545,7 @@ class rProApi
    {
       $weekDayValueArray = $_POST[ 'weekDayValue' ];
       $weekDayConfigString = implode ( ';', $weekDayValueArray );
-      plugin_config_set ( 'weekDayConfig', $weekDayConfigString );
+      rWeekDayManager::setWorkDayConfig ( $weekDayConfigString );
    }
 
    /**

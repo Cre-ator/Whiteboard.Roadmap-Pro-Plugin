@@ -124,7 +124,7 @@ class rEta
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT * FROM mantis_plugin_RoadmapPro_eta_table WHERE eta_config_value=' . $this->etaConfig;
+         'SELECT * FROM mantis_plugin_whiteboard_eta_table WHERE eta_config_value=' . $this->etaConfig;
 
       $result = $mysqli->query ( $query );
       if ( $result->num_rows != 0 )
@@ -145,10 +145,10 @@ class rEta
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'INSERT INTO mantis_plugin_RoadmapPro_eta_table ( id, eta_config_value, eta_user_value )
+         'INSERT INTO mantis_plugin_whiteboard_eta_table ( id, eta_config_value, eta_user_value )
          SELECT null,' . $this->etaConfig . ',' . (double)$this->etaUser . '
          FROM DUAL WHERE NOT EXISTS (
-         SELECT 1 FROM mantis_plugin_RoadmapPro_eta_table
+         SELECT 1 FROM mantis_plugin_whiteboard_eta_table
          WHERE eta_config_value=' . $this->etaConfig . ')';
 
       $mysqli->query ( $query );
@@ -164,7 +164,7 @@ class rEta
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'UPDATE mantis_plugin_RoadmapPro_eta_table
+         'UPDATE mantis_plugin_whiteboard_eta_table
          SET eta_user_value=' . (double)$this->etaUser . '
          WHERE eta_config_value=' . $this->etaConfig;
 
@@ -180,7 +180,7 @@ class rEta
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT id FROM mantis_plugin_RoadmapPro_eta_table WHERE eta_config_value = ' . $this->etaConfig;
+         'SELECT id FROM mantis_plugin_whiteboard_eta_table WHERE eta_config_value = ' . $this->etaConfig;
 
       $result = $mysqli->query ( $query );
       $mysqli->close ();

@@ -11,7 +11,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.1.57';
+      $this->version = '1.2.0';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -51,11 +51,12 @@ class RoadmapProPlugin extends MantisPlugin
 
    function schema ()
    {
-      return array
+      require_once ( __DIR__ . '/core/rProApi.php' );
+      $tableArray = array ();
+
+      $profileTable = array
       (
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'profile' ), "
+         'CreateTableSQL', array ( plugin_table ( 'profile' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             profile_name    C(250)  DEFAULT '',
             profile_color   C(250)  DEFAULT '',
@@ -63,34 +64,64 @@ class RoadmapProPlugin extends MantisPlugin
             profile_prio    I       DEFAULT 0,
             profile_effort  I       DEFAULT 0
             " )
-         ),
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'profilegroup' ), "
+      );
+
+      $profileGroupTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'profilegroup' ), "
             id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             group_name         C(250)  DEFAULT '',
             group_profiles     C(250)  DEFAULT ''
             " )
-         ),
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'eta' ), "
-            id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
-            eta_config_value   C(250)  DEFAULT '',
-            eta_user_value     C(250)  DEFAULT 0
-            " )
-         ),
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'etathreshold' ), "
+      );
+
+      $etaThresholdTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'etathreshold' ), "
             id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             eta_thr_from       C(250)  DEFAULT '',
             eta_thr_to         C(250)  DEFAULT '',
             eta_thr_unit       C(250)  DEFAULT '',
             eta_thr_factor     C(250)  DEFAULT ''
             " )
-         )
       );
+
+      $etaTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'eta', 'whiteboard' ), "
+            id                 I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            eta_config_value   C(250)  DEFAULT '',
+            eta_user_value     C(250)  DEFAULT 0
+            " )
+      );
+
+      $whiteboardMenuTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'menu', 'whiteboard' ), "
+            id                   I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            plugin_name          C(250)  DEFAULT '',
+            plugin_access_level  I       UNSIGNED,
+            plugin_show_menu     I       UNSIGNED,
+            plugin_menu_path     C(250)  DEFAULT ''
+            " )
+      );
+
+      array_push ( $tableArray, $profileTable );
+      array_push ( $tableArray, $profileGroupTable );
+      array_push ( $tableArray, $etaThresholdTable );
+      # add eta table if it does not exist
+      $boolArray = rProApi::checkWhiteboardTablesExist ();
+      if ( !$boolArray[ 1 ] )
+      {
+         array_push ( $tableArray, $etaTable );
+      }
+      # add whiteboardmenu table if it does not exist
+      if ( !$boolArray[ 0 ] )
+      {
+         array_push ( $tableArray, $whiteboardMenuTable );
+      }
+
+      return $tableArray;
    }
 
    function footer ()

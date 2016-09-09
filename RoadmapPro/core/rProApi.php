@@ -421,6 +421,9 @@ class rProApi
       print_successful_redirect ( 'manage_plugin_page.php' );
    }
 
+   /**
+    * set default plugin config
+    */
    public static function setDefault ()
    {
       if ( count ( rProfileManager::getRProfileIds () ) == 0 )
@@ -447,6 +450,46 @@ class rProApi
 
          $mysqli->close ();
       }
+   }
+
+   /**
+    * returns array with 1/0 values when plugin comprehensive table is installed
+    *
+    * @return array
+    */
+   public static function checkWhiteboardTablesExist ()
+   {
+      $boolArray = array ();
+
+      $mysqli = self::initializeDbConnection ();
+
+      $query = /** @lang sql */
+         'SELECT COUNT(id) FROM mantis_plugin_whiteboard_eta_table';
+      $result = $mysqli->query ( $query );
+      if ( $result->num_rows != 0 )
+      {
+         $boolArray[ 1 ] = true;
+      }
+      else
+      {
+         $boolArray[ 1 ] = false;
+      }
+
+      $query = /** @lang sql */
+         'SELECT COUNT(id) FROM mantis_plugin_whiteboard_menu_table';
+      $result = $mysqli->query ( $query );
+      if ( $result->num_rows != 0 )
+      {
+         $boolArray[ 0 ] = true;
+      }
+      else
+      {
+         $boolArray[ 0 ] = false;
+      }
+
+      $mysqli->close ();
+
+      return $boolArray;
    }
 
    /**

@@ -618,7 +618,7 @@ class rProApi
       if ( $useEta == true )
       {
          $calculatedEta = self::calculateEtaUnit ( $tempEta );
-         $pageProgress .= $calculatedEta[ 0 ] . $calculatedEta[ 1 ];
+         $pageProgress .= round ( ( $calculatedEta[ 0 ] ), 1 ) . $calculatedEta[ 1 ];
       }
       else
       {
@@ -902,7 +902,7 @@ class rProApi
     */
    public static function getWeekWorkTime ()
    {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       $weekWorkTime = 0;
@@ -928,7 +928,7 @@ class rProApi
     */
    public static function getWeekWorkDayAmount ()
    {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       $weekWorkDayAmount = 0;
@@ -968,7 +968,7 @@ class rProApi
     */
    public static function checkDayIsValid ( $day )
    {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       return $weekDayConfigArray[ $day ] > 0;

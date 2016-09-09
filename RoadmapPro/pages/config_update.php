@@ -14,6 +14,7 @@ if ( $optionReset == true )
 if ( $optionChange == true )
 {
    rProApi::configUpdateButton ( 'show_menu' );
+   rProApi::editPluginInWhiteboardMenu ( 'plugin_show_menu', gpc_get_int ( 'show_menu' ) );
    rProApi::configUpdateButton ( 'show_footer' );
    # change eta values when eta management is active
    if ( config_get ( 'enable_eta' ) )

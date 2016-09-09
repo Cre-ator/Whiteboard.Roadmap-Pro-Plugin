@@ -812,7 +812,7 @@ class rProApi
     */
    public static function getWeekWorkTime ()
    {
-      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       $weekWorkTime = 0;
@@ -838,7 +838,7 @@ class rProApi
     */
    public static function getWeekWorkDayAmount ()
    {
-      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       $weekWorkDayAmount = 0;
@@ -878,7 +878,7 @@ class rProApi
     */
    public static function checkDayIsValid ( $day )
    {
-      $weekDayConfigString = plugin_config_get ( 'weekDayConfig' );
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
       $weekDayConfigArray = explode ( ';', $weekDayConfigString );
 
       return $weekDayConfigArray[ $day ] > 0;

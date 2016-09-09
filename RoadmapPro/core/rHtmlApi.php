@@ -601,8 +601,10 @@ class rHtmlApi
          file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' )
       )
       {
-         require_once __DIR__ . '/../../WhiteboardMenu/core/whiteboard_print_api.php';
-         whiteboard_print_api::printWhiteboardMenu ();
+         require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+            'WhiteboardMenu' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'wmApi.php' );
+         echo '<link rel="stylesheet" href="plugins/WhiteboardMenu/files/whiteboardmenu.css"/>';
+         wmApi::printWhiteboardMenu ();
       }
    }
 

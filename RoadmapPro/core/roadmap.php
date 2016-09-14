@@ -556,7 +556,7 @@ class roadmap
    {
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
       return '&nbsp;' . round ( $this->progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
-      '&nbsp;' . $calculatedFullEta[ 0 ] . $calculatedFullEta[ 1 ];
+      '&nbsp;' . round ( ( $calculatedFullEta[ 0 ] ), 1 ) . $calculatedFullEta[ 1 ];
    }
 
    /**

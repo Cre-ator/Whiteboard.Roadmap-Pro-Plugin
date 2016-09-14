@@ -11,7 +11,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.2.6';
+      $this->version = '1.2.7';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -35,8 +35,6 @@ class RoadmapProPlugin extends MantisPlugin
    function init ()
    {
       require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rConst.php' );
-      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'rProApi.php' );
-      rProApi::setDefault ();
    }
 
    function config ()
@@ -156,6 +154,7 @@ class RoadmapProPlugin extends MantisPlugin
       if ( !rProApi::checkPluginIsRegisteredInWhiteboardMenu () )
       {
          rProApi::addPluginToWhiteboardMenu ();
+         rProApi::setDefault ();
       }
 
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )

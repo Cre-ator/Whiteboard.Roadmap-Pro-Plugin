@@ -70,6 +70,14 @@ class roadmap
     * @var integer
     */
    private $expectedFinishedDate;
+   /**
+    * @var integer
+    */
+   private $etaTaggedBugCount;
+   /**
+    * @var integer
+    */
+   private $etaNotTaggedBugCount;
 
    /**
     * roadmap constructor.
@@ -89,6 +97,9 @@ class roadmap
       $this->doneBugIds = array ();
       $this->doingBugIds = array ();
       $this->profileHashArray = array ();
+      $this->etaTaggedBugCount = 0;
+      $this->etaNotTaggedBugCount = 0;
+      $this->countEtaTaggedBugs ();
    }
 
    /**
@@ -247,6 +258,22 @@ class roadmap
    }
 
    /**
+    * @return int
+    */
+   public function getEtaTaggedBugCount ()
+   {
+      return $this->etaTaggedBugCount;
+   }
+
+   /**
+    * @return int
+    */
+   public function getEtaNotTaggedBugCount ()
+   {
+      return $this->etaNotTaggedBugCount;
+   }
+
+   /**
     * @return string
     */
    public function getTextProgressMain ()
@@ -281,7 +308,7 @@ class roadmap
     */
    public function getExpectedFinishedDateString ()
    {
-      if ( $this->etaIsSet )
+      if ( $this->etaIsSet || $this->etaTaggedBugCount > 0 )
       {
          $this->calcExpectedFinishedDate ();
          $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );
@@ -716,5 +743,24 @@ class roadmap
       $differenceInDay = ceil ( abs ( $difference ) / 86400 );
 
       return $operator . $differenceInDay . 'd';
+   }
+
+   /**
+    * count eta tagged and not eta tagged bugs
+    */
+   private function countEtaTaggedBugs ()
+   {
+      foreach ( $this->bugIds as $bugId )
+      {
+         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+         {
+            $this->etaNotTaggedBugCount++;
+         }
+         else
+         {
+            $this->etaTaggedBugCount++;
+         }
+      }
    }
 }

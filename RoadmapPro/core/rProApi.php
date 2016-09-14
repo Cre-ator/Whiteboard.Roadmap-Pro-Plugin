@@ -585,6 +585,32 @@ class rProApi
    }
 
    /**
+    * Updates the value set by an input text field
+    *
+    * @param $value
+    * @param $constant
+    */
+   public static function updateSingleValue ( $value, $constant )
+   {
+      $actualValue = null;
+
+      if ( is_int ( $value ) )
+      {
+         $actualValue = gpc_get_int ( $value, $constant );
+      }
+
+      if ( is_string ( $value ) )
+      {
+         $actualValue = gpc_get_string ( $value, $constant );
+      }
+
+      if ( plugin_config_get ( $value ) != $actualValue )
+      {
+         plugin_config_set ( $value, $actualValue );
+      }
+   }
+
+   /**
     * get timezone from a given user
     *
     * @param $userId
@@ -1001,5 +1027,69 @@ class rProApi
       }
 
       return $profileEffortFactor;
+   }
+
+   public static function calcDoneEtaForPartial ( roadmap $roadmap, $profileHashMap )
+   {
+      $doneEta = 0;
+      $bugIds = $roadmap->getBugIds ();
+      $defaultEta = self::getDefaultEtaUserValue ();
+
+      foreach ( $profileHashMap as $profileHash )
+      {
+         $hashProfileId = $profileHash[ 0 ];
+
+         $profile = new rProfile( $hashProfileId );
+         $profileEffort = $profile->getProfileEffort ();
+         $profileEffortFactor = ( $profileEffort / 100 );
+
+         foreach ( $bugIds as $bugId )
+         {
+         }
+      }
+
+      return $doneEta;
+   }
+
+   /**
+    * returns the full eta value, if there are bugs without set eta value
+    *
+    * @param roadmap $roadmap
+    * @return int
+    */
+   public static function calcFullEtaForPartial ( roadmap $roadmap )
+   {
+      $fullEta = 0;
+      $bugIds = $roadmap->getBugIds ();
+      $defaultEta = self::getDefaultEtaUserValue ();
+
+      foreach ( $bugIds as $bugId )
+      {
+         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+         {
+            $fullEta += $defaultEta;
+         }
+         else
+         {
+            $tmpEta = new rEta( $bugEtaValue );
+            $fullEta += $tmpEta->getEtaUser ();
+         }
+      }
+
+      return $fullEta;
+   }
+
+   /**
+    * returns the eta default value configured by the administrator
+    *
+    * @return int
+    */
+   private static function getDefaultEtaUserValue ()
+   {
+      $defaultEtaConfigValue = plugin_config_get ( 'defaulteta' );
+      $defaultEta = new rEta( $defaultEtaConfigValue );
+
+      return $defaultEta->getEtaUser ();
    }
 }

@@ -19,6 +19,8 @@ if ( $optionChange == true )
    # change eta values when eta management is active
    if ( config_get ( 'enable_eta' ) )
    {
+      rProApi::updateSingleValue ( 'defaulteta', 10 );
+      rProApi::updateSingleValue ( 'calcthreshold', 0 );
       rProApi::configProcessEta ();
       rProApi::configProcessTimeCalc ();
    }

@@ -43,6 +43,8 @@ class RoadmapProPlugin extends MantisPlugin
       (
          'show_menu' => ON,
          'show_footer' => ON,
+         'defaulteta' => 0,
+         'calcthreshold' => 10
       );
    }
 

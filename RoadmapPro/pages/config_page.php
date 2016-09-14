@@ -78,9 +78,31 @@ echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 $thresholdCount = 0;
 if ( config_get ( 'enable_eta' ) )
 {
+   $etaEnumValues = MantisEnum::getValues ( config_get ( 'eta_enum_string' ) );
    rHtmlApi::htmlPluginConfigOpenTable ();
    echo '<tr>';
    rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_eta_management', 3 );
+   echo '</tr>';
+
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_default_eta', 1 );
+   echo '<td colspan="2">';
+   echo '<span class="select"><select ' . helper_get_tab_index () . ' id="defaulteta" name="defaulteta">';
+   foreach ( $etaEnumValues as $etaEnumValue )
+   {
+      echo '<option value="' . $etaEnumValue . '"';
+      check_selected ( plugin_config_get ( 'defaulteta' ), $etaEnumValue );
+      echo '>' . string_display_line ( get_enum_element ( 'eta', $etaEnumValue ) ) . '</option>';
+   }
+   echo '</select></span>';
+   echo '</td>';
+   echo '</tr>';
+
+   echo '<tr>';
+   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_calc_threshold', 1 );
+   echo '<td colspan="2">';
+   echo '<input type="number" step="0.1" name="calcthreshold" min="0" max="100" value="' . plugin_config_get ( 'calcthreshold' ) . '"/>';
+   echo '</td>';
    echo '</tr>';
 
    echo '<tr>';
@@ -89,7 +111,6 @@ if ( config_get ( 'enable_eta' ) )
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    echo '</tr>';
 
-   $etaEnumValues = MantisEnum::getValues ( config_get ( 'eta_enum_string' ) );
    foreach ( $etaEnumValues as $etaEnumValue )
    {
       $eta = new rEta( $etaEnumValue );

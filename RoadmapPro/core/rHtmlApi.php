@@ -160,6 +160,7 @@ class rHtmlApi
             echo '<!---->';
             $sumPercentDone += $hashProgress;
             $doneEta += $tempEta;
+
          }
 
          if ( strlen ( $sumProgressHtmlString ) == 0 )
@@ -167,6 +168,17 @@ class rHtmlApi
             $sumProgressHtmlString .= '<div style="text-align: left">0%</div>';
             echo $sumProgressHtmlString;
          }
+
+         ########
+         $etaTaggedBugCount = $roadmap->getEtaTaggedBugCount ();
+         $etaNotTaggedBugCount = $roadmap->getEtaNotTaggedBugCount ();
+         if ( ( $etaNotTaggedBugCount > 0 ) && ( $etaTaggedBugCount > 0 ) )
+         {
+            $doneEtaForPartial = rProApi::calcDoneEtaForPartial ( $roadmap, $profileHashMap );
+            $fullEtaForPartial = rProApi::calcFullEtaForPartial ( $roadmap );
+         }
+
+
          $roadmap->setDoneEta ( $doneEta );
       }
       echo '</div></div>';

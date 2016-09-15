@@ -78,6 +78,10 @@ class roadmap
     * @var integer
     */
    private $etaNotTaggedBugCount;
+   /**
+    * @var boolean
+    */
+   private $useFreeCalc;
 
    /**
     * roadmap constructor.
@@ -282,6 +286,14 @@ class roadmap
    }
 
    /**
+    * @return boolean
+    */
+   public function isUseFreeCalc ()
+   {
+      return $this->useFreeCalc;
+   }
+
+   /**
     * @return string
     */
    public function getTextProgressMain ()
@@ -311,6 +323,19 @@ class roadmap
       }
    }
 
+   public function getUncertaintyString ()
+   {
+      if ( $this->useFreeCalc )
+      {
+         $uncertainty = round ( $this->etaNotTaggedBugCount / count ( $this->bugIds ) * 100 );
+         return '&nbsp;(' . plugin_lang_get ( 'roadmap_page_uncertainty' ) . ':&nbsp;' . $uncertainty . '%)';
+      }
+      else
+      {
+         return '';
+      }
+   }
+
    /**
     * @return string
     */
@@ -320,7 +345,7 @@ class roadmap
       {
          $this->calcExpectedFinishedDate ();
          $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );
-         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat . '*';
+         return ',&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_expected' ) . ':&nbsp;' . $dateFinishedExpectedFormat;
       }
       else
       {
@@ -379,6 +404,7 @@ class roadmap
       )
       {
          $this->fullEta = $this->calcFullEtaForPartial ();
+         $this->useFreeCalc = true;
       }
       else
       {

@@ -187,11 +187,12 @@ class rHtmlApi
       $versionId = $roadmap->getVersionId ();
       $textProgressDir = $roadmap->getTextProgressDir ();
       $textProgressMain = $roadmap->getTextProgressMain ();
-      $expectedFinishedDateString = $roadmap->getExpectedFinishedDateString ();
+      $textUncertainty = $roadmap->getUncertaintyString ();
+      $expectedFinishedDateString = $roadmap->getExpectedFinishedDateString () . '*';
       $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
       $actualDesiredFinishedDateDeviation = $roadmap->getActualDesiredDeviation ( $versionDesiredDate );
       $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDesiredDate ) );
-      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . $expectedFinishedDateString;
+      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date_planned' ) . ':&nbsp;' . $versionReleaseDate . $expectedFinishedDateString;
 
       echo '<div class="td h25">' . $textProgressMain . '&nbsp;</div>';
       echo '<div class="td h25">&nbsp;' . $versionReleaseString . '</div>';
@@ -199,10 +200,11 @@ class rHtmlApi
       if ( strlen ( $actualDesiredFinishedDateDeviation ) > 0 )
       {
          $actualDesiredFinishedDateDeviationString = ',&nbsp;' . plugin_lang_get ( 'roadmap_page_delay' ) .
-            ':&nbsp;' . $actualDesiredFinishedDateDeviation;
+            ':&nbsp;' . $actualDesiredFinishedDateDeviation . $textUncertainty;
          echo '<div class="td h25">' . $actualDesiredFinishedDateDeviationString . '</div>';
          $versionReleaseString .= $actualDesiredFinishedDateDeviationString;
       }
+
 
       echo '<script type="text/javascript">';
       echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $roadmap->getProjectId () . '\',\'' . $sumProgressHtmlString . '\',\'' . $textProgressDir . '\',\'' . $versionReleaseString . '\');';

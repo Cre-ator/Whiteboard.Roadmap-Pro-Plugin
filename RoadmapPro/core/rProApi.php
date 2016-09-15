@@ -388,7 +388,7 @@ class rProApi
                $forbiddenAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
                $forbiddenFlag = true;
             }
-            if ( ( $isWarning ) && ( $bugStatus >= $destinationBugStatus ) )
+            if ( ( $isWarning ) && ( $bugStatus < $destinationBugStatus ) )
             {
                if ( $warningAltText != "" )
                {

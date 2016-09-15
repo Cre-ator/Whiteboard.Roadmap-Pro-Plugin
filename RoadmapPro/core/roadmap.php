@@ -131,7 +131,7 @@ class roadmap
     * @param $bugId
     * @return int
     */
-   public function getSingleEta ( $bugId )
+   private function getSingleEta ( $bugId )
    {
       $this->calcSingleEta ( $bugId );
       return $this->singleEta;
@@ -144,6 +144,14 @@ class roadmap
    {
       $this->calcFullEta ();
       return $this->fullEta;
+   }
+
+   /**
+    * @param int $fullEta
+    */
+   public function setFullEta ( $fullEta )
+   {
+      $this->fullEta = $fullEta;
    }
 
    /**
@@ -338,19 +346,19 @@ class roadmap
     */
    private function checkEtaIsSet ()
    {
-      $this->etaIsSet = true;
-      if ( !config_get ( 'enable_eta' ) )
+      $this->etaIsSet = false;
+      if ( config_get ( 'enable_eta' ) )
       {
-         $this->etaIsSet = false;
-      }
-      else
-      {
-         foreach ( $this->bugIds as $bugId )
+         $factor = ( ( $this->etaNotTaggedBugCount / count ( $this->bugIds ) ) * 100 );
+         if ( $factor >= plugin_config_get ( 'calcthreshold' ) )
          {
-            $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-            if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+            foreach ( $this->bugIds as $bugId )
             {
-               $this->etaIsSet = false;
+               $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+               if ( ( $bugEtaValue != null ) && ( $bugEtaValue != ETA_NONE ) )
+               {
+                  $this->etaIsSet = true;
+               }
             }
          }
       }
@@ -362,22 +370,62 @@ class roadmap
    private function calcFullEta ()
    {
       $this->fullEta = 0;
-      foreach ( $this->bugIds as $bugId )
+
+      $factor = ( ( $this->etaNotTaggedBugCount / count ( $this->bugIds ) ) * 100 );
+      if (
+         ( $this->etaNotTaggedBugCount > 0 ) &&
+         ( $this->etaTaggedBugCount > 0 ) &&
+         ( $factor >= plugin_config_get ( 'calcthreshold' ) )
+      )
       {
-         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-
-         $etaEnumString = config_get ( 'eta_enum_string' );
-         $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-
-         foreach ( $etaEnumValues as $enumValue )
+         $this->fullEta = $this->calcFullEtaForPartial ();
+      }
+      else
+      {
+         foreach ( $this->bugIds as $bugId )
          {
-            if ( $enumValue == $bugEtaValue )
+            $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+
+            $etaEnumString = config_get ( 'eta_enum_string' );
+            $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
+
+            foreach ( $etaEnumValues as $enumValue )
             {
-               $eta = new rEta( $enumValue );
-               $this->fullEta += $eta->getEtaUser ();
+               if ( $enumValue == $bugEtaValue )
+               {
+                  $eta = new rEta( $enumValue );
+                  $this->fullEta += $eta->getEtaUser ();
+               }
             }
          }
       }
+   }
+
+   /**
+    * returns the full eta sum, if there are bugs without set eta value
+    *
+    * @return int
+    */
+   private function calcFullEtaForPartial ()
+   {
+      $fullEta = 0;
+      $defaultEtaUser = $this->getDefaultEtaUserValue ();
+
+      foreach ( $this->bugIds as $bugId )
+      {
+         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
+         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+         {
+            $fullEta += $defaultEtaUser;
+         }
+         else
+         {
+            $bugEta = new rEta( $bugEtaValue );
+            $fullEta += $bugEta->getEtaUser ();
+         }
+      }
+
+      return $fullEta;
    }
 
    /**
@@ -388,16 +436,23 @@ class roadmap
    private function calcSingleEta ( $bugId )
    {
       $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-
-      $etaEnumString = config_get ( 'eta_enum_string' );
-      $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
-
-      foreach ( $etaEnumValues as $enumValue )
+      if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
       {
-         if ( $enumValue == $bugEtaValue )
+         $bugEtaValueUser = $this->getDefaultEtaUserValue ();
+         $this->singleEta = $bugEtaValueUser;
+      }
+      else
+      {
+         $etaEnumString = config_get ( 'eta_enum_string' );
+         $etaEnumValues = MantisEnum::getValues ( $etaEnumString );
+
+         foreach ( $etaEnumValues as $enumValue )
          {
-            $eta = new rEta( $enumValue );
-            $this->singleEta = $eta->getEtaUser ();
+            if ( $enumValue == $bugEtaValue )
+            {
+               $eta = new rEta( $enumValue );
+               $this->singleEta = $eta->getEtaUser ();
+            }
          }
       }
    }
@@ -483,6 +538,7 @@ class roadmap
       if ( $this->getEtaIsSet () )
       {
          $fullEta = $this->getFullEta ();
+
          foreach ( $doneBugIds as $doneBugId )
          {
             $this->doneEta += $this->getSingleEta ( $doneBugId );
@@ -569,7 +625,7 @@ class roadmap
       $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
       return '&nbsp;' . round ( $this->progressPercent ) .
-      '%&nbsp;(' . round ( ( $calculatedDoneEta[ 0 ] ), 1 ) . $calculatedFullEta[ 1 ] .
+      '%&nbsp;(' . round ( ( $calculatedDoneEta[ 0 ] ), 1 ) . $calculatedDoneEta[ 1 ] .
       '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .
       '&nbsp;' . round ( ( $calculatedFullEta[ 0 ] ), 1 ) . $calculatedFullEta[ 1 ] . ')';
    }
@@ -618,17 +674,17 @@ class roadmap
    private function calcExpectedFinishedDate ()
    {
       # time difference in seconds
-      $overallLossFactor = ( 1 / rProApi::getWeekWorkDayAmount () ) * ( DAYSPERWEEK ) * LOSSFACTOR;
-      $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / rProApi::getAverageHoursPerDay () ) ) * $overallLossFactor;
+      $overallLossFactor = ( 1 / $this->getWeekWorkDayAmount () ) * ( DAYSPERWEEK ) * LOSSFACTOR;
+      $etaDifferenceInSec = ( ( ( $this->fullEta - $this->doneEta ) * HOURINSEC ) * ( HOURSPERDAY / $this->getAverageHoursPerDay () ) ) * $overallLossFactor;
 
       # set user specifiv timezone
-      date_default_timezone_set ( rProApi::getUserPrefTimeZone ( auth_get_current_user_id () ) );
+      date_default_timezone_set ( $this->getUserPrefTimeZone ( auth_get_current_user_id () ) );
       # expected time => now + difference
       $dateFinishedExpectedInSec = time () + $etaDifferenceInSec;
       $finishedExpectedDay = date ( 'D', $dateFinishedExpectedInSec );
       if ( $finishedExpectedDay == 'Mon' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( MON );
+         $dayIsValid = $this->checkDayIsValid ( MON );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -637,7 +693,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Tue' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( TUE );
+         $dayIsValid = $this->checkDayIsValid ( TUE );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -646,7 +702,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Wed' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( WED );
+         $dayIsValid = $this->checkDayIsValid ( WED );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -655,7 +711,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Thu' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( THU );
+         $dayIsValid = $this->checkDayIsValid ( THU );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -664,7 +720,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Fri' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( FRI );
+         $dayIsValid = $this->checkDayIsValid ( FRI );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -673,7 +729,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Sat' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( SAT );
+         $dayIsValid = $this->checkDayIsValid ( SAT );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -682,7 +738,7 @@ class roadmap
       }
       if ( $finishedExpectedDay == 'Sun' )
       {
-         $dayIsValid = rProApi::checkDayIsValid ( SUN );
+         $dayIsValid = $this->checkDayIsValid ( SUN );
          # calc time to add to finished day
          if ( !$dayIsValid )
          {
@@ -691,6 +747,26 @@ class roadmap
       }
 
       $this->expectedFinishedDate = $dateFinishedExpectedInSec;
+   }
+
+   /**
+    * get timezone from a given user
+    *
+    * @param $userId
+    * @return mixed
+    */
+   private function getUserPrefTimeZone ( $userId )
+   {
+      $mysqli = rProApi::initializeDbConnection ();
+
+      $query = /** @lang sql */
+         'SELECT timezone FROM mantis_user_pref_table WHERE user_id = ' . $userId;
+
+      $result = $mysqli->query ( $query );
+      $dbResultRow = mysqli_fetch_row ( $result );
+      $mysqli->close ();
+
+      return $dbResultRow[ 0 ];
    }
 
    /**
@@ -710,7 +786,7 @@ class roadmap
             return false;
          }
 
-         if ( !rProApi::checkDayIsValid ( ( $day + $index ) % DAYSPERWEEK ) )
+         if ( !$this->checkDayIsValid ( ( $day + $index ) % DAYSPERWEEK ) )
          {
             $dateFinishedExpectedInSec += SECONDS_PER_DAY;
          }
@@ -721,6 +797,20 @@ class roadmap
       }
 
       return $dateFinishedExpectedInSec;
+   }
+
+   /**
+    * returns true, if given day is valid (work time > 0)
+    *
+    * @param $day
+    * @return bool
+    */
+   private function checkDayIsValid ( $day )
+   {
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      return $weekDayConfigArray[ $day ] > 0;
    }
 
    /**
@@ -762,5 +852,84 @@ class roadmap
             $this->etaTaggedBugCount++;
          }
       }
+   }
+
+   /**
+    * return amount of days per week where someone is working
+    *
+    * @return int
+    */
+   private function getWeekWorkDayAmount ()
+   {
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      $weekWorkDayAmount = 0;
+      foreach ( $weekDayConfigArray as $weekDayWorkTime )
+      {
+         if ( $weekDayWorkTime > 0 )
+         {
+            $weekWorkDayAmount++;
+         }
+      }
+
+      if ( $weekWorkDayAmount > 0 )
+      {
+         return $weekWorkDayAmount;
+      }
+      else
+      {
+         return WORKDAYSPERWEEKDEFAULT;
+      }
+   }
+
+   /**
+    * return work time per week in hour
+    *
+    * @return int
+    */
+   private function getWeekWorkTime ()
+   {
+      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
+      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
+
+      $weekWorkTime = 0;
+      foreach ( $weekDayConfigArray as $weekDayWorkTime )
+      {
+         $weekWorkTime += $weekDayWorkTime;
+      }
+
+      if ( $weekWorkTime > 0 )
+      {
+         return $weekWorkTime;
+      }
+      else
+      {
+         return WEEKWORKTIMEDEFAULT;
+      }
+   }
+
+
+   /**
+    * return average work time per day in hour
+    *
+    * @return float
+    */
+   private function getAverageHoursPerDay ()
+   {
+      return round ( $this->getWeekWorkTime () / $this->getWeekWorkDayAmount () );
+   }
+
+   /**
+    * returns the eta default value configured by the administrator
+    *
+    * @return int
+    */
+   private function getDefaultEtaUserValue ()
+   {
+      $defaultEtaConfigValue = plugin_config_get ( 'defaulteta' );
+      $defaultEta = new rEta( $defaultEtaConfigValue );
+
+      return $defaultEta->getEtaUser ();
    }
 }

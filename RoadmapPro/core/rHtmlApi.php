@@ -169,16 +169,6 @@ class rHtmlApi
             echo $sumProgressHtmlString;
          }
 
-         ########
-         $etaTaggedBugCount = $roadmap->getEtaTaggedBugCount ();
-         $etaNotTaggedBugCount = $roadmap->getEtaNotTaggedBugCount ();
-         if ( ( $etaNotTaggedBugCount > 0 ) && ( $etaTaggedBugCount > 0 ) )
-         {
-            $doneEtaForPartial = rProApi::calcDoneEtaForPartial ( $roadmap, $profileHashMap );
-            $fullEtaForPartial = rProApi::calcFullEtaForPartial ( $roadmap );
-         }
-
-
          $roadmap->setDoneEta ( $doneEta );
       }
       echo '</div></div>';

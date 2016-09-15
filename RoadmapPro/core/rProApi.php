@@ -611,26 +611,6 @@ class rProApi
    }
 
    /**
-    * get timezone from a given user
-    *
-    * @param $userId
-    * @return mixed
-    */
-   public static function getUserPrefTimeZone ( $userId )
-   {
-      $mysqli = self::initializeDbConnection ();
-
-      $query = /** @lang sql */
-         'SELECT timezone FROM mantis_user_pref_table WHERE user_id = ' . $userId;
-
-      $result = $mysqli->query ( $query );
-      $dbResultRow = mysqli_fetch_row ( $result );
-      $mysqli->close ();
-
-      return $dbResultRow[ 0 ];
-   }
-
-   /**
     * get progress for a roadmap
     *
     * @param $useEta
@@ -922,85 +902,6 @@ class rProApi
    }
 
    /**
-    * return work time per week in hour
-    *
-    * @return int
-    */
-   public static function getWeekWorkTime ()
-   {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
-      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
-
-      $weekWorkTime = 0;
-      foreach ( $weekDayConfigArray as $weekDayWorkTime )
-      {
-         $weekWorkTime += $weekDayWorkTime;
-      }
-
-      if ( $weekWorkTime > 0 )
-      {
-         return $weekWorkTime;
-      }
-      else
-      {
-         return WEEKWORKTIMEDEFAULT;
-      }
-   }
-
-   /**
-    * return amount of days per week where someone is working
-    *
-    * @return int
-    */
-   public static function getWeekWorkDayAmount ()
-   {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
-      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
-
-      $weekWorkDayAmount = 0;
-      foreach ( $weekDayConfigArray as $weekDayWorkTime )
-      {
-         if ( $weekDayWorkTime > 0 )
-         {
-            $weekWorkDayAmount++;
-         }
-      }
-
-      if ( $weekWorkDayAmount > 0 )
-      {
-         return $weekWorkDayAmount;
-      }
-      else
-      {
-         return WORKDAYSPERWEEKDEFAULT;
-      }
-   }
-
-   /**
-    * return average work time per day in hour
-    *
-    * @return float
-    */
-   public static function getAverageHoursPerDay ()
-   {
-      return round ( self::getWeekWorkTime () / self::getWeekWorkDayAmount () );
-   }
-
-   /**
-    * returns true, if given day is valid (work time > 0)
-    *
-    * @param $day
-    * @return bool
-    */
-   public static function checkDayIsValid ( $day )
-   {
-      $weekDayConfigString = rWeekDayManager::getWorkDayConfig ();
-      $weekDayConfigArray = explode ( ';', $weekDayConfigString );
-
-      return $weekDayConfigArray[ $day ] > 0;
-   }
-
-   /**
     * calculate and return the profile effort factor
     *
     * @param roadmap $roadmap
@@ -1027,69 +928,5 @@ class rProApi
       }
 
       return $profileEffortFactor;
-   }
-
-   public static function calcDoneEtaForPartial ( roadmap $roadmap, $profileHashMap )
-   {
-      $doneEta = 0;
-      $bugIds = $roadmap->getBugIds ();
-      $defaultEta = self::getDefaultEtaUserValue ();
-
-      foreach ( $profileHashMap as $profileHash )
-      {
-         $hashProfileId = $profileHash[ 0 ];
-
-         $profile = new rProfile( $hashProfileId );
-         $profileEffort = $profile->getProfileEffort ();
-         $profileEffortFactor = ( $profileEffort / 100 );
-
-         foreach ( $bugIds as $bugId )
-         {
-         }
-      }
-
-      return $doneEta;
-   }
-
-   /**
-    * returns the full eta value, if there are bugs without set eta value
-    *
-    * @param roadmap $roadmap
-    * @return int
-    */
-   public static function calcFullEtaForPartial ( roadmap $roadmap )
-   {
-      $fullEta = 0;
-      $bugIds = $roadmap->getBugIds ();
-      $defaultEta = self::getDefaultEtaUserValue ();
-
-      foreach ( $bugIds as $bugId )
-      {
-         $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
-         {
-            $fullEta += $defaultEta;
-         }
-         else
-         {
-            $tmpEta = new rEta( $bugEtaValue );
-            $fullEta += $tmpEta->getEtaUser ();
-         }
-      }
-
-      return $fullEta;
-   }
-
-   /**
-    * returns the eta default value configured by the administrator
-    *
-    * @return int
-    */
-   private static function getDefaultEtaUserValue ()
-   {
-      $defaultEtaConfigValue = plugin_config_get ( 'defaulteta' );
-      $defaultEta = new rEta( $defaultEtaConfigValue );
-
-      return $defaultEta->getEtaUser ();
    }
 }

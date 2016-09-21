@@ -113,7 +113,7 @@ class rProApi
       $pluginName = plugin_get_current ();
       $pluginAccessLevel = VIEWER;
       $pluginShowMenu = ON;
-      $pluginPath = '<a href="' . plugin_page ( 'roadmap_page' ) . '">';
+      $pluginPath = plugin_page ( 'roadmap_page' );
 
       $mysqli = self::initializeDbConnection ();
 

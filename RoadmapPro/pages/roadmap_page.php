@@ -75,6 +75,14 @@ function processTable ( $profileId )
          $vPProjects = rProApi::getVPProjects ( $version );
          foreach ( $vPProjects as $projectId )
          {
+            # skip if user has no access to project
+            $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
+            $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
+            if ( !$userHasProjectLevel )
+            {
+               continue;
+            }
+
             $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
             if ( count ( $bugIds ) > 0 )
             {

@@ -295,3 +295,7 @@ a.directory:hover {
    width: 46px;
    background: url("sprite.png") no-repeat -11px -474px;
 }
+
+a[class="button"] {
+   text-decoration: none;
+}

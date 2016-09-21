@@ -58,7 +58,7 @@ function processTable ( $profileId )
 
    $roadmapManager = new roadmapManager( $getVersionId, $getProjectId );
    $projectIds = $roadmapManager->getProjectIds ();
-   $versions = $roadmapManager->getVersions ();
+   $tmpVersions = $roadmapManager->getVersions ();
 
    # initialize directory
    rHtmlApi::htmlPluginDirectory ();
@@ -66,68 +66,69 @@ function processTable ( $profileId )
    # print content title
    rHtmlApi::htmlPluginContentTitle ();
 
-   # iterate through projects
-   foreach ( $projectIds as $projectId )
+   if ( $_GET[ 'sort' ] == 'vp' )
    {
-      # skip if user has no access to project
-      $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
-      $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
-      if ( !$userHasProjectLevel )
+      $vPVersions = rProApi::getVPVersions ( $projectIds, $getVersionId );
+      foreach ( $vPVersions as $version )
       {
-         continue;
-      }
-
-      # no specific version selected - get all versions for selected project which are not released
-      if ( $getVersionId == null )
-      {
-         $versions = array_reverse ( version_get_all_rows ( $projectId, false ) );
-      }
-
-      # iterate through versions
-      $projectTitlePrinted = false;
-      foreach ( $versions as $version )
-      {
-         $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
-         if ( count ( $bugIds ) > 0 )
+         $versionTitlePrinted = false;
+         $vPProjects = rProApi::getVPProjects ( $version );
+         foreach ( $vPProjects as $projectId )
          {
-            # define and print project title
-            if ( !$projectTitlePrinted )
+            $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
+            if ( count ( $bugIds ) > 0 )
             {
-               # print project title
-               rHtmlApi::htmlPluginProjectTitle ( $profileId, $projectId );
-               # add project title to directory
-               rHtmlApi::htmlPluginAddDirectoryProjectEntry ( $projectId );
-               $projectTitlePrinted = true;
+               # define and print version title
+               if ( !$versionTitlePrinted )
+               {
+                  # print version title
+                  rHtmlApi::htmlPluginVersionTitle ( $version, $profileId );
+                  # add version title to directory
+                  rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $version );
+                  $versionTitlePrinted = true;
+               }
+               rProApi::goRoadmap( $profileId, $projectId, $version, $bugIds );
             }
-            #roadmap object
-            $getGroupId = $_GET[ 'group_id' ];
-            $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
-            # add version to directory
-            rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $projectId, $version[ 'id' ], $version[ 'version' ] );
-            # define and print title
-            $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
-            rHtmlApi::printWrapperInHTML ( $releaseTitleString );
-            # print version description
-            rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
-            # print version progress bar
-            rHtmlApi::printVersionProgress ( $roadmap );
-            # print bug list
-            if ( $profileId == -1 )
+         }
+      }
+   }
+   else
+   {
+      # iterate through projects
+      foreach ( $projectIds as $projectId )
+      {
+         # skip if user has no access to project
+         $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
+         $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
+         if ( !$userHasProjectLevel )
+         {
+            continue;
+         }
+
+         # no specific version selected - get all versions for selected project which are not released
+         if ( $getVersionId == null )
+         {
+            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, false ) );
+         }
+
+         # iterate through versions
+         $versionTitlePrinted = false;
+         foreach ( $tmpVersions as $version )
+         {
+            $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
+            if ( count ( $bugIds ) > 0 )
             {
-               $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
-               $doingBugIds = array_diff ( $bugIds, $doneBugIds );
-               rHtmlApi::printBugList ( $doingBugIds );
-               rHtmlApi::printBugList ( $doneBugIds, true );
+               # define and print project title
+               if ( !$versionTitlePrinted )
+               {
+                  # print project title
+                  rHtmlApi::htmlPluginProjectTitle ( $profileId, $projectId );
+                  # add project title to directory
+                  rHtmlApi::htmlPluginAddDirectoryProjectEntry ( $projectId );
+                  $versionTitlePrinted = true;
+               }
+               rProApi::goRoadmap( $profileId, $projectId, $version, $bugIds );
             }
-            else
-            {
-               rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
-               rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
-            }
-            # print text progress
-            ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
-            # print spacer
-            rHtmlApi::htmlPluginSpacer ();
          }
       }
    }

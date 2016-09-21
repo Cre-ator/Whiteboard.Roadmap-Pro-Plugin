@@ -506,6 +506,35 @@ class rProApi
       return $bugIds;
    }
 
+   /**
+    * returns all assigned bug ids to a given target version
+    *
+    * @param $versionName
+    * @return array|null
+    */
+   public static function dbGetBugIdsByTargetVersion ( $versionName )
+   {
+      $mysqli = self::initializeDbConnection ();
+
+      $bugIds = null;
+      $query = /** @lang sql */
+         'SELECT id FROM mantis_bug_table
+            WHERE target_version = \'' . $versionName . '\'';
+
+      $result = $mysqli->query ( $query );
+
+      if ( 0 != $result->num_rows )
+      {
+         while ( $row = $result->fetch_row () )
+         {
+            $bugIds[] = $row[ 0 ];
+         }
+      }
+      $mysqli->close ();
+
+      return $bugIds;
+   }
+
 
    /**
     * Reset all plugin-related data
@@ -928,5 +957,104 @@ class rProApi
       }
 
       return $profileEffortFactor;
+   }
+
+   public static function array_multi_unique ( $multiArray )
+   {
+      /* array_unique() für multidimensionale Arrays
+       * @param    array    $multiArray = array(array(..), array(..), ..)
+       * @return   array    Array mit einmaligen Elementen
+      **/
+      $uniqueArray = array ();
+      // alle Array-Elemente durchgehen
+      foreach ( $multiArray as $subArray )
+      {
+         // prüfen, ob Element bereits im Unique-Array
+         if ( !in_array ( $subArray, $uniqueArray ) )
+         {
+            // Element hinzufügen, wenn noch nicht drin
+            $uniqueArray[] = $subArray;
+         }
+      }
+      return $uniqueArray;
+   }
+
+   public static function getVPVersions ( $projectIds, $getVersionId )
+   {
+      $vPVersions = array ();
+      # iterate through projects
+      foreach ( $projectIds as $projectId )
+      {
+         # skip if user has no access to project
+         $userAccessLevel = user_get_access_level ( auth_get_current_user_id (), $projectId );
+         $userHasProjectLevel = access_has_project_level ( $userAccessLevel, $projectId );
+         if ( !$userHasProjectLevel )
+         {
+            continue;
+         }
+
+         # no specific version selected - get all versions for selected project which are not released
+         $tmpVersions = array ();
+         if ( $getVersionId == null )
+         {
+            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, false ) );
+         }
+
+         foreach ( $tmpVersions as $tmpVersion )
+         {
+            $tmpBugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $tmpVersion[ 'version' ] );
+            if ( count ( $tmpBugIds ) > 0 )
+            {
+               array_push ( $vPVersions, $tmpVersion );
+            }
+         }
+      }
+
+      return self::array_multi_unique ( $vPVersions );
+   }
+
+   public static function getVPProjects ( $version )
+   {
+      $bugIds = rProApi::dbGetBugIdsByTargetVersion ( $version[ 'version' ] );
+      $vPProjectIds = array ();
+      foreach ( $bugIds as $bugId )
+      {
+         array_push ( $vPProjectIds, bug_get_field ( $bugId, 'project_id' ) );
+      }
+
+      return array_unique ( $vPProjectIds );
+   }
+
+   public static function goRoadmap( $profileId, $projectId, $version, $bugIds )
+   {
+      #roadmap object
+      $getGroupId = $_GET[ 'group_id' ];
+      $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
+      # add version to directory
+      rHtmlApi::htmlPluginAddDirectorySubProjectEntry ( $version, $projectId, project_get_name ( $projectId ) );
+      # define and print title
+      $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
+      rHtmlApi::printWrapperInHTML ( $releaseTitleString );
+      # print version description
+      rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
+      # print version progress bar
+      rHtmlApi::printVersionProgress ( $roadmap );
+      # print bug list
+      if ( $profileId == -1 )
+      {
+         $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
+         $doingBugIds = array_diff ( $bugIds, $doneBugIds );
+         rHtmlApi::printBugList ( $doingBugIds );
+         rHtmlApi::printBugList ( $doneBugIds, true );
+      }
+      else
+      {
+         rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
+         rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+      }
+      # print text progress
+      ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
+      # print spacer
+      rHtmlApi::htmlPluginSpacer ();
    }
 }

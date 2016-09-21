@@ -79,11 +79,11 @@ class rHtmlApi
    {
       $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
       $versionReleaseDate = string_display_line ( date ( config_get ( 'short_date_format' ), $versionDesiredDate ) );
-      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate;
+      $versionReleaseString = plugin_lang_get ( 'roadmap_page_release_date_planned' ) . ':&nbsp;' . $versionReleaseDate;
       $progressHtmlString = '<span class="bar single" style="width: ' . $progress . '%; white-space: nowrap;"><div>' . $progressString . '</div></span>';
 
       echo '<div class="progress9001">' . $progressHtmlString . '</div>';
-      echo '<div class="td h25">&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date' ) . ':&nbsp;' . $versionReleaseDate . '</div>';
+      echo '<div class="td h25">&nbsp;' . plugin_lang_get ( 'roadmap_page_release_date_planned' ) . ':&nbsp;' . $versionReleaseDate . '</div>';
 
       echo '<script type="text/javascript">';
       echo 'addProgressBarToDirectory (\'' . $versionId . '\',\'' . $projectId . '\',\'' . $progressHtmlString . '\',\'' . $versionReleaseString . '\',\'' . '' . '\');';
@@ -258,7 +258,47 @@ class rHtmlApi
 
    public static function htmlPluginContentTitle ()
    {
-      echo '<div class="tr"><span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_content_title' ) . '</span></div>';
+      $getGroupId = $_GET[ 'group_id' ];
+      $getProfileId = $_GET[ 'profile_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $getVersionId = $_GET[ 'version_id' ];
+      $getSort = $_GET[ 'sort' ];
+
+      echo '<div class="tr">';
+      # page title
+      echo '<span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_content_title' ) . '</span>';
+      # sort button
+      echo '<div class="right">';
+      echo '<a class="button" href="' . plugin_page ( 'roadmap_page' );
+      if ( isset( $_GET[ 'group_id' ] ) )
+      {
+         echo '&amp;group_id=' . $getGroupId;
+      }
+      if ( isset( $_GET[ 'profile_id' ] ) )
+      {
+         echo '&amp;profile_id=' . $getProfileId;
+      }
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         echo '&amp;project_id=' . $getProjectId;
+      }
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         echo '&amp;version_id=' . $getVersionId;
+      }
+      if ( $getSort == 'vp' )
+      {
+         echo '&amp;sort=pv">';
+         echo '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortpv' ) . '" />';
+      }
+      if ( $getSort == 'pv' )
+      {
+         echo '&amp;sort=vp">';
+         echo '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortvp' ) . '" />';
+      }
+      echo '</a>';
+      echo '</div>';
+      echo '</div>';
       echo '<div class="tr"><hr /></div>';
    }
 
@@ -357,6 +397,7 @@ class rHtmlApi
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
+      $getSort = $_GET[ 'sort' ];
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=';
@@ -376,6 +417,14 @@ class rHtmlApi
          echo '&amp;project_id=' . $getProjectId;
       }
       echo '&amp;sproject_id=' . $currentProjectId;
+      if ( $getSort != null )
+      {
+         echo '&amp;sort=' . $getSort;
+      }
+      else
+      {
+         echo '&amp;sort=pv';
+      }
       echo '">';
       echo $groupName;
       echo '</a> ]';
@@ -391,6 +440,7 @@ class rHtmlApi
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
+      $getSort = $_GET[ 'sort' ];
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
@@ -414,6 +464,14 @@ class rHtmlApi
          echo '&amp;project_id=' . $getProjectId;
       }
       echo '&amp;sproject_id=' . $currentProjectId;
+      if ( $getSort != null )
+      {
+         echo '&amp;sort=' . $getSort;
+      }
+      else
+      {
+         echo '&amp;sort=pv';
+      }
       echo '">';
       echo $linkDescription;
       echo '</a> ]';
@@ -589,6 +647,30 @@ class rHtmlApi
    }
 
    /**
+    * print the project title in a roadmap
+    *
+    * @param $version
+    */
+   public static function htmlPluginVersionTitle ( $version, $profileId )
+   {
+      $versionid = string_display ( $version[ 'id' ] );
+      $versionName = string_display ( $version[ 'version' ] );
+      $profile = new rProfile( $profileId );
+      $profileName = string_display ( $profile->getProfileName () );
+
+      echo '<div class="tr"><div class="td"><span class="pagetitle" id="p' . $versionid . '">';
+      if ( $profileId == -1 )
+      {
+         echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $versionName, plugin_lang_get ( 'roadmap_page_whole_progress' ) );
+      }
+      else
+      {
+         echo sprintf ( plugin_lang_get ( 'roadmap_page_version_title' ), $versionName, $profileName );
+      }
+      echo '</span></div></div>';
+   }
+
+   /**
     * print spacer element
     */
    public static function htmlPluginSpacer ()
@@ -619,10 +701,24 @@ class rHtmlApi
     * @param $versionId
     * @param $versionName
     */
-   public static function htmlPluginAddDirectoryVersionEntry ( $projectId, $versionId, $versionName )
+   public static function htmlPluginAddDirectorySubVersionEntry ( $projectId, $versionId, $versionName )
    {
       echo '<script type="text/javascript">';
       echo 'addVersionEntryToDirectory (\'' . project_get_name ( $projectId ) . '\',\'' . $projectId . '\',\'' . $versionId . '\',\'' . $versionName . '\');';
+      echo '</script>';
+   }
+
+   /**
+    * add version entry to directory
+    *
+    * @param $version
+    * @param $projectId
+    * @param $projectName
+    */
+   public static function htmlPluginAddDirectorySubProjectEntry ( $version, $projectId, $projectName )
+   {
+      echo '<script type="text/javascript">';
+      echo 'addVersionEntryToDirectory (\'' . string_display_line ( $version[ 'version' ] ) . '\',\'' . $projectId . '\',\'' . $version[ 'id' ] . '\',\'' . $projectName . '\');';
       echo '</script>';
    }
 
@@ -636,6 +732,19 @@ class rHtmlApi
       $projectName = project_get_name ( $projectId );
       echo '<script type="text/javascript">';
       echo 'addProjectEntryToDirectory (\'directory\',\'' . $projectId . '\',\'' . $projectName . '\');';
+      echo '</script>';
+   }
+
+   /**
+    * add project entry to directory
+    *
+    * @param $version
+    */
+   public static function htmlPluginAddDirectoryVersionEntry ( $version )
+   {
+      $versionName = string_display_line ( $version[ 'version' ] );
+      echo '<script type="text/javascript">';
+      echo 'addProjectEntryToDirectory (\'directory\',\'' . $version[ 'id' ] . '\',\'' . $versionName . '\');';
       echo '</script>';
    }
 

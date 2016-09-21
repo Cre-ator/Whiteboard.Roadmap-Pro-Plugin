@@ -56,3 +56,5 @@ $s_plugin_RoadmapPro_roadmap_page_release_date_expected = 'desired';
 $s_plugin_RoadmapPro_roadmap_page_delay = 'Delay';
 $s_plugin_RoadmapPro_roadmap_page_dateinfo = 'Provided that only one full-time on works that project ';
 $s_plugin_RoadmapPro_roadmap_page_uncertainty = 'Uncertainty';
+$s_plugin_RoadmapPro_roadmap_page_sortpv = 'Group Project->Versions';
+$s_plugin_RoadmapPro_roadmap_page_sortvp = 'Group Versions->Projects';

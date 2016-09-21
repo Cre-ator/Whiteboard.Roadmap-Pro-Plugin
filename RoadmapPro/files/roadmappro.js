@@ -149,11 +149,42 @@ function delRow(initialRowCount, tableId) {
  * adds the box for the roadmap directory
  *
  * @param directoryTitle
+ * @param vpbutton
+ * @param pvbutton
+ * @param ahref
+ * @param groupId
+ * @param profileId
+ * @param projectId
+ * @param versionId
+ * @param sort
  * @returns {string}
  */
-function addRoadmapDirectoryBox(directoryTitle) {
-    document.write('<div class="tr"><span class="pagetitle">' + directoryTitle + '</span></div>' +
-        '<div class="tr"><hr /></div><div class="table" id="directory"></div>' +
+function addRoadmapDirectoryBox(directoryTitle, vpbutton, pvbutton, ahref, groupId, profileId, projectId, versionId, sort) {
+    document.write('<div class="tr"><span class="pagetitle">' + directoryTitle + '</span>');
+    document.write('<div class="right">' + ahref);
+    if (groupId != null && groupId != '') {
+        document.write('&amp;group_id=' + groupId);
+    }
+    if (profileId != null && profileId != '') {
+        document.write('&amp;profile_id=' + profileId);
+    }
+    if (projectId != null && projectId != '') {
+        document.write('&amp;project_id=' + projectId);
+    }
+    if (versionId != null && versionId != '') {
+        document.write('&amp;version_id=' + versionId);
+    }
+    if (sort == 'pv') {
+        document.write('&amp;sort=vp">');
+        document.write(pvbutton);
+    } else if (sort == 'vp') {
+        document.write('&amp;sort=pv">');
+        document.write(vpbutton);
+    } else {
+        document.write('">');
+    }
+    document.write('</a></div>');
+    document.write('</div><div class="tr"><hr /></div><div class="table" id="directory"></div>' +
         '<div class="tr"><div class="td"></div></div>');
 }
 

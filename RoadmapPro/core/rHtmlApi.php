@@ -249,8 +249,16 @@ class rHtmlApi
     */
    public static function htmlPluginDirectory ()
    {
+      $getGroupId = $_GET[ 'group_id' ];
+      $getProfileId = $_GET[ 'profile_id' ];
+      $getProjectId = $_GET[ 'project_id' ];
+      $getVersionId = $_GET[ 'version_id' ];
+      $getSort = $_GET[ 'sort' ];
+      $ahref = '<a class="button" href="' . plugin_page ( 'roadmap_page' );
+      $vpbutton = '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortpv' ) . '">';
+      $pvbutton = '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortvp' ) . '">';
       echo '<script type="text/javascript">';
-      echo 'addRoadmapDirectoryBox (\'' . plugin_lang_get ( 'roadmap_page_directory' ) . '\');';
+      echo 'addRoadmapDirectoryBox (\'' . plugin_lang_get ( 'roadmap_page_directory' ) . '\',\'' . $vpbutton . '\',\'' . $pvbutton . '\',\'' . $ahref . '\',\'' . $getGroupId . '\',\'' . $getProfileId . '\',\'' . $getProjectId . '\',\'' . $getVersionId . '\',\'' . $getSort . '\');';
       echo '</script>';
 
       echo '<div class="spacer"></div>';
@@ -268,6 +276,7 @@ class rHtmlApi
       # page title
       echo '<span class="pagetitle">' . plugin_lang_get ( 'roadmap_page_content_title' ) . '</span>';
       # sort button
+      echo '<noscript>';
       echo '<div class="right">';
       echo '<a class="button" href="' . plugin_page ( 'roadmap_page' );
       if ( isset( $_GET[ 'group_id' ] ) )
@@ -296,8 +305,13 @@ class rHtmlApi
          echo '&amp;sort=vp">';
          echo '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortvp' ) . '" />';
       }
+      if ( $getSort != 'vp' && $getSort != 'pv' )
+      {
+         echo '">';
+      }
       echo '</a>';
       echo '</div>';
+      echo '</noscript>';
       echo '</div>';
       echo '<div class="tr"><hr /></div>';
    }

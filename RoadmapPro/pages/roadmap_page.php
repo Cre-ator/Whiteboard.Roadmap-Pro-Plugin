@@ -87,7 +87,35 @@ function processTable ( $profileId )
                   rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $version );
                   $versionTitlePrinted = true;
                }
-               rProApi::goRoadmap( $profileId, $projectId, $version, $bugIds );
+               #roadmap object
+               $getGroupId = $_GET[ 'group_id' ];
+               $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
+               # add version to directory
+               rHtmlApi::htmlPluginAddDirectorySubProjectEntry ( $version, $projectId, project_get_name ( $projectId ) );
+               # define and print title
+               $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
+               rHtmlApi::printWrapperInHTML ( $releaseTitleString );
+               # print version description
+               rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
+               # print version progress bar
+               rHtmlApi::printVersionProgress ( $roadmap );
+               # print bug list
+               if ( $profileId == -1 )
+               {
+                  $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
+                  $doingBugIds = array_diff ( $bugIds, $doneBugIds );
+                  rHtmlApi::printBugList ( $doingBugIds );
+                  rHtmlApi::printBugList ( $doneBugIds, true );
+               }
+               else
+               {
+                  rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
+                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+               }
+               # print text progress
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
+               # print spacer
+               rHtmlApi::htmlPluginSpacer ();
             }
          }
       }
@@ -127,7 +155,35 @@ function processTable ( $profileId )
                   rHtmlApi::htmlPluginAddDirectoryProjectEntry ( $projectId );
                   $versionTitlePrinted = true;
                }
-               rProApi::goRoadmap( $profileId, $projectId, $version, $bugIds );
+               #roadmap object
+               $getGroupId = $_GET[ 'group_id' ];
+               $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
+               # add version to directory
+               rHtmlApi::htmlPluginAddDirectorySubVersionEntry ( $projectId, $version[ 'id' ], $version[ 'version' ] );
+               # define and print title
+               $releaseTitleString = rProApi::getReleasedTitleString ( $profileId, $getGroupId, $projectId, $version );
+               rHtmlApi::printWrapperInHTML ( $releaseTitleString );
+               # print version description
+               rHtmlApi::printWrapperInHTML ( rProApi::getDescription ( $version ) );
+               # print version progress bar
+               rHtmlApi::printVersionProgress ( $roadmap );
+               # print bug list
+               if ( $profileId == -1 )
+               {
+                  $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
+                  $doingBugIds = array_diff ( $bugIds, $doneBugIds );
+                  rHtmlApi::printBugList ( $doingBugIds );
+                  rHtmlApi::printBugList ( $doneBugIds, true );
+               }
+               else
+               {
+                  rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
+                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+               }
+               # print text progress
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
+               # print spacer
+               rHtmlApi::htmlPluginSpacer ();
             }
          }
       }

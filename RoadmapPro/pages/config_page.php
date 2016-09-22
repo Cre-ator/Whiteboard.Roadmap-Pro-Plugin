@@ -107,6 +107,8 @@ if ( config_get ( 'enable_eta' ) )
    echo '</td>';
    echo '</tr>';
 
+   echo '<tr class="foot-row"><td colspan="3">&nbsp;</td></tr>';
+
    echo '<tr>';
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_name' );
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_value' );

@@ -19,6 +19,11 @@ $s_plugin_RoadmapPro_config_page_calc_threshold = 'Threshold for automatic targe
 $s_plugin_RoadmapPro_config_page_calc_threshold_detail = 'If the number of items with a effort value reaches the threshold, the default value is used for all items without effort.';
 $s_plugin_RoadmapPro_config_page_default_eta = 'Standard ETA-Value for automatic target date calculation';
 
+$s_plugin_RoadmapPro_config_page_time_calc_title = 'Time Management';
+$s_plugin_RoadmapPro_config_page_time_calc_day = 'Day Of The Week';
+$s_plugin_RoadmapPro_config_page_time_calc_worktime = 'Work Time';
+$s_plugin_RoadmapPro_config_page_time_calc_weekday_enum = '10:Monday,20:Tuesday,30:Wednesday,40:Thursday,50:Friday,60:Saturday,70:Sunday';
+
 $s_plugin_RoadmapPro_config_page_profile_name = 'Name';
 $s_plugin_RoadmapPro_config_page_profile_status = 'Status';
 $s_plugin_RoadmapPro_config_page_profile_color = 'Color';

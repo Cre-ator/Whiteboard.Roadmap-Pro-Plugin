@@ -372,17 +372,27 @@ class roadmap
    private function checkEtaIsSet ()
    {
       $this->etaIsSet = false;
+      $calcthreshold = plugin_config_get ( 'calcthreshold' );
       if ( config_get ( 'enable_eta' ) )
       {
-         $factor = ( ( $this->etaNotTaggedBugCount / count ( $this->bugIds ) ) * 100 );
-         if ( $factor >= plugin_config_get ( 'calcthreshold' ) )
+         $factor = ( ( $this->etaTaggedBugCount / count ( $this->bugIds ) ) * 100 );
+         if (
+            ( $calcthreshold > 0 ) &&
+            ( $factor >= $calcthreshold ) &&
+            ( plugin_config_get ( 'defaulteta' ) != ETA_NONE )
+         )
          {
+            $this->etaIsSet = true;
+         }
+         else
+         {
+            $this->etaIsSet = true;
             foreach ( $this->bugIds as $bugId )
             {
                $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-               if ( ( $bugEtaValue != null ) && ( $bugEtaValue != ETA_NONE ) )
+               if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
                {
-                  $this->etaIsSet = true;
+                  $this->etaIsSet = false;
                }
             }
          }
@@ -396,11 +406,16 @@ class roadmap
    {
       $this->fullEta = 0;
 
-      $factor = ( ( $this->etaNotTaggedBugCount / count ( $this->bugIds ) ) * 100 );
+      $factor = ( ( $this->etaTaggedBugCount / count ( $this->bugIds ) ) * 100 );
+      $calcthreshold = plugin_config_get ( 'calcthreshold' );
+      #      wenn bug-anzahl ohne eta > 0  AND  bug-anzahl mit eta > 0
+      # AND  faktor >= benötigt            AND  default-eta != NONE
       if (
          ( $this->etaNotTaggedBugCount > 0 ) &&
          ( $this->etaTaggedBugCount > 0 ) &&
-         ( $factor >= plugin_config_get ( 'calcthreshold' ) )
+         ( $calcthreshold > 0 ) &&
+         ( $factor >= $calcthreshold ) &&
+         ( plugin_config_get ( 'defaulteta' ) != ETA_NONE )
       )
       {
          $this->fullEta = $this->calcFullEtaForPartial ();

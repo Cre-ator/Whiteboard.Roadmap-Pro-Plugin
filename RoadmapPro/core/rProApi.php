@@ -263,13 +263,19 @@ class rProApi
       $versionId = $version[ 'id' ];
       $versionName = $version[ 'version' ];
       $projectName = string_display ( project_get_name ( $projectId ) );
+      $getSort = $_GET[ 'sort' ];
 
       $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' );
       if ( $getGroupId != NULL )
       {
          $releaseTitleString .= '&amp;group_id=' . $getGroupId;
       }
-      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId . '" id="v' . $projectId . '_' . $versionId . '">'
+      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;project_id=' . $projectId;
+      if ( $getSort != NULL )
+      {
+         $releaseTitleString .= '&amp;sort=' . $getSort;
+      }
+      $releaseTitleString .= '" id="v' . $projectId . '_' . $versionId . '">'
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
          . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' );
 
@@ -277,7 +283,12 @@ class rProApi
       {
          $releaseTitleString .= '&amp;group_id=' . $getGroupId;
       }
-      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId . '">'
+      $releaseTitleString .= '&amp;profile_id=' . $profileId . '&amp;version_id=' . $versionId;
+      if ( $getSort != NULL )
+      {
+         $releaseTitleString .= '&amp;sort=' . $getSort;
+      }
+      $releaseTitleString .= '">'
          . string_display_line ( $versionName ) . '</a>'
          . '&nbsp;&nbsp;[&nbsp;<a href="view_all_set.php?type=1&amp;temporary=y&amp;'
          . FILTER_PROPERTY_PROJECT_ID . '=' . $projectId . '&amp;'

@@ -58,7 +58,7 @@ function processTable ( $profileId )
 
    $roadmapManager = new roadmapManager( $getVersionId, $getProjectId );
    $projectIds = $roadmapManager->getProjectIds ();
-   $tmpVersions = $roadmapManager->getVersions ();
+   $pVVersions = $roadmapManager->getVersions ();
 
    # initialize directory
    rHtmlApi::htmlPluginDirectory ();
@@ -68,7 +68,25 @@ function processTable ( $profileId )
 
    if ( $_GET[ 'sort' ] == 'vp' )
    {
-      $vPVersions = rProApi::getVPVersions ( $projectIds, $getVersionId );
+      $vPVersions = array ();
+      # no specific version selected - get all versions for selected project which are not released
+      if ( $getVersionId == NULL )
+      {
+         $vPVersions = rProApi::getVPVersions ( $projectIds, $getVersionId );
+      }
+      else
+      {
+         $versionArray = array ();
+         $versionArray[ 'id' ] = $getVersionId;
+         $versionArray[ 'project_id' ] = version_get_field ( $getVersionId, 'project_id' );
+         $versionArray[ 'version' ] = version_get_field ( $getVersionId, 'version' );
+         $versionArray[ 'description' ] = version_get_field ( $getVersionId, 'description' );
+         $versionArray[ 'released' ] = version_get_field ( $getVersionId, 'released' );
+         $versionArray[ 'obsolete' ] = version_get_field ( $getVersionId, 'obsolete' );
+         $versionArray[ 'date_order' ] = version_get_field ( $getVersionId, 'date_order' );
+         array_push ( $vPVersions, $versionArray );
+      }
+
       foreach ( $vPVersions as $version )
       {
          $versionTitlePrinted = FALSE;
@@ -130,6 +148,19 @@ function processTable ( $profileId )
    }
    else
    {
+      if ( $getVersionId != NULL )
+      {
+         $tmpProjectIds = array ();
+         $bugIds = rProApi::dbGetBugIdsByTargetVersion ( version_get_field ( $getVersionId, 'version' ) );
+         foreach ( $bugIds as $bugId )
+         {
+            array_push ( $tmpProjectIds, bug_get_field ( $bugId, 'project_id' ) );
+         }
+
+         $tmpProjectIds = array_unique ( $tmpProjectIds );
+         $projectIds = $tmpProjectIds;
+      }
+
       # iterate through projects
       foreach ( $projectIds as $projectId )
       {
@@ -144,12 +175,12 @@ function processTable ( $profileId )
          # no specific version selected - get all versions for selected project which are not released
          if ( $getVersionId == NULL )
          {
-            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, FALSE ) );
+            $pVVersions = array_reverse ( version_get_all_rows ( $projectId, FALSE ) );
          }
 
          # iterate through versions
          $versionTitlePrinted = FALSE;
-         foreach ( $tmpVersions as $version )
+         foreach ( $pVVersions as $version )
          {
             $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
             if ( count ( $bugIds ) > 0 )

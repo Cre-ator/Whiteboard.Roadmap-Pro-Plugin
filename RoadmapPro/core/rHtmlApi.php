@@ -53,10 +53,10 @@ class rHtmlApi
     *
     * @param null $id
     */
-   public static function htmlPluginConfigOpenTable ( $id = null )
+   public static function htmlPluginConfigOpenTable ( $id = NULL )
    {
       $htmlString = '<table align="center" cellspacing="1" class="width75';
-      if ( $id != null )
+      if ( $id != NULL )
       {
          $htmlString .= ' top" id="' . $id . '">';
       }
@@ -103,6 +103,8 @@ class rHtmlApi
       $doneEta = 0;
       $sumPercentDone = 0;
       $sumProgressHtmlString = '';
+
+
       echo '<div class="td"><div class="progress9001">';
       if ( !empty( $profileHashMap ) )
       {
@@ -416,22 +418,22 @@ class rHtmlApi
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=';
       # check specific profile id is given
-      if ( $groupId != null )
+      if ( $groupId != NULL )
       {
          echo $groupId;
       }
       # check version id is get parameter
-      if ( $getVersionId != null )
+      if ( $getVersionId != NULL )
       {
          echo '&amp;version_id=' . $getVersionId;
       }
       # check project id is get parameter
-      if ( $getProjectId != null )
+      if ( $getProjectId != NULL )
       {
          echo '&amp;project_id=' . $getProjectId;
       }
       echo '&amp;sproject_id=' . $currentProjectId;
-      if ( $getSort != null )
+      if ( $getSort != NULL )
       {
          echo '&amp;sort=' . $getSort;
       }
@@ -450,7 +452,7 @@ class rHtmlApi
     * @param $linkDescription
     * @param null $profileId
     */
-   private static function htmlLinkProfileSwitcher ( $linkDescription, $profileId = null )
+   private static function htmlLinkProfileSwitcher ( $linkDescription, $profileId = NULL )
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
@@ -459,7 +461,7 @@ class rHtmlApi
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
       # check specific profile id is given
-      if ( $profileId != null )
+      if ( $profileId != NULL )
       {
          echo $profileId;
       }
@@ -468,17 +470,17 @@ class rHtmlApi
          echo '-1';
       }
       # check version id is get parameter
-      if ( $getVersionId != null )
+      if ( $getVersionId != NULL )
       {
          echo '&amp;version_id=' . $getVersionId;
       }
       # check project id is get parameter
-      if ( $getProjectId != null )
+      if ( $getProjectId != NULL )
       {
          echo '&amp;project_id=' . $getProjectId;
       }
       echo '&amp;sproject_id=' . $currentProjectId;
-      if ( $getSort != null )
+      if ( $getSort != NULL )
       {
          echo '&amp;sort=' . $getSort;
       }
@@ -498,7 +500,7 @@ class rHtmlApi
     * @param $groupId
     * @param null $profileId
     */
-   private static function htmlLinkGroupProfileSwitcher ( $linkDescription, $groupId, $profileId = null )
+   private static function htmlLinkGroupProfileSwitcher ( $linkDescription, $groupId, $profileId = NULL )
    {
       $getVersionId = $_GET[ 'version_id' ];
       $getProjectId = $_GET[ 'project_id' ];
@@ -506,7 +508,7 @@ class rHtmlApi
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=' . $groupId . '&amp;profile_id=';
       # check specific profile id is given
-      if ( $profileId != null )
+      if ( $profileId != NULL )
       {
          echo $profileId;
       }
@@ -515,12 +517,12 @@ class rHtmlApi
          echo '-1';
       }
       # check version id is get parameter
-      if ( $getVersionId != null )
+      if ( $getVersionId != NULL )
       {
          echo '&amp;version_id=' . $getVersionId;
       }
       # check project id is get parameter
-      if ( $getProjectId != null )
+      if ( $getProjectId != NULL )
       {
          echo '&amp;project_id=' . $getProjectId;
       }
@@ -578,7 +580,7 @@ class rHtmlApi
     * @param $bugIds
     * @param bool $doneBugs
     */
-   public static function printBugList ( $bugIds, $doneBugs = false )
+   public static function printBugList ( $bugIds, $doneBugs = FALSE )
    {
       foreach ( $bugIds as $bugId )
       {

@@ -120,7 +120,7 @@ if ( config_get ( 'enable_eta' ) )
       $eta = new rEta( $etaEnumValue );
       echo '<tr>';
       echo '<td>' . string_display_line ( get_enum_element ( 'eta', $etaEnumValue ) ) . '</td>';
-      if ( $eta->getEtaUser () == null )
+      if ( $eta->getEtaUser () == NULL )
       {
          $eta->setEtaUser ( 0 );
          $eta->triggerInsertIntoDb ();

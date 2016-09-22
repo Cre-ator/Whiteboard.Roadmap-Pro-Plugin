@@ -71,19 +71,19 @@ class roadmapManager
    private function calcProjectVersionContent ()
    {
       # no specific project or version
-      if ( ( $this->projectId == null ) && ( $this->versionId == null ) )
+      if ( ( $this->projectId == NULL ) && ( $this->versionId == NULL ) )
       {
          $this->automaticDataCollector ();
       }
 
       # specific project selected
-      if ( $this->projectId != null )
+      if ( $this->projectId != NULL )
       {
          $this->projectDataCollector ();
       }
 
       # specific version selected
-      if ( $this->versionId != null )
+      if ( $this->versionId != NULL )
       {
          $this->projectVersionDataCollector ();
       }

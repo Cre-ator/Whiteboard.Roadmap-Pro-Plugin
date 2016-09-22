@@ -30,4 +30,4 @@ if ( isset( $_GET[ 'threshold_id' ] ) )
 }
 
 # redirect to view page
-print_successful_redirect ( plugin_page ( 'config_page', true ) );
+print_successful_redirect ( plugin_page ( 'config_page', TRUE ) );

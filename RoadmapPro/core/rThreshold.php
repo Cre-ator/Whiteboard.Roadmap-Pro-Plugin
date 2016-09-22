@@ -33,9 +33,9 @@ class rThreshold
     * rThreshold constructor.
     * @param null $thresholdId
     */
-   public function __construct ( $thresholdId = null )
+   public function __construct ( $thresholdId = NULL )
    {
-      if ( $thresholdId != null )
+      if ( $thresholdId != NULL )
       {
          $this->thresholdId = $thresholdId;
          $this->dbInitThresholdById ();
@@ -128,12 +128,12 @@ class rThreshold
    public function triggerInsertIntoDb ()
    {
       if (
-         ( $this->thresholdFrom != null ) &&
+         ( $this->thresholdFrom != NULL ) &&
          is_numeric ( $this->thresholdFrom ) &&
-         ( $this->thresholdTo != null ) &&
+         ( $this->thresholdTo != NULL ) &&
          is_numeric ( $this->thresholdTo ) &&
-         ( $this->thresholdUnit != null ) &&
-         ( $this->thresholdFactor != null ) &&
+         ( $this->thresholdUnit != NULL ) &&
+         ( $this->thresholdFactor != NULL ) &&
          is_numeric ( $this->thresholdFactor )
       )
       {
@@ -147,14 +147,14 @@ class rThreshold
    public function triggerUpdateInDb ()
    {
       if (
-         ( $this->thresholdFrom != null ) &&
+         ( $this->thresholdFrom != NULL ) &&
          is_numeric ( $this->thresholdFrom ) &&
-         ( $this->thresholdTo != null ) &&
+         ( $this->thresholdTo != NULL ) &&
          is_numeric ( $this->thresholdTo ) &&
-         ( $this->thresholdUnit != null ) &&
-         ( $this->thresholdFactor != null ) &&
+         ( $this->thresholdUnit != NULL ) &&
+         ( $this->thresholdFactor != NULL ) &&
          is_numeric ( $this->thresholdFactor ) &&
-         ( $this->thresholdId != null ) &&
+         ( $this->thresholdId != NULL ) &&
          is_numeric ( $this->thresholdId )
       )
       {
@@ -168,7 +168,7 @@ class rThreshold
    public function triggerDeleteFromDb ()
    {
       if (
-         ( $this->thresholdId != null ) &&
+         ( $this->thresholdId != NULL ) &&
          is_numeric ( $this->thresholdId )
       )
       {

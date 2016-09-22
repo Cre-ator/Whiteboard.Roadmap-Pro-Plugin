@@ -71,11 +71,11 @@ class rProApi
       $mysqli->close ();
       if ( $result->num_rows != 0 )
       {
-         return true;
+         return TRUE;
       }
       else
       {
-         return false;
+         return FALSE;
       }
    }
 
@@ -94,15 +94,15 @@ class rProApi
          $resultCount = mysqli_fetch_row ( $result )[ 0 ];
          if ( $resultCount > 0 )
          {
-            return true;
+            return TRUE;
          }
          else
          {
-            return false;
+            return FALSE;
          }
       }
 
-      return null;
+      return NULL;
    }
 
    /**
@@ -265,7 +265,7 @@ class rProApi
       $projectName = string_display ( project_get_name ( $projectId ) );
 
       $releaseTitleString = '<a href="' . plugin_page ( 'roadmap_page' );
-      if ( $getGroupId != null )
+      if ( $getGroupId != NULL )
       {
          $releaseTitleString .= '&amp;group_id=' . $getGroupId;
       }
@@ -273,7 +273,7 @@ class rProApi
          . string_display_line ( $projectName ) . '</a>&nbsp;-'
          . '&nbsp;<a href="' . plugin_page ( 'roadmap_page' );
 
-      if ( $getGroupId != null )
+      if ( $getGroupId != NULL )
       {
          $releaseTitleString .= '&amp;group_id=' . $getGroupId;
       }
@@ -312,7 +312,7 @@ class rProApi
          return lang_get ( 'description' ) . ':&nbsp;' . $description;
       }
 
-      return null;
+      return NULL;
    }
 
    /**
@@ -326,9 +326,9 @@ class rProApi
       $bugStatus = bug_get_field ( $bugId, 'status' );
       $allRelationships = relationship_get_all ( $bugId, $t_show_project );
       $allRelationshipsCount = count ( $allRelationships );
-      $stopFlag = false;
-      $forbiddenFlag = false;
-      $warningFlag = false;
+      $stopFlag = FALSE;
+      $forbiddenFlag = FALSE;
+      $warningFlag = FALSE;
       $bugEta = bug_get_field ( $bugId, 'eta' );
       $useEta = ( $bugEta != ETA_NONE ) && config_get ( 'enable_eta' );
       $stopAltText = "";
@@ -373,7 +373,7 @@ class rProApi
                   $stopAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
                }
                $stopAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
-               $stopFlag = true;
+               $stopFlag = TRUE;
             }
             if ( ( $isForbidden ) && ( $bugStatus > $destinationBugStatus ) )
             {
@@ -386,7 +386,7 @@ class rProApi
                   $forbiddenAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
                }
                $forbiddenAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
-               $forbiddenFlag = true;
+               $forbiddenFlag = TRUE;
             }
             if ( ( $isWarning ) && ( $bugStatus < $destinationBugStatus ) )
             {
@@ -399,7 +399,7 @@ class rProApi
                   $warningAltText .= trim ( utf8_str_pad ( $relationshipDescription, 20 ) ) . ' ';
                }
                $warningAltText .= string_display_line ( bug_format_id ( $destinationBugId ) );
-               $warningFlag = true;
+               $warningFlag = TRUE;
             }
          }
       }
@@ -483,7 +483,7 @@ class rProApi
    {
       $mysqli = self::initializeDbConnection ();
 
-      $bugIds = null;
+      $bugIds = NULL;
       if ( is_numeric ( $projectId ) )
       {
          $query = /** @lang sql */
@@ -516,7 +516,7 @@ class rProApi
    {
       $mysqli = self::initializeDbConnection ();
 
-      $bugIds = null;
+      $bugIds = NULL;
       $query = /** @lang sql */
          'SELECT id FROM mantis_bug_table
             WHERE target_version = \'' . $versionName . '\'';
@@ -621,7 +621,7 @@ class rProApi
     */
    public static function updateSingleValue ( $value, $constant )
    {
-      $actualValue = null;
+      $actualValue = NULL;
 
       if ( is_int ( $value ) )
       {
@@ -650,7 +650,7 @@ class rProApi
    public static function getRoadmapProgress ( $useEta, $tempEta, $hashProgress )
    {
       $pageProgress = '';
-      if ( $useEta == true )
+      if ( $useEta == TRUE )
       {
          $calculatedEta = self::calculateEtaUnit ( $tempEta );
          $pageProgress .= round ( ( $calculatedEta[ 0 ] ), 1 ) . $calculatedEta[ 1 ];
@@ -708,7 +708,7 @@ class rProApi
          }
       }
 
-      if ( $postEtaThresholdFrom != null )
+      if ( $postEtaThresholdFrom != NULL )
       {
          # process existing thresholds
          $thresholdIdCount = count ( $postEtaThresholdIds );
@@ -755,9 +755,9 @@ class rProApi
       $postProfilePriority = $_POST[ 'profile-prio' ];
       $postProfileEffort = $_POST[ 'profile-effort' ];
 
-      if ( $postProfileNames != null )
+      if ( $postProfileNames != NULL )
       {
-         if ( self::checkArrayForDuplicates ( $postProfileNames ) == true )
+         if ( self::checkArrayForDuplicates ( $postProfileNames ) == TRUE )
          {
             # error message
          }
@@ -814,9 +814,9 @@ class rProApi
       $postGroupIds = $_POST[ 'group-id' ];
       $postGroupNames = $_POST[ 'group-name' ];
 
-      if ( $postGroupNames != null )
+      if ( $postGroupNames != NULL )
       {
-         if ( self::checkArrayForDuplicates ( $postGroupNames ) == true )
+         if ( self::checkArrayForDuplicates ( $postGroupNames ) == TRUE )
          {
             # error message
          }
@@ -884,7 +884,7 @@ class rProApi
    public static function getDoneIssueIdsForAllProfiles ( $bugIds, $groupId )
    {
       $doneIssuesForAllProfiles = array ();
-      if ( $groupId == null )
+      if ( $groupId == NULL )
       {
          $profileIdArray = rProfileManager::getRProfileIds ();
       }
@@ -906,12 +906,12 @@ class rProApi
             $profileStatus = $profile->getProfileStatus ();
             $profileStatusArray = explode ( ';', $profileStatus );
 
-            $done = false;
+            $done = FALSE;
             foreach ( $profileStatusArray as $profileStatus )
             {
                if ( $bugStatus == $profileStatus )
                {
-                  $done = true;
+                  $done = TRUE;
                }
             }
 
@@ -995,9 +995,9 @@ class rProApi
 
          # no specific version selected - get all versions for selected project which are not released
          $tmpVersions = array ();
-         if ( $getVersionId == null )
+         if ( $getVersionId == NULL )
          {
-            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, false ) );
+            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, FALSE ) );
          }
 
          foreach ( $tmpVersions as $tmpVersion )

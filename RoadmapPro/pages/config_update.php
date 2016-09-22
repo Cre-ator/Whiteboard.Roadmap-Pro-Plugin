@@ -3,15 +3,15 @@ require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'cor
 
 auth_reauthenticate ();
 
-$optionChange = gpc_get_bool ( 'config_change', false );
-$optionReset = gpc_get_bool ( 'config_reset', false );
+$optionChange = gpc_get_bool ( 'config_change', FALSE );
+$optionReset = gpc_get_bool ( 'config_reset', FALSE );
 
-if ( $optionReset == true )
+if ( $optionReset == TRUE )
 {
-   print_successful_redirect ( plugin_page ( 'config_reset_ensure', true ) );
+   print_successful_redirect ( plugin_page ( 'config_reset_ensure', TRUE ) );
 }
 
-if ( $optionChange == true )
+if ( $optionChange == TRUE )
 {
    rProApi::configUpdateButton ( 'show_menu' );
    rProApi::editPluginInWhiteboardMenu ( 'plugin_show_menu', gpc_get_int ( 'show_menu' ) );
@@ -33,5 +33,5 @@ if ( $optionChange == true )
    rProApi::configProcessGroups ();
 
    form_security_purge ( 'plugin_RoadmapPro_config_update' );
-   print_successful_redirect ( plugin_page ( 'config_page', true ) );
+   print_successful_redirect ( plugin_page ( 'config_page', TRUE ) );
 }

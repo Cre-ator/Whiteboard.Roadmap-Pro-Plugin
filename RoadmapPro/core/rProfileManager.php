@@ -62,11 +62,11 @@ class rProfileManager
     * @param null $groupId
     * @return int
     */
-   public static function getSumRProfileEffort ( $groupId = null )
+   public static function getSumRProfileEffort ( $groupId = NULL )
    {
       $mysqli = rProApi::initializeDbConnection ();
 
-      if ( $groupId == null )
+      if ( $groupId == NULL )
       {
          $query = /** @lang sql */
             'SELECT SUM(profile_effort) FROM mantis_plugin_RoadmapPro_profile_table';
@@ -113,7 +113,7 @@ class rProfileManager
     */
    public static function getGroupSpecProfileIds ( $groupId )
    {
-      if ( $groupId == null )
+      if ( $groupId == NULL )
       {
          $profileIds = rProfileManager::getRProfileIds ();
       }

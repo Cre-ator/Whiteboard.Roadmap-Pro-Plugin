@@ -7,14 +7,14 @@ require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'cor
 
 # initialize profile color
 $getProfileId = 0;
-$profileIdIsSet = false;
+$profileIdIsSet = FALSE;
 $profileColor = 'FFFFFF';
 if ( isset( $_GET[ 'profile_id' ] ) )
 {
    $getProfileId = $_GET[ 'profile_id' ];
    $profile = new rProfile( $getProfileId );
    $profileColor = $profile->getProfileColor ();
-   $profileIdIsSet = true;
+   $profileIdIsSet = TRUE;
 }
 
 # print page top
@@ -71,7 +71,7 @@ function processTable ( $profileId )
       $vPVersions = rProApi::getVPVersions ( $projectIds, $getVersionId );
       foreach ( $vPVersions as $version )
       {
-         $versionTitlePrinted = false;
+         $versionTitlePrinted = FALSE;
          $vPProjects = rProApi::getVPProjects ( $version );
          foreach ( $vPProjects as $projectId )
          {
@@ -93,7 +93,7 @@ function processTable ( $profileId )
                   rHtmlApi::htmlPluginVersionTitle ( $version, $profileId );
                   # add version title to directory
                   rHtmlApi::htmlPluginAddDirectoryVersionEntry ( $version );
-                  $versionTitlePrinted = true;
+                  $versionTitlePrinted = TRUE;
                }
                #roadmap object
                $getGroupId = $_GET[ 'group_id' ];
@@ -113,15 +113,15 @@ function processTable ( $profileId )
                   $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
                   $doingBugIds = array_diff ( $bugIds, $doneBugIds );
                   rHtmlApi::printBugList ( $doingBugIds );
-                  rHtmlApi::printBugList ( $doneBugIds, true );
+                  rHtmlApi::printBugList ( $doneBugIds, TRUE );
                }
                else
                {
                   rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
-                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), TRUE );
                }
                # print text progress
-               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : NULL;
                # print spacer
                rHtmlApi::htmlPluginSpacer ();
             }
@@ -142,13 +142,13 @@ function processTable ( $profileId )
          }
 
          # no specific version selected - get all versions for selected project which are not released
-         if ( $getVersionId == null )
+         if ( $getVersionId == NULL )
          {
-            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, false ) );
+            $tmpVersions = array_reverse ( version_get_all_rows ( $projectId, FALSE ) );
          }
 
          # iterate through versions
-         $versionTitlePrinted = false;
+         $versionTitlePrinted = FALSE;
          foreach ( $tmpVersions as $version )
          {
             $bugIds = rProApi::dbGetBugIdsByProjectAndTargetVersion ( $projectId, $version[ 'version' ] );
@@ -161,7 +161,7 @@ function processTable ( $profileId )
                   rHtmlApi::htmlPluginProjectTitle ( $profileId, $projectId );
                   # add project title to directory
                   rHtmlApi::htmlPluginAddDirectoryProjectEntry ( $projectId );
-                  $versionTitlePrinted = true;
+                  $versionTitlePrinted = TRUE;
                }
                #roadmap object
                $getGroupId = $_GET[ 'group_id' ];
@@ -181,15 +181,15 @@ function processTable ( $profileId )
                   $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $getGroupId );
                   $doingBugIds = array_diff ( $bugIds, $doneBugIds );
                   rHtmlApi::printBugList ( $doingBugIds );
-                  rHtmlApi::printBugList ( $doneBugIds, true );
+                  rHtmlApi::printBugList ( $doneBugIds, TRUE );
                }
                else
                {
                   rHtmlApi::printBugList ( $roadmap->getDoingBugIds () );
-                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), true );
+                  rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), TRUE );
                }
                # print text progress
-               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : null;
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : NULL;
                # print spacer
                rHtmlApi::htmlPluginSpacer ();
             }

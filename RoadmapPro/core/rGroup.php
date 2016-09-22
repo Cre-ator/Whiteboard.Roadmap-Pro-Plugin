@@ -25,9 +25,9 @@ class rGroup
     * rGroup constructor.
     * @param null $groupId
     */
-   public function __construct ( $groupId = null )
+   public function __construct ( $groupId = NULL )
    {
-      if ( $groupId != null )
+      if ( $groupId != NULL )
       {
          $this->groupId = $groupId;
          $this->dbInitGroupById ();
@@ -88,8 +88,8 @@ class rGroup
    public function triggerInsertIntoDb ()
    {
       if (
-         ( $this->groupName != null ) &&
-         ( $this->groupProfiles != null )
+         ( $this->groupName != NULL ) &&
+         ( $this->groupProfiles != NULL )
       )
       {
          $this->dbInsertGroup ();
@@ -102,10 +102,10 @@ class rGroup
    public function triggerUpdateInDb ()
    {
       if (
-         ( $this->groupId != null ) &&
+         ( $this->groupId != NULL ) &&
          is_numeric ( $this->groupId ) &&
-         ( $this->groupName != null ) &&
-         ( $this->groupProfiles != null )
+         ( $this->groupName != NULL ) &&
+         ( $this->groupProfiles != NULL )
       )
       {
          $this->dbUpdateGroup ();
@@ -118,7 +118,7 @@ class rGroup
    public function triggerDeleteFromDb ()
    {
       if (
-         ( $this->groupId != null ) &&
+         ( $this->groupId != NULL ) &&
          is_numeric ( $this->groupId )
       )
       {

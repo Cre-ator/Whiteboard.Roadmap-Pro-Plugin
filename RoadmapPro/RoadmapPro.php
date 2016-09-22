@@ -2,7 +2,7 @@
 
 class RoadmapProPlugin extends MantisPlugin
 {
-   private $shortName = null;
+   private $shortName = NULL;
 
    function register ()
    {
@@ -11,7 +11,7 @@ class RoadmapProPlugin extends MantisPlugin
       $this->description = 'Extended Roadmap with additional progress information';
       $this->page = 'config_page';
 
-      $this->version = '1.2.19';
+      $this->version = '1.2.20';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99'
@@ -147,7 +147,7 @@ class RoadmapProPlugin extends MantisPlugin
       {
          return '<address>' . $this->shortName . ' ' . $this->version . ' Copyright &copy; 2016 by ' . $this->author . '</address>';
       }
-      return null;
+      return NULL;
    }
 
    function menu ()
@@ -165,7 +165,7 @@ class RoadmapProPlugin extends MantisPlugin
       {
          return '<a href="' . plugin_page ( 'roadmap_page' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a >';
       }
-      return null;
+      return NULL;
    }
 
    function uninstall ()

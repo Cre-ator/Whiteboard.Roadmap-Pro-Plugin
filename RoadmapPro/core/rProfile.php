@@ -37,9 +37,9 @@ class rProfile
     * rProfile constructor.
     * @param null $profileId
     */
-   public function __construct ( $profileId = null )
+   public function __construct ( $profileId = NULL )
    {
-      if ( $profileId != null )
+      if ( $profileId != NULL )
       {
          $this->profileId = $profileId;
          $this->dbInitProfileById ();
@@ -148,9 +148,9 @@ class rProfile
    public function triggerInsertIntoDb ()
    {
       if (
-         ( $this->profileName != null ) &&
-         ( $this->profileColor != null ) &&
-         ( $this->profileStatus != null )
+         ( $this->profileName != NULL ) &&
+         ( $this->profileColor != NULL ) &&
+         ( $this->profileStatus != NULL )
       )
       {
          $this->dbInsertProfile ();
@@ -163,11 +163,11 @@ class rProfile
    public function triggerUpdateInDb ()
    {
       if (
-         ( $this->profileId != null ) &&
+         ( $this->profileId != NULL ) &&
          is_numeric ( $this->profileId ) &&
-         ( $this->profileName != null ) &&
-         ( $this->profileColor != null ) &&
-         ( $this->profileStatus != null )
+         ( $this->profileName != NULL ) &&
+         ( $this->profileColor != NULL ) &&
+         ( $this->profileStatus != NULL )
       )
       {
          $this->dbUpdateProfile ();
@@ -180,7 +180,7 @@ class rProfile
    public function triggerDeleteFromDb ()
    {
       if (
-         ( $this->profileId != null ) &&
+         ( $this->profileId != NULL ) &&
          is_numeric ( $this->profileId )
       )
       {

@@ -371,28 +371,28 @@ class roadmap
     */
    private function checkEtaIsSet ()
    {
-      $this->etaIsSet = false;
+      $this->etaIsSet = FALSE;
       $calcthreshold = plugin_config_get ( 'calcthreshold' );
       if ( config_get ( 'enable_eta' ) )
       {
          $factor = ( ( $this->etaTaggedBugCount / count ( $this->bugIds ) ) * 100 );
          if (
-            ( $calcthreshold > 0 ) &&
+            ( $calcthreshold >= 0 ) &&
             ( $factor >= $calcthreshold ) &&
             ( plugin_config_get ( 'defaulteta' ) != ETA_NONE )
          )
          {
-            $this->etaIsSet = true;
+            $this->etaIsSet = TRUE;
          }
          else
          {
-            $this->etaIsSet = true;
+            $this->etaIsSet = TRUE;
             foreach ( $this->bugIds as $bugId )
             {
                $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-               if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+               if ( ( $bugEtaValue == NULL ) || ( $bugEtaValue == ETA_NONE ) )
                {
-                  $this->etaIsSet = false;
+                  $this->etaIsSet = FALSE;
                }
             }
          }
@@ -412,14 +412,13 @@ class roadmap
       # AND  faktor >= benötigt            AND  default-eta != NONE
       if (
          ( $this->etaNotTaggedBugCount > 0 ) &&
-         ( $this->etaTaggedBugCount > 0 ) &&
-         ( $calcthreshold > 0 ) &&
+         ( $calcthreshold >= 0 ) &&
          ( $factor >= $calcthreshold ) &&
          ( plugin_config_get ( 'defaulteta' ) != ETA_NONE )
       )
       {
          $this->fullEta = $this->calcFullEtaForPartial ();
-         $this->useFreeCalc = true;
+         $this->useFreeCalc = TRUE;
       }
       else
       {
@@ -455,7 +454,7 @@ class roadmap
       foreach ( $this->bugIds as $bugId )
       {
          $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+         if ( ( $bugEtaValue == NULL ) || ( $bugEtaValue == ETA_NONE ) )
          {
             $fullEta += $defaultEtaUser;
          }
@@ -477,7 +476,7 @@ class roadmap
    private function calcSingleEta ( $bugId )
    {
       $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-      if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+      if ( ( $bugEtaValue == NULL ) || ( $bugEtaValue == ETA_NONE ) )
       {
          $bugEtaValueUser = $this->getDefaultEtaUserValue ();
          $this->singleEta = $bugEtaValueUser;
@@ -522,7 +521,7 @@ class roadmap
       foreach ( $this->bugIds as $bugId )
       {
          $this->getIssueIsDone ( $bugId );
-         if ( $this->issueIsDone == false )
+         if ( $this->issueIsDone == FALSE )
          {
             array_push ( $this->doingBugIds, $bugId );
             $this->doingBugIds = array_unique ( $this->doingBugIds );
@@ -537,7 +536,7 @@ class roadmap
     */
    private function checkIssueIsDoneById ( $bugId )
    {
-      $this->issueIsDone = false;
+      $this->issueIsDone = FALSE;
 
       $bugStatus = bug_get_field ( $bugId, 'status' );
       $roadmapProfile = new rProfile( $this->profileId );
@@ -548,7 +547,7 @@ class roadmap
       {
          if ( $bugStatus == $roadmapStatus )
          {
-            $this->issueIsDone = true;
+            $this->issueIsDone = TRUE;
          }
       }
    }
@@ -824,7 +823,7 @@ class roadmap
       {
          if ( $index == 7 )
          {
-            return false;
+            return FALSE;
          }
 
          if ( !$this->checkDayIsValid ( ( $day + $index ) % DAYSPERWEEK ) )
@@ -884,7 +883,7 @@ class roadmap
       foreach ( $this->bugIds as $bugId )
       {
          $bugEtaValue = bug_get_field ( $bugId, 'eta' );
-         if ( ( $bugEtaValue == null ) || ( $bugEtaValue == ETA_NONE ) )
+         if ( ( $bugEtaValue == NULL ) || ( $bugEtaValue == ETA_NONE ) )
          {
             $this->etaNotTaggedBugCount++;
          }

@@ -29,9 +29,9 @@ class rEta
     * rEta constructor.
     * @param null $etaConfig
     */
-   public function __construct ( $etaConfig = null )
+   public function __construct ( $etaConfig = NULL )
    {
-      if ( $etaConfig != null )
+      if ( $etaConfig != NULL )
       {
          $this->etaConfig = $etaConfig;
          $this->dbInitEtaByConfigValue ();
@@ -187,11 +187,11 @@ class rEta
 
       if ( 0 != $result->num_rows )
       {
-         $this->etaIsSet = true;
+         $this->etaIsSet = TRUE;
       }
       else
       {
-         $this->etaIsSet = false;
+         $this->etaIsSet = FALSE;
       }
    }
 }

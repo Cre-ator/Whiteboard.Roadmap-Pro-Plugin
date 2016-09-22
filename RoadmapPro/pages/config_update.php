@@ -20,7 +20,10 @@ if ( $optionChange == true )
    if ( config_get ( 'enable_eta' ) )
    {
       rProApi::updateSingleValue ( 'defaulteta', 10 );
-      rProApi::updateSingleValue ( 'calcthreshold', 0 );
+      if ( gpc_get_int ( 'calcthreshold' ) <= 100 && gpc_get_int ( 'calcthreshold' ) >= 0 )
+      {
+         rProApi::updateSingleValue ( 'calcthreshold', 0 );
+      }
       rProApi::configProcessEta ();
       rProApi::configProcessTimeCalc ();
    }

@@ -16,6 +16,7 @@ $s_plugin_RoadmapPro_config_page_eta_threshold_to = 'to (h)';
 $s_plugin_RoadmapPro_config_page_eta_threshold_factor = 'Unit in h';
 
 $s_plugin_RoadmapPro_config_page_calc_threshold = 'Threshold for automatic target date calculation in %';
+$s_plugin_RoadmapPro_config_page_calc_threshold_detail = 'If the number of items with a effort value reaches the threshold, the default value is used for all items without effort.';
 $s_plugin_RoadmapPro_config_page_default_eta = 'Standard ETA-Value for automatic target date calculation';
 
 $s_plugin_RoadmapPro_config_page_profile_name = 'Name';

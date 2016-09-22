@@ -16,6 +16,7 @@ $s_plugin_RoadmapPro_config_page_eta_threshold_to = 'bis (h)';
 $s_plugin_RoadmapPro_config_page_eta_threshold_factor = 'Einheit in h';
 
 $s_plugin_RoadmapPro_config_page_calc_threshold = 'Schwelle für automatische Terminkalkulation in %';
+$s_plugin_RoadmapPro_config_page_calc_threshold_detail = 'Erreicht die Anzahl an mit Aufwand bestimmten Einträge den hinterlegten Schwellenwert, so wird für alle Einträge ohne Aufwand der Default-Wert verwendet.';
 $s_plugin_RoadmapPro_config_page_default_eta = 'Standard ETA-Wert für automatische Terminkalkulation';
 
 $s_plugin_RoadmapPro_config_page_time_calc_title = 'Zeitmanagement';

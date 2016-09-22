@@ -99,9 +99,11 @@ if ( config_get ( 'enable_eta' ) )
    echo '</tr>';
 
    echo '<tr>';
-   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_calc_threshold', 1 );
+   echo '<td class="category" colspan="1">' . plugin_lang_get ( 'config_page_calc_threshold' ) . '<br />';
+   echo '<span class="small">' . plugin_lang_get ( 'config_page_calc_threshold_detail' ) . '</span>';
+   echo '</td>';
    echo '<td colspan="2">';
-   echo '<input type="number" step="0.1" name="calcthreshold" min="0" max="100" value="' . plugin_config_get ( 'calcthreshold' ) . '"/>';
+   echo '<input type="number" step="1" name="calcthreshold" min="0" max="100" value="' . plugin_config_get ( 'calcthreshold' ) . '"/>';
    echo '</td>';
    echo '</tr>';
 

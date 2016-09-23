@@ -230,7 +230,7 @@ function addProgressBarToDirectory(versionId, projectId, progressHtmlString, tex
  * @param versionName
  */
 function addVersionEntryToDirectory(projectName, projectId, versionId, versionName) {
-    var table = document.getElementById(projectName).parentNode.parentNode;
+    var table = document.getElementById(projectName).parentNode;
 
     var trdiv = document.createElement("div");
     trdiv.className = 'tr';
@@ -255,15 +255,17 @@ function addProjectEntryToDirectory(tableId, projectId, projectName) {
     var table = document.getElementById(tableId);
 
     var trdiv = document.createElement("div");
-    trdiv.className = 'tr';
+    trdiv.className = 'caption';
+    trdiv.id = projectName;
+    trdiv.innerHTML = '<a class="directory project" href="#p' + projectId + '">' + projectName + '</a>';
     table.appendChild(trdiv);
 
-    var tddiv = document.createElement("div");
-    tddiv.className = 'td';
-    tddiv.id = projectName;
-    tddiv.innerHTML = '<div class="tr"><div class="td"><a class="directory project" href="#p' + projectId + '">' + projectName + '</a></div></div>';
-
-    trdiv.appendChild(tddiv);
+    // var tddiv = document.createElement("div");
+    // tddiv.className = 'td100';
+    // tddiv.id = projectName;
+    // tddiv.innerHTML = '<a class="directory project" href="#p' + projectId + '">' + projectName + '</a>';
+    //
+    // trdiv.appendChild(tddiv);
 }
 
 /**

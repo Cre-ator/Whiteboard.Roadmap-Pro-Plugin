@@ -31,8 +31,8 @@ rHtmlApi::printProfileSwitcher ();
 # print group->profile menu bar
 if ( isset( $_GET[ 'group_id' ] ) )
 {
-   $groupId = $_GET[ 'group_id' ];
-   rHtmlApi::htmlGroupProfileSwitcher ( $groupId );
+   $getGroupId = $_GET[ 'group_id' ];
+   rHtmlApi::htmlGroupProfileSwitcher ( $getGroupId );
 }
 
 # print page content
@@ -53,8 +53,26 @@ html_page_bottom ();
  */
 function processTable ( $profileId )
 {
-   $getVersionId = $_GET[ 'version_id' ];
-   $getProjectId = $_GET[ 'project_id' ];
+   $getProjectId = NULL;
+   $getVersionId = NULL;
+   $getGroupId = NULL;
+   $getSort = NULL;
+   if ( isset( $_GET[ 'project_id' ] ) )
+   {
+      $getProjectId = $_GET[ 'project_id' ];
+   }
+   if ( isset( $_GET[ 'version_id' ] ) )
+   {
+      $getVersionId = $_GET[ 'version_id' ];
+   }
+   if ( isset( $_GET[ 'group_id' ] ) )
+   {
+      $getGroupId = $_GET[ 'group_id' ];
+   }
+   if ( isset( $_GET[ 'sort' ] ) )
+   {
+      $getSort = $_GET[ 'sort' ];
+   }
 
    $roadmapManager = new roadmapManager( $getVersionId, $getProjectId );
    $projectIds = $roadmapManager->getProjectIds ();
@@ -66,7 +84,7 @@ function processTable ( $profileId )
    # print content title
    rHtmlApi::htmlPluginContentTitle ();
 
-   if ( $_GET[ 'sort' ] == 'vp' )
+   if ( $getSort == 'vp' )
    {
       $vPVersions = array ();
       # no specific version selected - get all versions for selected project which are not released
@@ -114,7 +132,6 @@ function processTable ( $profileId )
                   $versionTitlePrinted = TRUE;
                }
                #roadmap object
-               $getGroupId = $_GET[ 'group_id' ];
                $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
                # add version to directory
                rHtmlApi::htmlPluginAddDirectorySubProjectEntry ( $version, $projectId, project_get_name ( $projectId ) );
@@ -139,7 +156,7 @@ function processTable ( $profileId )
                   rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), TRUE );
                }
                # print text progress
-               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : NULL;
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : rHtmlApi::printScaledTextProgress ( $roadmap );
                # print spacer
                rHtmlApi::htmlPluginSpacer ();
             }
@@ -195,7 +212,6 @@ function processTable ( $profileId )
                   $versionTitlePrinted = TRUE;
                }
                #roadmap object
-               $getGroupId = $_GET[ 'group_id' ];
                $roadmap = new roadmap( $bugIds, $profileId, $getGroupId, $projectId, $version[ 'id' ] );
                # add version to directory
                rHtmlApi::htmlPluginAddDirectorySubVersionEntry ( $projectId, $version[ 'id' ], $version[ 'version' ] );
@@ -220,7 +236,7 @@ function processTable ( $profileId )
                   rHtmlApi::printBugList ( $roadmap->getDoneBugIds (), TRUE );
                }
                # print text progress
-               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : NULL;
+               ( $profileId >= 0 ) ? rHtmlApi::printSingleTextProgress ( $roadmap ) : rHtmlApi::printScaledTextProgress ( $roadmap );
                # print spacer
                rHtmlApi::htmlPluginSpacer ();
             }

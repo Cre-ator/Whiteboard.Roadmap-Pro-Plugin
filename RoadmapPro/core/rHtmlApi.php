@@ -175,7 +175,7 @@ class rHtmlApi
       }
       echo '</div></div>';
 
-      self::printScaledTextProgress ( $roadmap, $sumProgressHtmlString );
+      self::printScaledDetailedTextProgress ( $roadmap, $sumProgressHtmlString );
    }
 
    /**
@@ -184,7 +184,7 @@ class rHtmlApi
     * @param roadmap $roadmap
     * @param $sumProgressHtmlString
     */
-   private static function printScaledTextProgress ( roadmap $roadmap, $sumProgressHtmlString )
+   private static function printScaledDetailedTextProgress ( roadmap $roadmap, $sumProgressHtmlString )
    {
       $versionId = $roadmap->getVersionId ();
       $textProgressDir = $roadmap->getTextProgressDir ();
@@ -237,6 +237,22 @@ class rHtmlApi
    }
 
    /**
+    * print progress as text
+    *
+    * @param roadmap $roadmap
+    */
+   public static function printScaledTextProgress ( roadmap $roadmap )
+   {
+      $bugIds = $roadmap->getBugIds ();
+      $overallBugAmount = count ( $bugIds );
+      $doneBugIds = rProApi::getDoneIssueIdsForAllProfiles ( $bugIds, $roadmap->getGroupId () );
+      $doneBugAmount = count ( $doneBugIds );
+      echo '<div class="tr"><div class="td">' . PHP_EOL;
+      echo sprintf ( plugin_lang_get ( 'roadmap_page_resolved_time' ), $doneBugAmount, $overallBugAmount );
+      echo '</div></div>' . PHP_EOL;
+   }
+
+   /**
     * wraps content into a cell
     *
     * @param $content
@@ -251,11 +267,32 @@ class rHtmlApi
     */
    public static function htmlPluginDirectory ()
    {
-      $getGroupId = $_GET[ 'group_id' ];
-      $getProfileId = $_GET[ 'profile_id' ];
-      $getProjectId = $_GET[ 'project_id' ];
-      $getVersionId = $_GET[ 'version_id' ];
-      $getSort = $_GET[ 'sort' ];
+      $getGroupId = NULL;
+      $getProfileId = NULL;
+      $getProjectId = NULL;
+      $getVersionId = NULL;
+      $getSort = NULL;
+      if ( isset( $_GET[ 'group_id' ] ) )
+      {
+         $getGroupId = $_GET[ 'group_id' ];
+      }
+      if ( isset( $_GET[ 'profile_id' ] ) )
+      {
+         $getProfileId = $_GET[ 'profile_id' ];
+      }
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         $getProjectId = $_GET[ 'project_id' ];
+      }
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         $getVersionId = $_GET[ 'version_id' ];
+      }
+      if ( isset( $_GET[ 'sort' ] ) )
+      {
+         $getSort = $_GET[ 'sort' ];
+      }
+
       $ahref = '<a class="button" href="' . plugin_page ( 'roadmap_page' );
       $vpbutton = '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortpv' ) . '">';
       $pvbutton = '<input type="button" value="' . plugin_lang_get ( 'roadmap_page_sortvp' ) . '">';
@@ -268,11 +305,31 @@ class rHtmlApi
 
    public static function htmlPluginContentTitle ()
    {
-      $getGroupId = $_GET[ 'group_id' ];
-      $getProfileId = $_GET[ 'profile_id' ];
-      $getProjectId = $_GET[ 'project_id' ];
-      $getVersionId = $_GET[ 'version_id' ];
-      $getSort = $_GET[ 'sort' ];
+      $getGroupId = NULL;
+      $getProfileId = NULL;
+      $getProjectId = NULL;
+      $getVersionId = NULL;
+      $getSort = NULL;
+      if ( isset( $_GET[ 'group_id' ] ) )
+      {
+         $getGroupId = $_GET[ 'group_id' ];
+      }
+      if ( isset( $_GET[ 'profile_id' ] ) )
+      {
+         $getProfileId = $_GET[ 'profile_id' ];
+      }
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         $getProjectId = $_GET[ 'project_id' ];
+      }
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         $getVersionId = $_GET[ 'version_id' ];
+      }
+      if ( isset( $_GET[ 'sort' ] ) )
+      {
+         $getSort = $_GET[ 'sort' ];
+      }
 
       echo '<div class="tr">';
       # page title
@@ -411,9 +468,22 @@ class rHtmlApi
     */
    private static function htmlLinkGroupSwitcher ( $groupName, $groupId )
    {
-      $getVersionId = $_GET[ 'version_id' ];
-      $getProjectId = $_GET[ 'project_id' ];
-      $getSort = $_GET[ 'sort' ];
+      $getVersionId = NULL;
+      $getProjectId = NULL;
+      $getSort = NULL;
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         $getVersionId = $_GET[ 'version_id' ];
+      }
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         $getProjectId = $_GET[ 'project_id' ];
+      }
+      if ( isset( $_GET[ 'sort' ] ) )
+      {
+         $getSort = $_GET[ 'sort' ];
+      }
+
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=';
@@ -454,9 +524,22 @@ class rHtmlApi
     */
    private static function htmlLinkProfileSwitcher ( $linkDescription, $profileId = NULL )
    {
-      $getVersionId = $_GET[ 'version_id' ];
-      $getProjectId = $_GET[ 'project_id' ];
-      $getSort = $_GET[ 'sort' ];
+      $getVersionId = NULL;
+      $getProjectId = NULL;
+      $getSort = NULL;
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         $getVersionId = $_GET[ 'version_id' ];
+      }
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         $getProjectId = $_GET[ 'project_id' ];
+      }
+      if ( isset( $_GET[ 'sort' ] ) )
+      {
+         $getSort = $_GET[ 'sort' ];
+      }
+
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;profile_id=';
@@ -502,8 +585,17 @@ class rHtmlApi
     */
    private static function htmlLinkGroupProfileSwitcher ( $linkDescription, $groupId, $profileId = NULL )
    {
-      $getVersionId = $_GET[ 'version_id' ];
-      $getProjectId = $_GET[ 'project_id' ];
+      $getProjectId = NULL;
+      $getVersionId = NULL;
+      if ( isset( $_GET[ 'project_id' ] ) )
+      {
+         $getProjectId = $_GET[ 'project_id' ];
+      }
+      if ( isset( $_GET[ 'version_id' ] ) )
+      {
+         $getVersionId = $_GET[ 'version_id' ];
+      }
+
       $currentProjectId = helper_get_current_project ();
 
       echo '[ <a href="' . plugin_page ( 'roadmap_page' ) . '&amp;group_id=' . $groupId . '&amp;profile_id=';

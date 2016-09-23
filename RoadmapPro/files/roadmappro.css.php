@@ -196,6 +196,7 @@ div.table_center {
 
 div.table #directory {
    float: left;
+   position: relative;
 }
 
 div.tr {
@@ -206,6 +207,12 @@ div.td {
    display: table-cell;
    border: none;
    float: left;
+}
+
+div.caption {
+   display: table-caption;
+   float: left;
+   border: none;
 }
 
 .h25 {

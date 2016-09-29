@@ -341,7 +341,7 @@ class roadmap
     */
    public function getExpectedFinishedDateString ()
    {
-      if ( $this->etaIsSet || $this->etaTaggedBugCount > 0 )
+      if ( $this->etaIsSet )
       {
          $this->calcExpectedFinishedDate ();
          $dateFinishedExpectedFormat = string_display_line ( date ( config_get ( 'short_date_format' ), $this->expectedFinishedDate ) );

@@ -14,7 +14,6 @@ hr.version-separator {
 .progress-suffix {
    position: relative;
    background: #fff;
-   background-color: #fff;
    height: 25px;
    margin-top: 1em;
    margin-bottom: 1em;

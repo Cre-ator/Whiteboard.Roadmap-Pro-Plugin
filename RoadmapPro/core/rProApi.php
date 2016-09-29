@@ -655,11 +655,12 @@ class rProApi
     *
     * @param $useEta
     * @param $tempEta
-    * @param $hashProgress
+    * @param $profileHash
     * @return string
     */
-   public static function getRoadmapProgress ( $useEta, $tempEta, $hashProgress )
+   public static function getRoadmapProgress ( $useEta, $tempEta, $profileHash )
    {
+      $hashProgress = $profileHash[ 1 ];
       $pageProgress = '';
       if ( $useEta == TRUE )
       {
@@ -668,7 +669,8 @@ class rProApi
       }
       else
       {
-         $pageProgress .= round ( $hashProgress ) . '%';
+         $profileEffortFactor = $profileHash[ 2 ];
+         $pageProgress .= round ( $hashProgress / $profileEffortFactor ) . '%';
       }
 
       return $pageProgress;

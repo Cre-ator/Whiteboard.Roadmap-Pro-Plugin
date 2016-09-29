@@ -146,7 +146,7 @@ class rHtmlApi
                   $nextHashProgress = $nextProfileHash[ 1 ];
                }
 
-               $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $hashProgress );
+               $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $profileHash );
                $barWidth = ( ( ( $hashProgress / 100 ) * BARINNERWIDTH ) - 2 );
                $textWidth = strlen ( $roadmapProgress ) * CHARWIDTH;
                $progressHtmlString .= '<div class="bar ' . $direction . '" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';

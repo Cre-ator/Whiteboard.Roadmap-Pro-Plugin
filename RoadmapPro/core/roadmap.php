@@ -615,7 +615,7 @@ class roadmap
          $roadmapProfileId = $roadmapProfileIds[ $index ];
          $roadmapProfile = new rProfile( $roadmapProfileId );
          $tProfileId = $roadmapProfile->getProfileId ();
-         $this->setProfileId ( $tProfileId );
+         $this->profileId = $tProfileId;
          # effort factor
          $profileEffortFactor = rProApi::getProfileEffortFactor ( $this );
          # bug data
@@ -637,14 +637,14 @@ class roadmap
             }
             $doneEtaPercent = $doneEtaPercent * $profileCount * $profileEffortFactor;
             $wholeProgress += $doneEtaPercent;
-            $profileHash = $tProfileId . ';' . $doneEtaPercent;
+            $profileHash = $tProfileId . ';' . $doneEtaPercent . ';' . $profileEffortFactor;
          }
          else
          {
             $tVersionProgress = ( $tDoneBugAmount / $allBugCount );
             $progessDonePercent = ( $tVersionProgress * 100 * $profileEffortFactor );
             $wholeProgress += $progessDonePercent;
-            $profileHash = $tProfileId . ';' . $progessDonePercent;
+            $profileHash = $tProfileId . ';' . $progessDonePercent . ';' . $profileEffortFactor;
          }
 
          array_push ( $this->profileHashArray, $profileHash );

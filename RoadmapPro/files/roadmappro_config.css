@@ -1,0 +1,30 @@
+table[class="width75"] > tbody > tr:nth-child(odd) {
+    background-color: #e8e8e8;
+}
+
+table[class="width75"] > tbody > tr:nth-child(even) {
+    background-color: #d8d8d8;
+}
+
+table[class="width75 top"] > tbody > tr:nth-child(odd) {
+    background-color: #e8e8e8;
+}
+
+table[class="width75 top"] > tbody > tr:nth-child(even) {
+    background-color: #d8d8d8;
+}
+
+table[class="width75"] > tbody > tr[class="foot-row"] {
+    background-color: #ffffff;
+}
+
+a[class="button"] {
+    text-decoration: none;
+}
+
+table.top {
+    border-top: solid 1px #000000;
+    border-left: solid 1px #000000;
+    border-right: solid 1px #000000;
+    border-bottom: hidden;
+}

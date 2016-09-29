@@ -1,0 +1,66 @@
+<?php
+$s_plugin_RoadmapPro_menu_title = 'Roadmap Pro';
+
+$s_plugin_RoadmapPro_config_page_title = 'Roadmap Pro Configuration';
+$s_plugin_RoadmapPro_config_page_general = 'General Configuration';
+$s_plugin_RoadmapPro_config_page_access_level = 'Plugin Access Level';
+$s_plugin_RoadmapPro_config_page_show_menu = 'Show menu';
+$s_plugin_RoadmapPro_config_page_show_footer = 'Show plugin information in footer';
+$s_plugin_RoadmapPro_config_page_roadmap_profile_management = 'Roadmap Profiles';
+$s_plugin_RoadmapPro_config_page_roadmap_eta_threshold_management = 'ETA Threshold Management';
+$s_plugin_RoadmapPro_config_page_eta_name = 'Description';
+$s_plugin_RoadmapPro_config_page_eta_value = 'Value';
+$s_plugin_RoadmapPro_config_page_eta_unit_title = 'Unit';
+$s_plugin_RoadmapPro_config_page_eta_threshold_from = 'from (h)';
+$s_plugin_RoadmapPro_config_page_eta_threshold_to = 'to (h)';
+$s_plugin_RoadmapPro_config_page_eta_threshold_factor = 'Unit in h';
+
+$s_plugin_RoadmapPro_config_page_calc_threshold = 'Threshold for automatic target date calculation in %';
+$s_plugin_RoadmapPro_config_page_calc_threshold_detail = 'If the number of items with a effort value reaches the threshold, the default value is used for all items without effort.';
+$s_plugin_RoadmapPro_config_page_default_eta = 'Standard ETA-Value for automatic target date calculation';
+
+$s_plugin_RoadmapPro_config_page_time_calc_title = 'Time Management';
+$s_plugin_RoadmapPro_config_page_time_calc_day = 'Day Of The Week';
+$s_plugin_RoadmapPro_config_page_time_calc_worktime = 'Work Time';
+$s_plugin_RoadmapPro_config_page_time_calc_weekday_enum = '10:Monday,20:Tuesday,30:Wednesday,40:Thursday,50:Friday,60:Saturday,70:Sunday';
+
+$s_plugin_RoadmapPro_config_page_profile_name = 'Name';
+$s_plugin_RoadmapPro_config_page_profile_status = 'Status';
+$s_plugin_RoadmapPro_config_page_profile_color = 'Color';
+$s_plugin_RoadmapPro_config_page_profile_prio = 'Priority';
+$s_plugin_RoadmapPro_config_page_profile_effort = 'Weighting';
+$s_plugin_RoadmapPro_config_page_profile_action = 'Action';
+$s_plugin_RoadmapPro_config_page_eta_unit = 'h';
+$s_plugin_RoadmapPro_config_page_add_profile = 'Add Profile';
+$s_plugin_RoadmapPro_config_page_profile_list = 'Profiles';
+$s_plugin_RoadmapPro_config_page_delete_profile = 'Remove';
+
+$s_plugin_RoadmapPro_config_page_prfgr_management = 'Roadmap Groups';
+$s_plugin_RoadmapPro_config_page_prfgr_profiles = 'Contains Profiles';
+
+$s_plugin_RoadmapPro_config_page_eta_management = 'Effort Management';
+$s_plugin_RoadmapPro_config_page_eta_none_value = 'unused Effort';
+$s_plugin_RoadmapPro_config_page_prio_decription = 'The priority represents the time in the workflow';
+
+$s_plugin_RoadmapPro_config_reset_ensure_title = 'Reset Plugin Configuration';
+$s_plugin_RoadmapPro_config_reset_ensure_expl = 'Caution, if you proceed all data stored in the plugin are permanently deleted. Continue?';
+$s_plugin_RoadmapPro_config_reset_ensure_conf = 'Continue';
+$s_plugin_RoadmapPro_config_reset_ensure_dont = 'Abort';
+
+$s_plugin_RoadmapPro_roadmap_page_content_title = 'Roadmaps';
+$s_plugin_RoadmapPro_roadmap_page_resolved_time = '%1$d from %2$d Issues done.';
+$s_plugin_RoadmapPro_roadmap_page_version_title = '%1$s - Roadmap in %2$s';
+$s_plugin_RoadmapPro_roadmap_page_bar_time = 'Duration';
+$s_plugin_RoadmapPro_roadmap_page_bar_amount = 'Amount';
+$s_plugin_RoadmapPro_roadmap_page_bar_from = 'from';
+$s_plugin_RoadmapPro_roadmap_page_whole_progress = 'Overall Progress';
+$s_plugin_RoadmapPro_roadmap_page_no_eta = 'Progress not defined.';
+$s_plugin_RoadmapPro_roadmap_page_directory = 'Overview';
+$s_plugin_RoadmapPro_roadmap_page_no_cat = 'No Category';
+$s_plugin_RoadmapPro_roadmap_page_release_date_planned = 'planned';
+$s_plugin_RoadmapPro_roadmap_page_release_date_expected = 'desired';
+$s_plugin_RoadmapPro_roadmap_page_delay = 'Delay';
+$s_plugin_RoadmapPro_roadmap_page_dateinfo = 'Provided that only one full-time on works that project ';
+$s_plugin_RoadmapPro_roadmap_page_uncertainty = 'Uncertainty';
+$s_plugin_RoadmapPro_roadmap_page_sortpv = 'Group Project->Versions';
+$s_plugin_RoadmapPro_roadmap_page_sortvp = 'Group Versions->Projects';

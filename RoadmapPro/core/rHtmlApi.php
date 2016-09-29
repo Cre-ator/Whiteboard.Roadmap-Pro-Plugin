@@ -651,7 +651,7 @@ class rHtmlApi
             $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
             $progressString = round ( ( $calculatedDoneEta[ 0 ] * $profileEffortFactor ), 1 ) . $calculatedDoneEta[ 1 ] .
-               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . round ( $calculatedFullEta[ 0 ], 1 ) . $calculatedFullEta[ 1 ];
+               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . round ( $calculatedFullEta[ 0 ] * $profileEffortFactor , 1 ) . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          else

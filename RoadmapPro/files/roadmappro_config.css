@@ -1,3 +1,7 @@
+table[class="width75"] {
+   margin-bottom: 14pt;
+}
+
 table[class="width75"] > tbody > tr:nth-child(odd) {
     background-color: #e8e8e8;
 }

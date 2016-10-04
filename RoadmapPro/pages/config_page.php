@@ -40,8 +40,6 @@ rHtmlApi::htmlPluginConfigRadio ( 'show_footer', 2 );
 echo '</tr>';
 echo '</table>';
 
-echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
-
 # time calculation settings
 if ( config_get ( 'enable_eta' ) )
 {
@@ -71,8 +69,6 @@ if ( config_get ( 'enable_eta' ) )
 
    echo '</table>';
 }
-
-echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
 # eta management
 $thresholdCount = 0;
@@ -137,8 +133,6 @@ if ( config_get ( 'enable_eta' ) )
       echo '</tr>';
    }
    echo '</table>';
-
-   echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
    # thresholds
    rHtmlApi::htmlPluginConfigOpenTable ( 'thresholds' );
@@ -207,8 +201,6 @@ if ( config_get ( 'enable_eta' ) )
    echo '</tbody>';
    echo '</table>';
 }
-
-echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 
 # show profiles
 rHtmlApi::htmlPluginConfigOpenTable ( 'profiles' );
@@ -295,7 +287,6 @@ echo '</table>';
 
 if ( $profileCount > 1 )
 {
-   echo '<table><tr class="foot-row"><td>&nbsp;</td></tr></table>';
 # profile groups
    rHtmlApi::htmlPluginConfigOpenTable ( 'profilegroups' );
    echo '<tr>';
@@ -381,12 +372,15 @@ if ( $profileCount > 1 )
    echo '</td>';
 }
 
-echo '<td class="center" colspan="5">';
-echo '<input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/>&nbsp';
-echo '<input type="submit" name="config_reset" class="button" value="' . lang_get ( 'reset_prefs_button' ) . '"/>';
-echo '</td>';
 echo '</tr>';
 echo '</tbody>';
+echo '</table>';
+
+echo '<table align="center">';
+echo '<tr>';
+echo '<td><input type="submit" name="config_change" class="button" value="' . lang_get ( 'update_prefs_button' ) . '"/></td>';
+echo '<td><input type="submit" name="config_reset" class="button" value="' . lang_get ( 'reset_prefs_button' ) . '"/></td>';
+echo '</tr>';
 echo '</table>';
 
 echo '</form>';

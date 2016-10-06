@@ -51,14 +51,11 @@ You are welcome to translate this plugin, in a different language with Crowdin.
 Screenshots
 -----------
 
-Screenshot of the 'Roadmap Pro' overview with single progress.
-![RoadmapPro Overview](/Images/roadmap_pro_spov.png?raw=true "")
+Screenshot of the 'Roadmap Pro' with single progress.
+![RoadmapPro](/Images/roadmap_pro_sp.png?raw=true "")
 
-Screenshot of the 'Roadmap Pro' detailed roadmap information with single progress.
-![RoadmapPro Detailed View](/Images/roadmap_pro_spdv.png?raw=true "")
+Screenshot of the 'Roadmap Pro' with overall progress.
+![RoadmapPro](/Images/roadmap_pro_op.png?raw=true "")
 
-Screenshot of the 'Roadmap Pro' overview with overall progress.
-![RoadmapPro Overview](/Images/roadmap_pro_opov.png?raw=true "")
-
-Screenshot of the 'Roadmap Pro' detailed roadmap information with overall progress.
-![RoadmapPro Detailed View](/Images/roadmap_pro_opdv.png?raw=true "")
+Screenshot of the 'Roadmap Pro' config dialog.
+![RoadmapPro Config](/Images/roadmap_pro_conf.png?raw=true "")

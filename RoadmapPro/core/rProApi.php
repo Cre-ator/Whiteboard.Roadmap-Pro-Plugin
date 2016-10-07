@@ -702,6 +702,7 @@ class rProApi
          {
             $calculatedEta = self::calculateEtaUnit ( $tempEta );
          }
+         setlocale ( LC_NUMERIC, lang_get_current () );
          $pageProgress .= round ( ( $calculatedEta[ 0 ] ), 1 ) . $calculatedEta[ 1 ];
       }
       else

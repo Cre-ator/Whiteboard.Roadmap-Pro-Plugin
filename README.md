@@ -59,3 +59,13 @@ Screenshot of the 'Roadmap Pro' with overall progress.
 
 Screenshot of the 'Roadmap Pro' config dialog.
 ![RoadmapPro Config](/Images/roadmap_pro_conf.png?raw=true "")
+
+Screenshot of the 'Roadmap Pro' ETA config dialog.
+![RoadmapPro Config Eta](/Images/roadmap_pro_conf_eta.png?raw=true "")
+
+Libraries
+---------
+
+- Jan Odvarko - jscolor, JavaScript Color Picker (v1.4.5)
+  GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
+  http://jscolor.com

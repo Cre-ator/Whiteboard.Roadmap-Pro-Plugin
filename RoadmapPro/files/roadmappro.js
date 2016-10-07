@@ -111,23 +111,19 @@ function addThresholdRow() {
     var td2 = document.createElement("td");
     var td3 = document.createElement("td");
     var td4 = document.createElement("td");
-    var td5 = document.createElement("td");
 
-    /** from */
-    td1.innerHTML = '<input type="number" step="0.1" name="threshold-from[]" size="15" maxlength="128" value="">';
     /** to */
-    td2.innerHTML = '<input type="number" step="0.1" name="threshold-to[]" size="15" maxlength="128" value="">';
+    td1.innerHTML = '<input type="number" step="0.1" name="threshold-to[]" size="15" maxlength="128" value="">';
     /** unit */
-    td3.innerHTML = '<input type="text" name="new-threshold-unit-' + newThresholdCounter + '" size="15" maxlength="128" value="">';
+    td2.innerHTML = '<input type="text" name="new-threshold-unit-' + newThresholdCounter + '" size="15" maxlength="128" value="">';
     newThresholdCounter++;
     /** factor */
-    td4.innerHTML = '<input type="number" step="0.1" name="threshold-factor[]" size="15" maxlength="128" value="">';
+    td3.innerHTML = '<input type="number" step="0.1" name="threshold-factor[]" size="15" maxlength="128" value="">';
 
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
     tr.appendChild(td4);
-    tr.appendChild(td5);
 }
 
 /**

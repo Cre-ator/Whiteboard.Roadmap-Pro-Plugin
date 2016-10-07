@@ -26,7 +26,7 @@ echo form_security_field ( 'plugin_RoadmapPro_config_update' );
 rHtmlApi::htmlPluginConfigOpenTable ();
 # General configuration
 echo '<tr>';
-rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_general', 3 );
+echo '<td class="form-title" colspan="3">' . plugin_lang_get ( 'menu_title' ) . ':&nbsp;' . plugin_lang_get ( 'config_page_general' ) . '</td>';
 echo '</tr>';
 # Show menu
 echo '<tr>';
@@ -140,7 +140,6 @@ if ( config_get ( 'enable_eta' ) )
    rHtmlApi::htmlPluginConfigOutputCol ( 'form-title', 'config_page_roadmap_eta_threshold_management', 6 );
    echo '</tr>';
    echo '<tr>';
-   rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_from' );
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_to' );
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_unit_title' );
    rHtmlApi::htmlPluginConfigOutputCol ( 'category', 'config_page_eta_threshold_factor' );
@@ -154,18 +153,13 @@ if ( config_get ( 'enable_eta' ) )
       foreach ( $thresholdIds as $thresholdId )
       {
          $threshold = new rThreshold( $thresholdId );
-         $thresholdFrom = $threshold->getThresholdFrom ();
          $thresholdTo = $threshold->getThresholdTo ();
          $thresholdUnit = $threshold->getThresholdUnit ();
          $thresholdFactor = $threshold->getThresholdFactor ();
 
          echo '<tr>';
-         # threshold from
          echo '<td>';
          echo '<input type="hidden" name="threshold-id[]" value="' . $thresholdId . '" />';
-         echo '<input type="number" step="0.1" name="threshold-from[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdFrom ) . '" />';
-         echo '</td>';
-         echo '<td>';
          echo '<input type="number" step="0.1" name="threshold-to[]" size="15" maxlength="128" value="' . string_display_line ( $thresholdTo ) . '" />';
          echo '</td>';
          echo '<td>';
@@ -186,6 +180,7 @@ if ( config_get ( 'enable_eta' ) )
       }
    }
 }
+
 echo '</table>';
 
 if ( config_get ( 'enable_eta' ) )

@@ -201,6 +201,7 @@ class rProApi
    }
 
    /**
+    * todo
     * assign a given eta value to a specified eta unit
     *
     * @param $eta
@@ -211,6 +212,7 @@ class rProApi
       $backupString = array ();
       $backupString[ 0 ] = $eta;
       $backupString[ 1 ] = plugin_lang_get ( 'config_page_eta_unit' );
+      $backupString[ 2 ] = NULL;
       $etaString = array ();
       $thresholdIds = rThresholdManager::getRThresholdIds ();
       $thresholdCount = count ( $thresholdIds );
@@ -220,22 +222,47 @@ class rProApi
       }
       else
       {
+         $calcDone = FALSE;
+         $thresholdFactor = 1;
+         $thresholdUnit = plugin_lang_get ( 'config_page_eta_unit' );
          for ( $index = 0; $index < $thresholdCount; $index++ )
          {
             $thresholdId = $thresholdIds[ $index ];
             $threshold = new rThreshold( $thresholdId );
-            $thresholdFrom = $threshold->getThresholdFrom ();
             $thresholdTo = $threshold->getThresholdTo ();
 
-            if ( ( $eta > $thresholdFrom ) && ( $eta < $thresholdTo ) )
+            $nextThresholdExists = FALSE;
+            $usedThreshold = NULL;
+            $nextThreshold = NULL;
+            if ( $index < ( $thresholdCount - 1 ) )
             {
-               $thresholdUnit = $threshold->getThresholdUnit ();
-               $thresholdFactor = $threshold->getThresholdFactor ();
-
-               $newEta = ( $eta / $thresholdFactor );
-               $etaString[ 0 ] = $newEta;
-               $etaString[ 1 ] = $thresholdUnit;
+               $nextThresholdId = $thresholdIds[ $index + 1 ];
+               $nextThreshold = new rThreshold( $nextThresholdId );
+               $nextThresholdExists = TRUE;
             }
+
+            if ( !$calcDone )
+            {
+               if ( ( $eta > $thresholdTo ) && ( $nextThresholdExists ) )
+               {
+                  $thresholdUnit = $nextThreshold->getThresholdUnit ();
+                  $thresholdFactor = $nextThreshold->getThresholdFactor ();
+                  $usedThreshold = $nextThreshold;
+
+               }
+               else
+               {
+                  $thresholdUnit = $threshold->getThresholdUnit ();
+                  $thresholdFactor = $threshold->getThresholdFactor ();
+                  $usedThreshold = $threshold;
+                  $calcDone = TRUE;
+               }
+            }
+
+            $newEta = ( $eta / $thresholdFactor );
+            $etaString[ 0 ] = $newEta;
+            $etaString[ 1 ] = $thresholdUnit;
+            $etaString[ 2 ] = $usedThreshold;
          }
       }
 
@@ -546,7 +573,6 @@ class rProApi
       return $bugIds;
    }
 
-
    /**
     * Reset all plugin-related data
     *
@@ -656,15 +682,26 @@ class rProApi
     * @param $useEta
     * @param $tempEta
     * @param $profileHash
+    * @param rThreshold $maxThreshold
     * @return string
     */
-   public static function getRoadmapProgress ( $useEta, $tempEta, $profileHash )
+   public static function getRoadmapProgress ( $useEta, $tempEta, $profileHash, rThreshold $maxThreshold )
    {
       $hashProgress = $profileHash[ 1 ];
       $pageProgress = '';
       if ( $useEta == TRUE )
       {
-         $calculatedEta = self::calculateEtaUnit ( $tempEta );
+         if ( $maxThreshold != NULL )
+         {
+            $calculatedEta = array ();
+            $factor = $maxThreshold->getThresholdFactor ();
+            $calculatedEta[ 0 ] = $tempEta / $factor;
+            $calculatedEta[ 1 ] = $maxThreshold->getThresholdUnit ();
+         }
+         else
+         {
+            $calculatedEta = self::calculateEtaUnit ( $tempEta );
+         }
          $pageProgress .= round ( ( $calculatedEta[ 0 ] ), 1 ) . $calculatedEta[ 1 ];
       }
       else
@@ -692,7 +729,6 @@ class rProApi
    public static function configProcessEta ()
    {
       $postEtaThresholdIds = $_POST[ 'threshold-id' ];
-      $postEtaThresholdFrom = $_POST[ 'threshold-from' ];
       $postEtaThresholdTo = $_POST[ 'threshold-to' ];
       $postEtaThresholdUnit = $_POST[ 'threshold-unit' ];
       $postEtaThresholdFactor = $_POST[ 'threshold-factor' ];
@@ -721,7 +757,7 @@ class rProApi
          }
       }
 
-      if ( $postEtaThresholdFrom != NULL )
+      if ( $postEtaThresholdTo != NULL )
       {
          # process existing thresholds
          $thresholdIdCount = count ( $postEtaThresholdIds );
@@ -732,7 +768,6 @@ class rProApi
             {
                $thresholdId = $postEtaThresholdIds[ $index ];
                $threshold = new rThreshold( $thresholdId );
-               $threshold->setThresholdFrom ( $postEtaThresholdFrom[ $index ] );
                $threshold->setThresholdTo ( $postEtaThresholdTo[ $index ] );
                $threshold->setThresholdUnit ( $thresholdUnit );
                $threshold->setThresholdFactor ( $postEtaThresholdFactor[ $index ] );
@@ -741,12 +776,11 @@ class rProApi
          }
 
          # process new thresholds
-         $overallThresholdCount = count ( $postEtaThresholdFrom );
+         $overallThresholdCount = count ( $postEtaThresholdTo );
          $newThresholdIndex = 0;
          for ( $newIndex = $thresholdIdCount; $newIndex < $overallThresholdCount; $newIndex++ )
          {
             $newThreshold = new rThreshold();
-            $newThreshold->setThresholdFrom ( $postEtaThresholdFrom[ $newIndex ] );
             $newThreshold->setThresholdTo ( $postEtaThresholdTo[ $newIndex ] );
             $newThresholdUnit = $_POST[ 'new-threshold-unit-' . $newThresholdIndex ];
             $newThreshold->setThresholdUnit ( $newThresholdUnit );

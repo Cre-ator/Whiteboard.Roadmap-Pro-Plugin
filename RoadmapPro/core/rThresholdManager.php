@@ -19,7 +19,7 @@ class rThresholdManager
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'SELECT id FROM mantis_plugin_whiteboard_etathreshold_table';
+         'SELECT id FROM mantis_plugin_whiteboard_etathreshold_table ORDER BY cast(eta_thr_factor as unsigned) ASC';
 
       $result = $mysqli->query ( $query );
 

@@ -15,10 +15,6 @@ class rThreshold
    /**
     * @var integer
     */
-   private $thresholdFrom;
-   /**
-    * @var integer
-    */
    private $thresholdTo;
    /**
     * @var string
@@ -56,22 +52,6 @@ class rThreshold
    public function getThresholdId ()
    {
       return $this->thresholdId;
-   }
-
-   /**
-    * @return int
-    */
-   public function getThresholdFrom ()
-   {
-      return $this->thresholdFrom;
-   }
-
-   /**
-    * @param int $thresholdFrom
-    */
-   public function setThresholdFrom ( $thresholdFrom )
-   {
-      $this->thresholdFrom = $thresholdFrom;
    }
 
    /**
@@ -128,8 +108,6 @@ class rThreshold
    public function triggerInsertIntoDb ()
    {
       if (
-         ( $this->thresholdFrom != NULL ) &&
-         is_numeric ( $this->thresholdFrom ) &&
          ( $this->thresholdTo != NULL ) &&
          is_numeric ( $this->thresholdTo ) &&
          ( $this->thresholdUnit != NULL ) &&
@@ -147,8 +125,6 @@ class rThreshold
    public function triggerUpdateInDb ()
    {
       if (
-         ( $this->thresholdFrom != NULL ) &&
-         is_numeric ( $this->thresholdFrom ) &&
          ( $this->thresholdTo != NULL ) &&
          is_numeric ( $this->thresholdTo ) &&
          ( $this->thresholdUnit != NULL ) &&
@@ -190,10 +166,9 @@ class rThreshold
       $dbThresholdRow = mysqli_fetch_row ( $result );
       $mysqli->close ();
 
-      $this->thresholdFrom = $dbThresholdRow[ 1 ];
-      $this->thresholdTo = $dbThresholdRow[ 2 ];
-      $this->thresholdUnit = $dbThresholdRow[ 3 ];
-      $this->thresholdFactor = $dbThresholdRow[ 4 ];
+      $this->thresholdTo = $dbThresholdRow[ 1 ];
+      $this->thresholdUnit = $dbThresholdRow[ 2 ];
+      $this->thresholdFactor = $dbThresholdRow[ 3 ];
    }
 
    /**
@@ -204,8 +179,8 @@ class rThreshold
       $mysqli = rProApi::initializeDbConnection ();
 
       $query = /** @lang sql */
-         'INSERT INTO mantis_plugin_whiteboard_etathreshold_table ( id, eta_thr_from, eta_thr_to, eta_thr_unit, eta_thr_factor )
-         SELECT null,' . (int)$this->thresholdFrom . ',' . (int)$this->thresholdTo . ',\'' . $this->thresholdUnit . '\',' . (int)$this->thresholdFactor . '
+         'INSERT INTO mantis_plugin_whiteboard_etathreshold_table ( id, eta_thr_to, eta_thr_unit, eta_thr_factor )
+         SELECT null,' . (int)$this->thresholdTo . ',\'' . $this->thresholdUnit . '\',' . (int)$this->thresholdFactor . '
          FROM DUAL WHERE NOT EXISTS (
          SELECT 1 FROM mantis_plugin_whiteboard_etathreshold_table
          WHERE eta_thr_unit=\'' . $this->thresholdUnit . '\')';
@@ -224,7 +199,7 @@ class rThreshold
 
       $query = /** @lang sql */
          'UPDATE mantis_plugin_whiteboard_etathreshold_table
-         SET eta_thr_from=' . (int)$this->thresholdFrom . ',eta_thr_to=' . (int)$this->thresholdTo . ',eta_thr_unit=\'' . $this->thresholdUnit . '\',eta_thr_factor=' . (int)$this->thresholdFactor . '
+         SET eta_thr_to=' . (int)$this->thresholdTo . ',eta_thr_unit=\'' . $this->thresholdUnit . '\',eta_thr_factor=' . (int)$this->thresholdFactor . '
          WHERE id=' . $this->thresholdId;
 
       $mysqli->query ( $query );

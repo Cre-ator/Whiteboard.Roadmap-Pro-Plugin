@@ -294,13 +294,14 @@ class roadmap
    }
 
    /**
+    * @param rThreshold $maxThreshold
     * @return string
     */
-   public function getTextProgressMain ()
+   public function getTextProgressMain ( rThreshold $maxThreshold )
    {
       if ( $this->etaIsSet )
       {
-         return $this->generateEtaTextProgressMain ();
+         return $this->generateEtaTextProgressMain ( $maxThreshold );
       }
       else
       {
@@ -658,12 +659,23 @@ class roadmap
    /**
     * generate and return text progress string for eta-calculated progress for main roadmap
     *
+    * @param rThreshold $maxThreshold
     * @return string
     */
-   private function generateEtaTextProgressMain ()
+   private function generateEtaTextProgressMain ( rThreshold $maxThreshold )
    {
-      $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
       $calculatedFullEta = rProApi::calculateEtaUnit ( $this->fullEta );
+      if ( $maxThreshold != NULL )
+      {
+         $calculatedDoneEta = array ();
+         $factor = $maxThreshold->getThresholdFactor ();
+         $calculatedDoneEta[ 0 ] = $this->doneEta / $factor;
+         $calculatedDoneEta[ 1 ] = $maxThreshold->getThresholdUnit ();
+      }
+      else
+      {
+         $calculatedDoneEta = rProApi::calculateEtaUnit ( $this->doneEta );
+      }
       return '&nbsp;' . round ( $this->progressPercent ) .
       '%&nbsp;(' . round ( ( $calculatedDoneEta[ 0 ] ), 1 ) . $calculatedDoneEta[ 1 ] .
       '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) .

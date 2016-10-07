@@ -4,6 +4,7 @@ require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfileManager.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rProfile.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroupManager.php' );
 require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rGroup.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'rThreshold.php' );
 
 /**
  * Class roadmap_html_api
@@ -104,6 +105,8 @@ class rHtmlApi
       $sumPercentDone = 0;
       $sumProgressHtmlString = '';
 
+      $maxThresholdUnit = rProApi::calculateEtaUnit ( $fullEta );
+      $maxThreshold = $maxThresholdUnit[ 2 ];
 
       echo '<div class="td"><div class="progress9001">';
       if ( !empty( $profileHashMap ) )
@@ -146,7 +149,7 @@ class rHtmlApi
                   $nextHashProgress = $nextProfileHash[ 1 ];
                }
 
-               $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $profileHash );
+               $roadmapProgress = rProApi::getRoadmapProgress ( $useEta, $tempEta, $profileHash, $maxThreshold );
                $barWidth = ( ( ( $hashProgress / 100 ) * BARINNERWIDTH ) - 2 );
                $textWidth = strlen ( $roadmapProgress ) * CHARWIDTH;
                $progressHtmlString .= '<div class="bar ' . $direction . '" style="width: ' . $hashProgress . '%; background: ' . $profileColor . ';">';
@@ -175,7 +178,7 @@ class rHtmlApi
       }
       echo '</div></div>';
 
-      self::printScaledDetailedTextProgress ( $roadmap, $sumProgressHtmlString );
+      self::printScaledDetailedTextProgress ( $roadmap, $sumProgressHtmlString, $maxThreshold );
    }
 
    /**
@@ -183,12 +186,13 @@ class rHtmlApi
     *
     * @param roadmap $roadmap
     * @param $sumProgressHtmlString
+    * @param rThreshold $maxThreshold
     */
-   private static function printScaledDetailedTextProgress ( roadmap $roadmap, $sumProgressHtmlString )
+   private static function printScaledDetailedTextProgress ( roadmap $roadmap, $sumProgressHtmlString, rThreshold $maxThreshold )
    {
       $versionId = $roadmap->getVersionId ();
       $textProgressDir = $roadmap->getTextProgressDir ();
-      $textProgressMain = $roadmap->getTextProgressMain ();
+      $textProgressMain = $roadmap->getTextProgressMain ($maxThreshold);
       $textUncertainty = $roadmap->getUncertaintyString ();
       $expectedFinishedDateString = $roadmap->getExpectedFinishedDateString () . '*';
       $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
@@ -648,10 +652,23 @@ class rHtmlApi
          if ( $useEta && config_get ( 'enable_eta' ) )
          {
             $profileEffortFactor = rProApi::getProfileEffortFactor ( $roadmap );
-            $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
+
             $calculatedFullEta = rProApi::calculateEtaUnit ( $fullEta );
+            /** @var rThreshold $usedThreshold */
+            $usedThreshold = $calculatedFullEta[ 2 ];
+            if ( $usedThreshold != NULL )
+            {
+               $calculatedDoneEta = array ();
+               $factor = $usedThreshold->getThresholdFactor ();
+               $calculatedDoneEta[ 0 ] = $doneEta / $factor;
+               $calculatedDoneEta[ 1 ] = $usedThreshold->getThresholdUnit ();
+            }
+            else
+            {
+               $calculatedDoneEta = rProApi::calculateEtaUnit ( $doneEta );
+            }
             $progressString = round ( ( $calculatedDoneEta[ 0 ] * $profileEffortFactor ), 1 ) . $calculatedDoneEta[ 1 ] .
-               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . round ( $calculatedFullEta[ 0 ] * $profileEffortFactor , 1 ) . $calculatedFullEta[ 1 ];
+               '&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . round ( $calculatedFullEta[ 0 ] * $profileEffortFactor, 1 ) . $calculatedFullEta[ 1 ];
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }
          else

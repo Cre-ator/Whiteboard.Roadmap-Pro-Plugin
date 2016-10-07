@@ -106,6 +106,7 @@ class rHtmlApi
       $sumProgressHtmlString = '';
 
       $maxThresholdUnit = rProApi::calculateEtaUnit ( $fullEta );
+      /** @var rThreshold $maxThreshold */
       $maxThreshold = $maxThresholdUnit[ 2 ];
 
       echo '<div class="td"><div class="progress9001">';
@@ -188,11 +189,11 @@ class rHtmlApi
     * @param $sumProgressHtmlString
     * @param rThreshold $maxThreshold
     */
-   private static function printScaledDetailedTextProgress ( roadmap $roadmap, $sumProgressHtmlString, rThreshold $maxThreshold )
+   private static function printScaledDetailedTextProgress ( roadmap $roadmap, $sumProgressHtmlString, rThreshold $maxThreshold = NULL )
    {
       $versionId = $roadmap->getVersionId ();
       $textProgressDir = $roadmap->getTextProgressDir ();
-      $textProgressMain = $roadmap->getTextProgressMain ($maxThreshold);
+      $textProgressMain = $roadmap->getTextProgressMain ( $maxThreshold );
       $textUncertainty = $roadmap->getUncertaintyString ();
       $expectedFinishedDateString = $roadmap->getExpectedFinishedDateString () . '*';
       $versionDesiredDate = version_get_field ( $versionId, 'date_order' );
@@ -307,6 +308,9 @@ class rHtmlApi
       echo '<div class="spacer"></div>';
    }
 
+   /**
+    * print the html content title
+    */
    public static function htmlPluginContentTitle ()
    {
       $getGroupId = NULL;
@@ -694,6 +698,7 @@ class rHtmlApi
    {
       foreach ( $bugIds as $bugId )
       {
+         /** @var BugData $bug */
          $bug = bug_get ( $bugId );
          $userId = $bug->handler_id;
          echo '<div class="tr">';
@@ -719,6 +724,11 @@ class rHtmlApi
       }
    }
 
+   /**
+    * print category for bug entry in the roadmap
+    *
+    * @param $categoryId
+    */
    private static function htmlPluginPrintCategory ( $categoryId )
    {
       if ( $categoryId == 0 )
@@ -887,6 +897,9 @@ class rHtmlApi
       echo '<script type="text/javascript">backToTop();</script>';
    }
 
+   /**
+    * print html info text
+    */
    public static function htmlInfoFooter ()
    {
       echo '<div class="tr"><div class="td" style="font-size: smaller">*' . plugin_lang_get ( 'roadmap_page_dateinfo' ) . '</div></div>';

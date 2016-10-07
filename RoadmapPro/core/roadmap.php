@@ -297,7 +297,7 @@ class roadmap
     * @param rThreshold $maxThreshold
     * @return string
     */
-   public function getTextProgressMain ( rThreshold $maxThreshold )
+   public function getTextProgressMain ( rThreshold $maxThreshold = NULL )
    {
       if ( $this->etaIsSet )
       {
@@ -324,6 +324,9 @@ class roadmap
       }
    }
 
+   /**
+    * @return string
+    */
    public function getUncertaintyString ()
    {
       if ( $this->useFreeCalc )
@@ -354,6 +357,10 @@ class roadmap
       }
    }
 
+   /**
+    * @param $versonDesiredDate
+    * @return string
+    */
    public function getActualDesiredDeviation ( $versonDesiredDate )
    {
       if ( $this->etaIsSet )
@@ -737,7 +744,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Mon' )
       {
          $dayIsValid = $this->checkDayIsValid ( MON );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, MON );
@@ -746,7 +752,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Tue' )
       {
          $dayIsValid = $this->checkDayIsValid ( TUE );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, TUE );
@@ -755,7 +760,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Wed' )
       {
          $dayIsValid = $this->checkDayIsValid ( WED );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, WED );
@@ -764,7 +768,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Thu' )
       {
          $dayIsValid = $this->checkDayIsValid ( THU );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, THU );
@@ -773,7 +776,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Fri' )
       {
          $dayIsValid = $this->checkDayIsValid ( FRI );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, FRI );
@@ -782,7 +784,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Sat' )
       {
          $dayIsValid = $this->checkDayIsValid ( SAT );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, SAT );
@@ -791,7 +792,6 @@ class roadmap
       if ( $finishedExpectedDay == 'Sun' )
       {
          $dayIsValid = $this->checkDayIsValid ( SUN );
-         # calc time to add to finished day
          if ( !$dayIsValid )
          {
             $dateFinishedExpectedInSec = $this->calcDelay ( $dateFinishedExpectedInSec, SUN );

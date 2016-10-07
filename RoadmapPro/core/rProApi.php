@@ -79,6 +79,11 @@ class rProApi
       }
    }
 
+   /**
+    * checks if this plugin is registered in the whiteboard menu
+    *
+    * @return bool|null
+    */
    public static function checkPluginIsRegisteredInWhiteboardMenu ()
    {
       $mysqli = self::initializeDbConnection ();
@@ -201,7 +206,6 @@ class rProApi
    }
 
    /**
-    * todo
     * assign a given eta value to a specified eta unit
     *
     * @param $eta
@@ -1007,26 +1011,32 @@ class rProApi
       return $profileEffortFactor;
    }
 
+   /**
+    * get unique elements from a multi array
+    *
+    * @param $multiArray
+    * @return array
+    */
    public static function array_multi_unique ( $multiArray )
    {
-      /* array_unique() für multidimensionale Arrays
-       * @param    array    $multiArray = array(array(..), array(..), ..)
-       * @return   array    Array mit einmaligen Elementen
-      **/
       $uniqueArray = array ();
-      // alle Array-Elemente durchgehen
       foreach ( $multiArray as $subArray )
       {
-         // prüfen, ob Element bereits im Unique-Array
          if ( !in_array ( $subArray, $uniqueArray ) )
          {
-            // Element hinzufügen, wenn noch nicht drin
             $uniqueArray[] = $subArray;
          }
       }
       return $uniqueArray;
    }
 
+   /**
+    * get versions for a given array of projects
+    *
+    * @param $projectIds
+    * @param $getVersionId
+    * @return array
+    */
    public static function getVPVersions ( $projectIds, $getVersionId )
    {
       $vPVersions = array ();
@@ -1061,6 +1071,12 @@ class rProApi
       return self::array_multi_unique ( $vPVersions );
    }
 
+   /**
+    * get project ids for a given version
+    *
+    * @param $version
+    * @return array
+    */
    public static function getVPProjects ( $version )
    {
       $bugIds = rProApi::dbGetBugIdsByTargetVersion ( $version[ 'version' ] );

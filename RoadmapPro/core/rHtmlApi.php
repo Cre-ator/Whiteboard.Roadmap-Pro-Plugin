@@ -676,7 +676,6 @@ class rHtmlApi
          {
             $bugIds = $roadmap->getBugIds ();
             $bugCount = count ( $bugIds );
-            setlocale ( LC_NUMERIC, lang_get_current () );
             $progressString = round ( $progressPercent ) . '%&nbsp;' . plugin_lang_get ( 'roadmap_page_bar_from' ) . '&nbsp;' . $bugCount . '&nbsp;' . lang_get ( 'issues' );
             self::printSingleProgressbar ( $progressPercent, $progressString, $versionId, $roadmap->getProjectId () );
          }

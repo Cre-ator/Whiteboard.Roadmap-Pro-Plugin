@@ -86,7 +86,7 @@ $(document).ready(function () {
     /**
      * add profile row to config menu
      */
-    $('#addprofilerownew').click(function () {
+    $('a[data-state_id]').click(function () {
         var divArea = document.getElementById(profileId);
         // widget body
         var widgetBodyDiv = document.createElement("div");
@@ -126,7 +126,16 @@ $(document).ready(function () {
         td4.className = "width-15";
         td4.style.width = "15%";
 
+        var $this = $(this);
+        var statusValues = $this.data('state_id');
+        var statusStrings = $this.data('state_name');
+        var optionstring = '';
+        for (var i = 0; i < statusValues.length; i++) {
+            var value = statusValues[i];
+            var string = statusStrings[i];
 
+            optionstring += '<option value="' + value + '">' + string + '</option>'
+        }
 
         /** name */
         td1.innerHTML = '<input type="text" name="profile-name[]" size="15" maxlength="128" value="">';
@@ -142,12 +151,12 @@ $(document).ready(function () {
         /** action */
         td6.innerHTML = '';
 
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(td4);
-        tr.appendChild(td5);
-        tr.appendChild(td6);
+        tableTable.appendChild(td1);
+        tableTable.appendChild(td2);
+        tableTable.appendChild(td3);
+        tableTable.appendChild(td4);
+        tableTable.appendChild(td5);
+        tableTable.appendChild(td6);
 
         tableResponsiveDiv.appendChild(tableTable);
         widgetMainDiv.appendChild(tableResponsiveDiv);

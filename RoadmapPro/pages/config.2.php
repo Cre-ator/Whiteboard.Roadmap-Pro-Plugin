@@ -494,13 +494,25 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
         </div>
         <!-- Ende::Profile -->
         <!-- Add / Delete threshold row -->
+        <?php
+        $statusEnumConfig = config_get('status_enum_string');
+        $statusEnumValues = MantisEnum::getValues($statusEnumConfig);
+        $statusEnumStrings = array();
+        foreach ($statusEnumValues as $statusEnumValue) {
+          array_push($statusEnumStrings, get_enum_element('status', $statusEnumValue));
+        }
+        $jsProfileEnumIdArray = json_encode($statusEnumValues);
+        $jsProfileEnumNameArray = json_encode($statusEnumStrings);
+        ?>
         <div class="widget-body">
           <div class="widget-main no-padding">
             <div class="table-responsive">
               <table class="table table-bordered table-condensed table-striped">
                 <td class="width-100" width="100%">
                   <input type="button" id="addprofilerownew" value="+"/>&nbsp;
-                  <input type="button" id="delprofilerownew" value="-"/>&nbsp;
+                  <a data-state_id="<?php echo $jsProfileEnumIdArray; ?>"
+                     data-state_name="<?php echo $jsProfileEnumNameArray; ?>">ADD</a>
+                  <!--                  <input type="button" id="delprofilerownew" value="-"/>&nbsp;-->
                 </td>
               </table>
             </div>

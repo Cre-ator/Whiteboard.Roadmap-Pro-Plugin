@@ -892,7 +892,7 @@ class rHtmlApi
    public static function htmlInitializeRessources ( $profileColor )
    {
       echo '<link rel="stylesheet" href="plugins/RoadmapPro/files/roadmappro.css.php?profile_color=' . $profileColor . '"/>';
-      echo '<script type="text/javascript" src="plugins/RoadmapPro/files/roadmappro.js"></script>';
+      echo '<script type="text/javascript" src="plugins/RoadmapPro/scripts/roadmappro.js"></script>';
       echo '<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>';
       echo '<script type="text/javascript">backToTop();</script>';
    }

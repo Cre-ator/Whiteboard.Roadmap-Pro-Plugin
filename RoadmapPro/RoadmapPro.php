@@ -6,9 +6,9 @@ class RoadmapProPlugin extends MantisPlugin
 
   function register()
   {
-    $this->shortName = 'RoadmapPro';
+    $this->shortName = plugin_lang_get('menu_title');
     $this->name = 'Whiteboard.' . $this->shortName;
-    $this->description = 'Extended Roadmap with additional progress information';
+    $this->description = plugin_lang_get('description');
     $this->page = 'config_page';
 
     $this->version = '1.4.0';

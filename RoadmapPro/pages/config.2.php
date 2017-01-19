@@ -15,18 +15,18 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
 <div class="col-md-12 col-xs-12">
   <div class="space-10"></div>
   <form action="<?php echo plugin_page('config_update') ?>" method="post">
-    <!-- Allgemeine Einstellungen -->
+    <!-- General Settings -->
     <div class="form-container">
       <div class="widget-box widget-color-blue2">
-        <!-- Überschrift -->
+        <!-- Title -->
         <div class="widget-header widget-header-small">
           <h4 class="widget-title lighter">
             <i class="ace-icon fa fa-text-width"></i>
             <?php echo plugin_lang_get('menu_title') . ':&nbsp;' . plugin_lang_get('config_page_general'); ?>
           </h4>
         </div>
-        <!-- Ende::Überschrift -->
-        <!-- Menü anzeigen -->
+        <!-- End::Title -->
+        <!-- Show Menu -->
         <div class="widget-body">
           <div class="widget-main no-padding">
             <div class="table-responsive">
@@ -52,8 +52,8 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
             </div>
           </div>
         </div>
-        <!-- Ende::Menü anzeigen -->
-        <!-- Footer anzeigen -->
+        <!-- End::Show Menu -->
+        <!-- Show Footer -->
         <div class="widget-body">
           <div class="widget-main no-padding">
             <div class="table-responsive">
@@ -79,25 +79,25 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
             </div>
           </div>
         </div>
-        <!-- Ende::Footer anzeigen -->
+        <!-- End::Show Footer -->
       </div>
     </div>
-    <!-- Ende::Allgemeine Einstellungen -->
-    <!-- Zeitmanagement, ETA Management -->
+    <!-- End::General Settings -->
+    <!-- Time, ETA Management -->
     <?php
     if (config_get('enable_eta')) { ?>
-      <!-- Zeitmanagement -->
+      <!-- Time -->
       <div class="form-container">
         <div class="widget-box widget-color-blue2">
-          <!-- Überschrift -->
+          <!-- Title -->
           <div class="widget-header widget-header-small">
             <h4 class="widget-title lighter">
               <i class="ace-icon fa fa-text-width"></i>
               <?php echo plugin_lang_get('config_page_time_calc_title'); ?>
             </h4>
           </div>
-          <!-- Ende::Überschrift -->
-          <!-- Kopfzeile -->
+          <!-- End::Title -->
+          <!-- Head -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -115,7 +115,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Kopfzeile -->
+          <!-- End::Head -->
           <?php
           $weekDayValue = 10;
           $weekDayConfigString = rWeekDayManager::getWorkDayConfig();
@@ -146,7 +146,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
           ?>
         </div>
       </div>
-      <!-- Ende::Zeitmanagement -->
+      <!-- End::Time -->
       <!-- ETA Management -->
       <?php
       $thresholdCount = 0;
@@ -154,15 +154,15 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
       ?>
       <div class="form-container">
         <div class="widget-box widget-color-blue2">
-          <!-- Überschrift -->
+          <!-- Title -->
           <div class="widget-header widget-header-small">
             <h4 class="widget-title lighter">
               <i class="ace-icon fa fa-text-width"></i>
               <?php echo plugin_lang_get('config_page_eta_management'); ?>
             </h4>
           </div>
-          <!-- Ende::Überschrift -->
-          <!-- Standard ETA Wert -->
+          <!-- End::Title -->
+          <!-- Standard ETA Value -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -187,8 +187,8 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Standard ETA Wert -->
-          <!-- Schwelle für automatische Kalkulation -->
+          <!-- End::Standard ETA Value -->
+          <!-- Calc Threshold -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -210,9 +210,9 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Schwelle für automatische Kalkulation -->
-          <!-- ETA Werteverwaltung-->
-          <!-- Kopfzeile -->
+          <!-- End::Calc Threshold -->
+          <!-- ETA Values-->
+          <!-- Head -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -230,7 +230,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Kopfzeile -->
+          <!-- End::Head -->
           <?php
           foreach ($etaEnumValues as $etaEnumValue) {
             $eta = new rEta($etaEnumValue);
@@ -261,22 +261,22 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
             <?php
           }
           ?>
-          <!-- Ende::ETA Werteverwaltung-->
+          <!-- End::ETA Values-->
         </div>
       </div>
-      <!-- Ende::ETA Management -->
+      <!-- End::ETA Management -->
       <!-- ETA Thresholds -->
       <div class="form-container">
         <div class="widget-box widget-color-blue2">
-          <!-- Überschrift -->
+          <!-- Title -->
           <div class="widget-header widget-header-small">
             <h4 class="widget-title lighter">
               <i class="ace-icon fa fa-text-width"></i>
               <?php echo plugin_lang_get('config_page_roadmap_eta_threshold_management'); ?>
             </h4>
           </div>
-          <!-- Ende::Überschrift -->
-          <!-- Kopfzeile -->
+          <!-- End::Title -->
+          <!-- Head -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -297,7 +297,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Kopfzeile -->
+          <!-- End::Head -->
           <!-- Thresholds -->
           <div id="thresholds">
             <?php
@@ -316,26 +316,26 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
                     <div class="table-responsive">
                       <table class="table table-bordered table-condensed table-striped">
                         <td class="width-25" width="25%">
-                          <input type="hidden" name="threshold-id[]"
-                                 value="<?php echo $thresholdId; ?>"/>
-                          <!--                                                <label>-->
-                          <input type="number" step="0.1" name="threshold-to[]" size="15"
-                                 maxlength="128"
-                                 value="<?php echo string_display_line($thresholdTo); ?>"/>
-                          <!--                                                </label>-->
+                          <label>
+                            <input type="hidden" name="threshold-id[]"
+                                   value="<?php echo $thresholdId; ?>"/>
+                            <input type="number" step="0.1" name="threshold-to[]" size="15"
+                                   maxlength="128"
+                                   value="<?php echo string_display_line($thresholdTo); ?>"/>
+                          </label>
                         </td>
                         <td class="width-25" width="25%">
-                          <!--                                                <label>-->
-                          <input type="text" name="threshold-unit[]" size="15" maxlength="128"
-                                 value="<?php echo string_display_line($thresholdUnit); ?>"/>
-                          <!--                                                </label>-->
+                          <label>
+                            <input type="text" name="threshold-unit[]" size="15" maxlength="128"
+                                   value="<?php echo string_display_line($thresholdUnit); ?>"/>
+                          </label>
                         </td>
                         <td class="width-25" width="25%">
-                          <!--                                                <label>-->
-                          <input type="number" step="0.1" name="threshold-factor[]" size="15"
-                                 maxlength="128"
-                                 value="<?php echo string_display_line($thresholdFactor); ?>"/>
-                          <!--                                                </label>-->
+                          <label>
+                            <input type="number" step="0.1" name="threshold-factor[]" size="15"
+                                   maxlength="128"
+                                   value="<?php echo string_display_line($thresholdFactor); ?>"/>
+                          </label>
                         </td>
                         <td class="width-25" width="25%">
                           <a class="button"
@@ -353,40 +353,40 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
             }
             ?>
           </div>
-          <!-- Ende::Thresholds -->
+          <!-- End::Thresholds -->
           <!-- Add / Delete threshold row -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
                 <table class="table table-bordered table-condensed table-striped">
                   <td class="width-100" width="100%">
-                    <input type="button" id="addthresholdrownew" value="+"/>&nbsp;
-                    <input type="button" id="delthresholdrownew" value="-"/>&nbsp;
+                    <input class="btn btn-primary btn-white btn-round" type="button" id="addthresholdrownew" value="+"/>&nbsp;
+                    <input class="btn btn-primary btn-white btn-round" type="button" id="delthresholdrownew" value="-"/>&nbsp;
                   </td>
                 </table>
               </div>
             </div>
           </div>
-          <!-- Ende::Add / Delete threshold row -->
+          <!-- End::Add / Delete threshold row -->
         </div>
       </div>
-      <!-- Ende::ETA Thresholds -->
+      <!-- End::ETA Thresholds -->
       <?php
     }
     ?>
-    <!-- Ende::Zeitmanagement, ETA Management -->
+    <!-- End::Time, ETA Management -->
     <!-- Profile-Management -->
     <div class="form-container">
       <div class="widget-box widget-color-blue2">
-        <!-- Überschrift -->
+        <!-- Title -->
         <div class="widget-header widget-header-small">
           <h4 class="widget-title lighter">
             <i class="ace-icon fa fa-text-width"></i>
             <?php echo plugin_lang_get('config_page_roadmap_profile_management'); ?>
           </h4>
         </div>
-        <!-- Ende::Überschrift -->
-        <!-- Kopfzeile -->
+        <!-- End::Title -->
+        <!-- Head -->
         <div class="widget-body">
           <div class="widget-main no-padding">
             <div class="table-responsive">
@@ -413,8 +413,8 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
             </div>
           </div>
         </div>
-        <!-- Ende::Kopfzeile -->
-        <!-- Profile -->
+        <!-- End::Head -->
+        <!-- Profiles -->
         <div id="profiles">
           <?php
           $profileIds = rProfileManager::getRProfileIds();
@@ -477,10 +477,9 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
                       </td>
                       <!-- delete profile button -->
                       <td class="width-15" width="15%">
-                        <a class="button"
+                        <a class="btn btn-primary btn-white btn-round"
                            href="<?php echo plugin_page('config_delete'); ?>&amp;profile_id=<?php echo $profileId; ?>">
-                          <input type="button"
-                                 value="<?php echo plugin_lang_get('config_page_delete_profile'); ?>"/>
+                          <?php echo plugin_lang_get('config_page_delete_profile'); ?>
                         </a>
                       </td>
                     </table>
@@ -492,8 +491,8 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
           }
           ?>
         </div>
-        <!-- Ende::Profile -->
-        <!-- Add / Delete threshold row -->
+        <!-- End::Profiles -->
+        <!-- Add / Delete profile row -->
         <?php
         $statusEnumConfig = config_get('status_enum_string');
         $statusEnumValues = MantisEnum::getValues($statusEnumConfig);
@@ -501,42 +500,42 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
         foreach ($statusEnumValues as $statusEnumValue) {
           array_push($statusEnumStrings, get_enum_element('status', $statusEnumValue));
         }
-        $jsProfileEnumIdArray = json_encode($statusEnumValues);
-        $jsProfileEnumNameArray = json_encode($statusEnumStrings);
+        $jsStatusEnumIdArray = json_encode($statusEnumValues);
+        $jsStatusEnumNameArray = json_encode($statusEnumStrings);
         ?>
         <div class="widget-body">
           <div class="widget-main no-padding">
             <div class="table-responsive">
               <table class="table table-bordered table-condensed table-striped">
                 <td class="width-100" width="100%">
-                  <input type="button" id="addprofilerownew" value="+"/>&nbsp;
-                  <a data-state_id="<?php echo $jsProfileEnumIdArray; ?>"
-                     data-state_name="<?php echo $jsProfileEnumNameArray; ?>">ADD</a>
-                  <!--                  <input type="button" id="delprofilerownew" value="-"/>&nbsp;-->
+                  <a data-state_profileid="<?php echo $jsStatusEnumIdArray; ?>"
+                     data-state_profilename="<?php echo $jsStatusEnumNameArray; ?>"
+                     class="btn btn-primary btn-white btn-round">+</a>
+                  <input class="btn btn-primary btn-white btn-round" type="button" id="delprofilerownew" value="-"/>&nbsp;
                 </td>
               </table>
             </div>
           </div>
         </div>
-        <!-- Ende::Add / Delete threshold row -->
+        <!-- End::Add / Delete profile row -->
       </div>
     </div>
-    <!-- Ende::Profile-Management -->
+    <!-- End::Profile-Management -->
     <?php
     if ($profileCount > 1) {
       ?>
       <!-- Group-Management -->
       <div class="form-container">
         <div class="widget-box widget-color-blue2">
-          <!-- Überschrift -->
+          <!-- Title -->
           <div class="widget-header widget-header-small">
             <h4 class="widget-title lighter">
               <i class="ace-icon fa fa-text-width"></i>
               <?php echo plugin_lang_get('config_page_prfgr_management'); ?>
             </h4>
           </div>
-          <!-- Ende::Überschrift -->
-          <!-- Kopfzeile -->
+          <!-- End::Title -->
+          <!-- Head -->
           <div class="widget-body">
             <div class="widget-main no-padding">
               <div class="table-responsive">
@@ -554,86 +553,116 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core'
               </div>
             </div>
           </div>
-          <!-- Ende::Kopfzeile -->
+          <!-- End::Head -->
           <!-- Groups -->
-          <?php
-          $groupIds = rGroupManager::getRGroupIds();
-          $groupCount = count($groupIds);
-          if ($groupCount > 0) {
-            for ($index = 0; $index < $groupCount; $index++) {
-              $groupId = $groupIds[$index];
-              $group = new rGroup($groupId);
-              $dbGroudName = $group->getGroupName();
-              $dbGroupProfiles = $group->getGroupProfiles();
+          <div id="groups">
+            <?php
+            $groupIds = rGroupManager::getRGroupIds();
+            $groupCount = count($groupIds);
+            if ($groupCount > 0) {
+              for ($index = 0; $index < $groupCount; $index++) {
+                $groupId = $groupIds[$index];
+                $group = new rGroup($groupId);
+                $dbGroudName = $group->getGroupName();
+                $dbGroupProfiles = $group->getGroupProfiles();
 
-              $groupProfileEnumNames = array();
-              $profileEnumIds = rProApi::getProfileEnumIds();
-              $profileEnumNames = rProApi::getProfileEnumNames();
-              $profileEnumCount = count($profileEnumIds);
-              $groupProfileArray = explode(';', $dbGroupProfiles);
-              foreach ($groupProfileArray as $profileId) {
-                $profile = new rProfile($profileId);
-                $profileName = $profile->getProfileName();
+                $groupProfileEnumNames = array();
+                $profileEnumIds = rProApi::getProfileEnumIds();
+                $profileEnumNames = rProApi::getProfileEnumNames();
+                $profileEnumCount = count($profileEnumIds);
+                $groupProfileArray = explode(';', $dbGroupProfiles);
+                foreach ($groupProfileArray as $profileId) {
+                  $profile = new rProfile($profileId);
+                  $profileName = $profile->getProfileName();
 
-                array_push($groupProfileEnumNames, $profileName);
-              }
-              ?>
-              <div class="widget-body">
-                <div class="widget-main no-padding">
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-condensed table-striped">
-                      <!-- group name -->
-                      <td class="width-40" width="40%">
-                        <label>
-                          <input type="hidden" name="group-id[]"
-                                 value="<?php echo $groupId; ?>"/>
-                          <input type="text" name="group-name[]" size="15" maxlength="128"
-                                 value="<?php echo string_display_line($dbGroudName); ?>"/>
-                        </label>
-                      </td>
-                      <!-- group profiles -->
-                      <td class="width-30" width="30%">
-                        <select name="group-profile-<?php echo $index; ?>[]"
-                                multiple="multiple">
-                          <?php
-                          for ($pindex = 0; $pindex < $profileEnumCount; $pindex++) {
-                            $profileId = $profileEnumIds[$pindex];
-                            $profileName = $profileEnumNames[$pindex];
-                            echo '<option value="' . $profileId . '"';
-                            check_selected($groupProfileEnumNames, $profileName);
-                            echo '>' . $profileName . '</option>';
-                          }
-                          ?>
-                        </select>
-                      </td>
-                      <!-- delete group button -->
-                      <td class="width-30" width="30%">
-                        <a class="button"
-                           href="<?php echo plugin_page('config_delete'); ?>&amp;group_id=<?php echo $groupId; ?>">
-                          <input type="button"
-                                 value="<?php echo plugin_lang_get('config_page_delete_profile'); ?>"/>
-                        </a>
-                      </td>
-                    </table>
+                  array_push($groupProfileEnumNames, $profileName);
+                }
+                ?>
+                <div class="widget-body">
+                  <div class="widget-main no-padding">
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-condensed table-striped">
+                        <!-- group name -->
+                        <td class="width-40" width="40%">
+                          <label>
+                            <input type="hidden" name="group-id[]"
+                                   value="<?php echo $groupId; ?>"/>
+                            <input type="text" name="group-name[]" size="15" maxlength="128"
+                                   value="<?php echo string_display_line($dbGroudName); ?>"/>
+                          </label>
+                        </td>
+                        <!-- group profiles -->
+                        <td class="width-30" width="30%">
+                          <label>
+                            <select name="group-profile-<?php echo $index; ?>[]"
+                                    multiple="multiple">
+                              <?php
+                              for ($pindex = 0; $pindex < $profileEnumCount; $pindex++) {
+                                $profileId = $profileEnumIds[$pindex];
+                                $profileName = $profileEnumNames[$pindex];
+                                echo '<option value="' . $profileId . '"';
+                                check_selected($groupProfileEnumNames, $profileName);
+                                echo '>' . $profileName . '</option>';
+                              }
+                              ?>
+                            </select>
+                          </label>
+                        </td>
+                        <!-- delete group button -->
+                        <td class="width-30" width="30%">
+                          <a class="btn btn-primary btn-white btn-round"
+                             href="<?php echo plugin_page('config_delete'); ?>&amp;group_id=<?php echo $groupId; ?>">
+                            <?php echo plugin_lang_get('config_page_delete_profile'); ?>
+                          </a>
+                        </td>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <?php
+                <?php
+              }
             }
+            ?>
+          </div>
+          <!-- End::Groups -->
+          <!-- Add / Delete group row -->
+          <?php
+          if ($profileCount > 1) {
+            $profileEnumIds = rProApi::getProfileEnumIds();
+            $profileEnumNames = rProApi::getProfileEnumNames();
+            $jsProfileEnumIdArray = json_encode($profileEnumIds);
+            $jsProfileEnumNameArray = json_encode($profileEnumNames);
+            ?>
+            <div class="widget-body">
+              <div class="widget-main no-padding">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-condensed table-striped">
+                    <td class="width-100" width="100%">
+                      <a data-state_groupid="<?php echo $jsProfileEnumIdArray; ?>"
+                         data-state_groupname="<?php echo $jsProfileEnumNameArray; ?>"
+                         class="btn btn-primary btn-white btn-round">+</a>
+                      <input class="btn btn-primary btn-white btn-round" data-type="minus" type="button"
+                             id="delgrouprownew" value="-"/>&nbsp;
+                    </td>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <?php
           }
           ?>
-          <!-- Ende::Groups -->
+          <!-- End::Add / Delete group row -->
         </div>
       </div>
-      <!-- TODO Buttons -->
-      <!-- Ende::Group-Management -->
+      <!-- End::Group-Management -->
       <?php
     }
     ?>
-    <!-- Konfiguration Ändern Button -->
+    <!-- Change Configuration Button -->
     <div class="widget-toolbox padding-8 clearfix">
       <input type="submit" class="btn btn-primary btn-white btn-round" name="config_change"
              value="<?php echo lang_get('change_configuration') ?>"/>
     </div>
+    <!-- End::Change Configuration Button -->
   </form>
 </div>

@@ -6,6 +6,10 @@ var profileId = "profiles";
  * @type {string}
  */
 var thresholdId = "thresholds";
+/*
+ * @type {string}
+ */
+var groupId = "groups";
 /**
  * @type {number}
  */
@@ -14,6 +18,10 @@ var newThresholdCounter = 0;
  * @type {number}
  */
 var newProfileCounter = 0;
+/**
+ * @type {number}
+ */
+var newGroupCounter = 0;
 
 /**
  * adds an empty threshold row to the config page
@@ -86,12 +94,12 @@ $(document).ready(function () {
     /**
      * add profile row to config menu
      */
-    $('a[data-state_id]').click(function () {
+    $('a[data-state_profileid]').click(function () {
         var divArea = document.getElementById(profileId);
         // widget body
         var widgetBodyDiv = document.createElement("div");
         widgetBodyDiv.className = "widget-body";
-        widgetBodyDiv.id = "" + newThresholdCounter + "";
+        widgetBodyDiv.id = "" + newProfileCounter + "";
         // widget main
         var widgetMainDiv = document.createElement("div");
         widgetMainDiv.className = "widget-main no-padding";
@@ -127,9 +135,10 @@ $(document).ready(function () {
         td4.style.width = "15%";
 
         var $this = $(this);
-        var statusValues = $this.data('state_id');
-        var statusStrings = $this.data('state_name');
+        var statusValues = $this.data('state_profileid');
+        var statusStrings = $this.data('state_profilename');
         var optionstring = '';
+        //alert("statusstrings: " + statusStrings);
         for (var i = 0; i < statusValues.length; i++) {
             var value = statusValues[i];
             var string = statusStrings[i];
@@ -141,7 +150,6 @@ $(document).ready(function () {
         td1.innerHTML = '<input type="text" name="profile-name[]" size="15" maxlength="128" value="">';
         /** status */
         td2.innerHTML = '<select name="new-status-' + newProfileCounter + '[]" multiple="multiple">' + optionstring + '</select>';
-        newProfileCounter++;
         /** color */
         td3.innerHTML = '<label><input class="color {pickerFace:4,pickerClosable:true}" type="text" name="profile-color[]" value=""/></label>';
         /** priority */
@@ -173,6 +181,77 @@ $(document).ready(function () {
         if (newProfileCounter > 0) {
             $('#' + profileId).children().last().remove();
             newProfileCounter--;
+        }
+    });
+
+    /**
+     * add group row to config menu
+     */
+    $('a[data-state_groupid]').click(function () {
+        var divArea = document.getElementById(groupId);
+        // widget body
+        var widgetBodyDiv = document.createElement("div");
+        widgetBodyDiv.className = "widget-body";
+        widgetBodyDiv.id = "" + newGroupCounter + "";
+        // widget main
+        var widgetMainDiv = document.createElement("div");
+        widgetMainDiv.className = "widget-main no-padding";
+        // table responsive
+        var tableResponsiveDiv = document.createElement("div");
+        tableResponsiveDiv.className = "table-responsive";
+        // table element
+        var tableTable = document.createElement("table");
+        tableTable.className = "table table-bordered table-condensed table-striped";
+        // column 1
+        var td1 = document.createElement("td");
+        td1.className = "width-40";
+        td1.style.width = "40%";
+        // column 2
+        var td2 = document.createElement("td");
+        td2.className = "width-30";
+        td2.style.width = "30%";
+        // column 3
+        var td3 = document.createElement("td");
+        td3.className = "width-30";
+        td3.style.width = "30%";
+
+        var $this = $(this);
+        var profileIds = $this.data('state_groupid');
+        var profileNames = $this.data('state_groupname');
+        var optionstring = '';
+        for (var i = 0; i < profileIds.length; i++) {
+            var value = profileIds[i];
+            var string = profileNames[i];
+
+            optionstring += '<option value="' + value + '">' + string + '</option>'
+        }
+
+        /** name */
+        td1.innerHTML = '<input type="text" name="group-name[]" size="15" maxlength="128" value="">';
+        /** profiles */
+        td2.innerHTML = '<select name="new-group-profile-' + newGroupCounter + '[]" multiple="multiple">' + optionstring + '</select>';
+        /** action */
+        td3.innerHTML = '';
+
+        tableTable.appendChild(td1);
+        tableTable.appendChild(td2);
+        tableTable.appendChild(td3);
+
+        tableResponsiveDiv.appendChild(tableTable);
+        widgetMainDiv.appendChild(tableResponsiveDiv);
+        widgetBodyDiv.appendChild(widgetMainDiv);
+        divArea.appendChild(widgetBodyDiv);
+
+        newGroupCounter++;
+    });
+
+    /**
+     * delete group row from config menu
+     */
+    $('#delgrouprownew').click(function () {
+        if (newGroupCounter > 0) {
+            $('#' + groupId).children().last().remove();
+            newGroupCounter--;
         }
     });
 });
